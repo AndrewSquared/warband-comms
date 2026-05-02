@@ -79,6 +79,11 @@ local function GetTrackerRowMetrics(rowScale)
 	return iconWidth, timerWidth, nameOffset
 end
 
+local function GetTrackerRowHeight(rowScale, iconWidth)
+	local textHeight = math.floor((12 * rowScale) + 0.5)
+	return math.max(12, iconWidth, textHeight)
+end
+
 local function FitNameToTrackerRow(tracker, name)
 	local width = WarbandComms.GetTrackerWidth()
 	local scale = WarbandComms.GetRowTextScale()
@@ -152,17 +157,19 @@ function WarbandComms.ApplyTrackerInternalLayout(tracker)
 	local rowBase = window .. "ListRow"
 	local rowScale = WarbandComms.GetRowTextScale()
 	local iconWidth, timerWidth, nameOffset = GetTrackerRowMetrics(rowScale)
+	local rowHeight = GetTrackerRowHeight(rowScale, iconWidth)
+	local iconYOffset = math.max(0, math.floor((rowHeight - iconWidth) / 2))
 	local nameWidth = math.max(12, width - (nameOffset + timerWidth + 8))
 	for i = 1, 12 do
 		local rowName = rowBase .. i
-		WindowSetDimensions(rowName, width, 12)
+		WindowSetDimensions(rowName, width, rowHeight)
 		WindowSetDimensions(rowName .. "Icon", iconWidth, iconWidth)
 		WindowClearAnchors(rowName .. "Icon")
-		WindowAddAnchor(rowName .. "Icon", "topleft", rowName, "topleft", 1, 0)
-		WindowSetDimensions(rowName .. "Name", nameWidth, 15)
+		WindowAddAnchor(rowName .. "Icon", "topleft", rowName, "topleft", 1, iconYOffset)
+		WindowSetDimensions(rowName .. "Name", nameWidth, rowHeight)
 		WindowClearAnchors(rowName .. "Name")
 		WindowAddAnchor(rowName .. "Name", "topleft", rowName, "topleft", nameOffset, 0)
-		WindowSetDimensions(rowName .. "Timer", timerWidth, 15)
+		WindowSetDimensions(rowName .. "Timer", timerWidth, rowHeight)
 		WindowClearAnchors(rowName .. "Timer")
 		WindowAddAnchor(rowName .. "Timer", "topright", rowName, "topright", -2, 0)
 	end

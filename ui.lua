@@ -31,6 +31,67 @@ function WarbandComms.ApplyTextScale(tracker)
 	end
 end
 
+function WarbandComms.ApplyTrackerInternalLayout(tracker)
+	local window = WarbandComms.AddonName .. tracker:upper()
+	local width = WarbandComms.GetTrackerWidth()
+	if WindowGetDimensions then
+		local currentWidth = WindowGetDimensions(window)
+		if currentWidth and currentWidth > 0 then
+			width = currentWidth
+		end
+	end
+
+	local titleName = window .. "Title"
+	WindowSetDimensions(titleName, width, 20)
+
+	local listName = window .. "List"
+	local _, windowHeight = WindowGetDimensions(window)
+	if windowHeight and windowHeight > 20 then
+		WindowSetDimensions(listName, width, windowHeight - 15)
+	end
+
+	local rowBase = window .. "ListRow"
+	local timerWidth = 28
+	local timerX = math.max(96, width - (timerWidth + 4))
+	local nameWidth = math.max(40, timerX - 17)
+	for i = 1, 12 do
+		local rowName = rowBase .. i
+		WindowSetDimensions(rowName, width, 12)
+		WindowSetDimensions(rowName .. "Name", nameWidth, 15)
+		WindowSetDimensions(rowName .. "Timer", timerWidth, 15)
+		WindowClearAnchors(rowName .. "Timer")
+		WindowAddAnchor(rowName .. "Timer", "topleft", rowName, "topleft", timerX, 0)
+	end
+end
+
+function WarbandComms.ApplyTrackerDimensions(tracker)
+	local window = WarbandComms.AddonName .. tracker:upper()
+	WindowSetDimensions(window, WarbandComms.GetTrackerWidth(), WarbandComms.GetTrackerHeight())
+	WarbandComms.ApplyTrackerInternalLayout(tracker)
+end
+
+function WarbandComms.ApplyTrackerDimensionsUniform(tracker)
+	local window = WarbandComms.AddonName .. tracker:upper()
+	WindowSetScale(window, 1.0)
+	WarbandComms.ApplyTrackerDimensions(tracker)
+end
+
+function WarbandComms.AdjustTrackerDimensionsRelative(tracker, deltaWidth, deltaHeight)
+	local window = WarbandComms.AddonName .. tracker:upper()
+	local currentWidth, currentHeight = WindowGetDimensions(window)
+	if not currentWidth or currentWidth <= 0 then
+		currentWidth = WarbandComms.GetTrackerWidth()
+	end
+	if not currentHeight or currentHeight <= 0 then
+		currentHeight = WarbandComms.GetTrackerHeight()
+	end
+
+	local nextWidth = WarbandComms.ClampTrackerWidth(currentWidth + (deltaWidth or 0))
+	local nextHeight = WarbandComms.ClampTrackerHeight(currentHeight + (deltaHeight or 0))
+	WindowSetDimensions(window, nextWidth, nextHeight)
+	WarbandComms.ApplyTrackerInternalLayout(tracker)
+end
+
 function WarbandComms.OnTrackerWindowShown()
 	if WarbandComms.suppressTrackerWindowSync then return end
 
@@ -59,7 +120,7 @@ function WarbandComms.CreateUI(tracker)
 	WindowSetTintColor (window.."Background", 0, 0, 0)
 	WindowSetAlpha (window.."Background", 0.60)
 	WindowSetScale(window, 1.0)
-	WindowSetDimensions(window, 125, 113) -- width, height
+	WarbandComms.ApplyTrackerDimensions(tracker)
 
 
 	local windowTitle = window .. "Title"
@@ -72,6 +133,7 @@ end
 function WarbandComms.UpdateUI(tracker, abilityList, nearlyReadyTime)
 	local window = WarbandComms.AddonName .. tracker:upper()
     if not WindowGetShowing(window) then return end
+	WarbandComms.ApplyTrackerInternalLayout(tracker)
 	WarbandComms.ApplyTextScale(tracker)
 
 	local listWindow = window .. "ListRow"

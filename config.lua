@@ -17,9 +17,49 @@ local function RefreshTextScaleLabels()
 	LabelSetText(configWindow .. "RowTextSizeValue", FormatPercentLabel(WarbandComms.GetRowTextScale()))
 end
 
+local function RefreshSizeLabels()
+	local width = WarbandComms.GetTrackerWidth()
+	local height = WarbandComms.GetTrackerHeight()
+	if WarbandComms.GetSizeApplyMode() == "relative" then
+		local widthDelta = width - WarbandComms.DefaultTrackerWidth
+		local heightDelta = height - WarbandComms.DefaultTrackerHeight
+		LabelSetText(configWindow .. "TrackerWidthValue", towstring(string.format("%+d", widthDelta)))
+		LabelSetText(configWindow .. "TrackerHeightValue", towstring(string.format("%+d", heightDelta)))
+	else
+		LabelSetText(configWindow .. "TrackerWidthValue", towstring(tostring(width)))
+		LabelSetText(configWindow .. "TrackerHeightValue", towstring(tostring(height)))
+	end
+end
+
+local function RefreshSizeModeLabel()
+	local mode = WarbandComms.GetSizeApplyMode()
+	if mode == "uniform" then
+		LabelSetText(configWindow .. "SizeApplyModeButtonValue", L"Uniform")
+	else
+		LabelSetText(configWindow .. "SizeApplyModeButtonValue", L"Relative")
+	end
+	RefreshSizeLabels()
+end
+
 local function ApplyTextScaleToAllTrackers()
 	for trackerName, _ in pairs(WarbandComms.Trackers) do
 		WarbandComms.ApplyTextScale(trackerName)
+	end
+end
+
+local function ApplyTrackerSizeToAllTrackers()
+	for trackerName, _ in pairs(WarbandComms.Trackers) do
+		if WarbandComms.GetSizeApplyMode() == "uniform" then
+			WarbandComms.ApplyTrackerDimensionsUniform(trackerName)
+		else
+			WarbandComms.ApplyTrackerDimensions(trackerName)
+		end
+	end
+end
+
+local function ApplyTrackerSizeDeltaToAllTrackers(deltaWidth, deltaHeight)
+	for trackerName, _ in pairs(WarbandComms.Trackers) do
+		WarbandComms.AdjustTrackerDimensionsRelative(trackerName, deltaWidth, deltaHeight)
 	end
 end
 
@@ -45,7 +85,16 @@ function WarbandComms.InitConfig(version)
 	LabelSetText(configWindow .. "HeaderTextSizeIncreaseButtonLabel", L"+")
 	LabelSetText(configWindow .. "RowTextSizeDecreaseButtonLabel", L"-")
 	LabelSetText(configWindow .. "RowTextSizeIncreaseButtonLabel", L"+")
+	LabelSetText(configWindow .. "TrackerWidthLabel", L"Box Width")
+	LabelSetText(configWindow .. "TrackerHeightLabel", L"Box Height")
+	LabelSetText(configWindow .. "TrackerWidthDecreaseButtonLabel", L"-")
+	LabelSetText(configWindow .. "TrackerWidthIncreaseButtonLabel", L"+")
+	LabelSetText(configWindow .. "TrackerHeightDecreaseButtonLabel", L"-")
+	LabelSetText(configWindow .. "TrackerHeightIncreaseButtonLabel", L"+")
+	LabelSetText(configWindow .. "SizeApplyModeLabel", L"Resize Mode")
 	RefreshTextScaleLabels()
+	RefreshSizeLabels()
+	RefreshSizeModeLabel()
 
 	-- Dynamically add trackers
 	local tracker_index = 0
@@ -58,7 +107,7 @@ function WarbandComms.InitConfig(version)
 
 		WindowClearAnchors(window)
         -- place rows under the header controls
-		WindowAddAnchor(window, "topleft", configWindow, "topleft", 20, 140 + (tracker_index * 40))
+		WindowAddAnchor(window, "topleft", configWindow, "topleft", 20, 196 + (tracker_index * 40))
 		tracker_index = tracker_index + 1
 
 		local buttonName = window .. "Button"
@@ -86,7 +135,7 @@ function WarbandComms.InitConfig(version)
 
 		WindowClearAnchors(window)
 		-- place rows under the header controls
-		WindowAddAnchor(window, "topleft", configWindow, "topleft", 350, 140 + (notification_index * 40))
+		WindowAddAnchor(window, "topleft", configWindow, "topleft", 350, 196 + (notification_index * 40))
 		notification_index = notification_index + 1
 
 		local buttonName = window .. "Button"
@@ -103,7 +152,7 @@ function WarbandComms.InitConfig(version)
 		end
 	end
 	-- Resize config window to fit all trackers
-	WindowSetDimensions(configWindow, 700, 190 + (tracker_index * 50))
+	WindowSetDimensions(configWindow, 700, 246 + (tracker_index * 50))
 end
 
 function WarbandComms.ChangeHeaderTextSize(delta)
@@ -132,6 +181,54 @@ end
 
 function WarbandComms.IncreaseRowTextSize()
 	WarbandComms.ChangeRowTextSize(0.1)
+end
+
+function WarbandComms.ChangeTrackerWidth(delta)
+	WarbandComms.Settings.trackerWidth = WarbandComms.ClampTrackerWidth(WarbandComms.GetTrackerWidth() + delta)
+	RefreshSizeLabels()
+	if WarbandComms.GetSizeApplyMode() == "uniform" then
+		ApplyTrackerSizeToAllTrackers()
+	else
+		ApplyTrackerSizeDeltaToAllTrackers(delta, 0)
+	end
+end
+
+function WarbandComms.ChangeTrackerHeight(delta)
+	WarbandComms.Settings.trackerHeight = WarbandComms.ClampTrackerHeight(WarbandComms.GetTrackerHeight() + delta)
+	RefreshSizeLabels()
+	if WarbandComms.GetSizeApplyMode() == "uniform" then
+		ApplyTrackerSizeToAllTrackers()
+	else
+		ApplyTrackerSizeDeltaToAllTrackers(0, delta)
+	end
+end
+
+function WarbandComms.DecreaseTrackerWidth()
+	WarbandComms.ChangeTrackerWidth(-10)
+end
+
+function WarbandComms.IncreaseTrackerWidth()
+	WarbandComms.ChangeTrackerWidth(10)
+end
+
+function WarbandComms.DecreaseTrackerHeight()
+	WarbandComms.ChangeTrackerHeight(-10)
+end
+
+function WarbandComms.IncreaseTrackerHeight()
+	WarbandComms.ChangeTrackerHeight(10)
+end
+
+function WarbandComms.ToggleSizeApplyMode()
+	if WarbandComms.GetSizeApplyMode() == "uniform" then
+		WarbandComms.Settings.sizeApplyMode = "relative"
+		EA_ChatWindow.Print(L"[WarbandComms] Resize Mode: Relative (preserve per-tracker size differences)")
+	else
+		WarbandComms.Settings.sizeApplyMode = "uniform"
+		ApplyTrackerSizeToAllTrackers()
+		EA_ChatWindow.Print(L"[WarbandComms] Resize Mode: Uniform (normalize all tracker sizes)")
+	end
+	RefreshSizeModeLabel()
 end
 
 function WarbandComms.ToggleAllTrackers()

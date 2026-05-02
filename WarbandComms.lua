@@ -41,6 +41,8 @@ WarbandComms.SendChatQueue = {}
 WarbandComms.SendChatQueuedByAction = {}
 WarbandComms.TrackerKeyByLower = {}
 WarbandComms.suppressTrackerWindowSync = false
+WarbandComms.DefaultTrackerWidth = 125
+WarbandComms.DefaultTrackerHeight = 113
 
 WarbandComms.ChatChannels = {
 	[SystemData.ChatLogFilters.BATTLEGROUP] = true,
@@ -161,6 +163,32 @@ function WarbandComms.GetRowTextScale()
 	return WarbandComms.ClampTextScale(WarbandComms.Settings.rowTextScale)
 end
 
+function WarbandComms.ClampTrackerWidth(value)
+	local numeric = tonumber(value) or WarbandComms.DefaultTrackerWidth
+	return min(360, max(90, math.floor(numeric + 0.5)))
+end
+
+function WarbandComms.ClampTrackerHeight(value)
+	local numeric = tonumber(value) or WarbandComms.DefaultTrackerHeight
+	return min(320, max(80, math.floor(numeric + 0.5)))
+end
+
+function WarbandComms.GetTrackerWidth()
+	return WarbandComms.ClampTrackerWidth(WarbandComms.Settings.trackerWidth)
+end
+
+function WarbandComms.GetTrackerHeight()
+	return WarbandComms.ClampTrackerHeight(WarbandComms.Settings.trackerHeight)
+end
+
+function WarbandComms.GetSizeApplyMode()
+	local mode = WarbandComms.Settings.sizeApplyMode
+	if mode ~= "uniform" and mode ~= "relative" then
+		mode = "relative"
+	end
+	return mode
+end
+
 function WarbandComms.OnInitialize()
 	RegisterEventHandler(SystemData.Events.CHAT_TEXT_ARRIVED, "WarbandComms.TextArrived");
 	RegisterEventHandler(SystemData.Events.PLAYER_BEGIN_CAST, "WarbandComms.OnCast")
@@ -182,6 +210,9 @@ function WarbandComms.OnInitialize()
 		bellow = true,
 		headerTextScale = 1.0,
 		rowTextScale = 1.0,
+		trackerWidth = WarbandComms.DefaultTrackerWidth,
+		trackerHeight = WarbandComms.DefaultTrackerHeight,
+		sizeApplyMode = "relative",
 		version = version,
 		showOnStartup = true,
 		notifications = {
@@ -200,8 +231,20 @@ function WarbandComms.OnInitialize()
 	if WarbandComms.Settings.rowTextScale == nil then
 		WarbandComms.Settings.rowTextScale = defaultSettings.rowTextScale
 	end
+	if WarbandComms.Settings.trackerWidth == nil then
+		WarbandComms.Settings.trackerWidth = defaultSettings.trackerWidth
+	end
+	if WarbandComms.Settings.trackerHeight == nil then
+		WarbandComms.Settings.trackerHeight = defaultSettings.trackerHeight
+	end
+	if WarbandComms.Settings.sizeApplyMode == nil then
+		WarbandComms.Settings.sizeApplyMode = defaultSettings.sizeApplyMode
+	end
 	WarbandComms.Settings.headerTextScale = WarbandComms.GetHeaderTextScale()
 	WarbandComms.Settings.rowTextScale = WarbandComms.GetRowTextScale()
+	WarbandComms.Settings.trackerWidth = WarbandComms.GetTrackerWidth()
+	WarbandComms.Settings.trackerHeight = WarbandComms.GetTrackerHeight()
+	WarbandComms.Settings.sizeApplyMode = WarbandComms.GetSizeApplyMode()
 
 	for _, v in pairs(WarbandComms.trackedAbilities) do
 		WarbandComms.Trackers[v.tracker] = {}

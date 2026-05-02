@@ -164,6 +164,144 @@
                     </Windows>
                 </Button>
 
+                <Label name="$parentTrackerWidthLabel" font="font_clear_small" textalign="left">
+                    <Size><AbsPoint x="100" y="20" /></Size>
+                    <Anchors>
+                        <Anchor point="topleft" relativePoint="topleft" relativeTo="$parent">
+                            <AbsPoint x="20" y="102" />
+                        </Anchor>
+                    </Anchors>
+                </Label>
+                <Button name="$parentTrackerWidthDecreaseButton" inherits="EA_Button_Default">
+                    <Size><AbsPoint x="24" y="20" /></Size>
+                    <Anchors>
+                        <Anchor point="topleft" relativePoint="topleft" relativeTo="$parent">
+                            <AbsPoint x="128" y="102" />
+                        </Anchor>
+                    </Anchors>
+                    <EventHandlers>
+                        <EventHandler event="OnLButtonUp" function="WarbandComms.DecreaseTrackerWidth" />
+                    </EventHandlers>
+                    <Windows>
+                        <Label name="$parentLabel" font="font_clear_medium_bold" textalign="center">
+                            <Size><AbsPoint x="24" y="20" /></Size>
+                            <Anchors>
+                                <Anchor point="center" relativePoint="center" relativeTo="$parent" />
+                            </Anchors>
+                        </Label>
+                    </Windows>
+                </Button>
+                <Label name="$parentTrackerWidthValue" font="font_clear_small" textalign="center">
+                    <Size><AbsPoint x="50" y="20" /></Size>
+                    <Anchors>
+                        <Anchor point="topleft" relativePoint="topleft" relativeTo="$parent">
+                            <AbsPoint x="156" y="102" />
+                        </Anchor>
+                    </Anchors>
+                </Label>
+                <Button name="$parentTrackerWidthIncreaseButton" inherits="EA_Button_Default">
+                    <Size><AbsPoint x="24" y="20" /></Size>
+                    <Anchors>
+                        <Anchor point="topleft" relativePoint="topleft" relativeTo="$parent">
+                            <AbsPoint x="210" y="102" />
+                        </Anchor>
+                    </Anchors>
+                    <EventHandlers>
+                        <EventHandler event="OnLButtonUp" function="WarbandComms.IncreaseTrackerWidth" />
+                    </EventHandlers>
+                    <Windows>
+                        <Label name="$parentLabel" font="font_clear_medium_bold" textalign="center">
+                            <Size><AbsPoint x="24" y="20" /></Size>
+                            <Anchors>
+                                <Anchor point="center" relativePoint="center" relativeTo="$parent" />
+                            </Anchors>
+                        </Label>
+                    </Windows>
+                </Button>
+
+                <Label name="$parentTrackerHeightLabel" font="font_clear_small" textalign="left">
+                    <Size><AbsPoint x="100" y="20" /></Size>
+                    <Anchors>
+                        <Anchor point="topleft" relativePoint="topleft" relativeTo="$parent">
+                            <AbsPoint x="350" y="102" />
+                        </Anchor>
+                    </Anchors>
+                </Label>
+                <Button name="$parentTrackerHeightDecreaseButton" inherits="EA_Button_Default">
+                    <Size><AbsPoint x="24" y="20" /></Size>
+                    <Anchors>
+                        <Anchor point="topleft" relativePoint="topleft" relativeTo="$parent">
+                            <AbsPoint x="435" y="102" />
+                        </Anchor>
+                    </Anchors>
+                    <EventHandlers>
+                        <EventHandler event="OnLButtonUp" function="WarbandComms.DecreaseTrackerHeight" />
+                    </EventHandlers>
+                    <Windows>
+                        <Label name="$parentLabel" font="font_clear_medium_bold" textalign="center">
+                            <Size><AbsPoint x="24" y="20" /></Size>
+                            <Anchors>
+                                <Anchor point="center" relativePoint="center" relativeTo="$parent" />
+                            </Anchors>
+                        </Label>
+                    </Windows>
+                </Button>
+                <Label name="$parentTrackerHeightValue" font="font_clear_small" textalign="center">
+                    <Size><AbsPoint x="50" y="20" /></Size>
+                    <Anchors>
+                        <Anchor point="topleft" relativePoint="topleft" relativeTo="$parent">
+                            <AbsPoint x="463" y="102" />
+                        </Anchor>
+                    </Anchors>
+                </Label>
+                <Button name="$parentTrackerHeightIncreaseButton" inherits="EA_Button_Default">
+                    <Size><AbsPoint x="24" y="20" /></Size>
+                    <Anchors>
+                        <Anchor point="topleft" relativePoint="topleft" relativeTo="$parent">
+                            <AbsPoint x="517" y="102" />
+                        </Anchor>
+                    </Anchors>
+                    <EventHandlers>
+                        <EventHandler event="OnLButtonUp" function="WarbandComms.IncreaseTrackerHeight" />
+                    </EventHandlers>
+                    <Windows>
+                        <Label name="$parentLabel" font="font_clear_medium_bold" textalign="center">
+                            <Size><AbsPoint x="24" y="20" /></Size>
+                            <Anchors>
+                                <Anchor point="center" relativePoint="center" relativeTo="$parent" />
+                            </Anchors>
+                        </Label>
+                    </Windows>
+                </Button>
+
+                <Label name="$parentSizeApplyModeLabel" font="font_clear_small" textalign="left">
+                    <Size><AbsPoint x="100" y="20" /></Size>
+                    <Anchors>
+                        <Anchor point="topleft" relativePoint="topleft" relativeTo="$parent">
+                            <AbsPoint x="20" y="128" />
+                        </Anchor>
+                    </Anchors>
+                </Label>
+                <Button name="$parentSizeApplyModeButton" inherits="EA_Button_Default">
+                    <Size><AbsPoint x="106" y="20" /></Size>
+                    <Anchors>
+                        <Anchor point="topleft" relativePoint="topleft" relativeTo="$parent">
+                            <AbsPoint x="128" y="128" />
+                        </Anchor>
+                    </Anchors>
+                    <EventHandlers>
+                        <EventHandler event="OnLButtonUp" function="WarbandComms.ToggleSizeApplyMode" />
+                    </EventHandlers>
+                    <Windows>
+                        <Label name="$parentValue" font="font_clear_small" textalign="center">
+                            <Size><AbsPoint x="106" y="20" /></Size>
+                            <Anchors>
+                                <Anchor point="center" relativePoint="center" relativeTo="$parent" />
+                            </Anchors>
+                        </Label>
+                    </Windows>
+                </Button>
+
                 <!-- dynamically generated tracker checkbox and labels -->
 
                 <!-- Notifications Title -->

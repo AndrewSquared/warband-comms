@@ -8,6 +8,15 @@
     - added slash aliases: /warbandcomms, /wb-comms, /wbc
     - deprecated /ret slash command with in-chat guidance to /wbc
     - deprecated /retwbcomms and /rwc slash commands with in-chat guidance to /wbc
+    - added independent text size controls for tracker headers and row text in config
+    - finalized text scaling behavior: +/- controls set addon text scale; LayoutEditor resize remains intuitive (box and text scale together)
+    - synced LayoutEditor hidden state with tracker visibility toggles
+    - hardened LayoutEditor registration to avoid duplicate/phantom entries and clean legacy interupt typo registrations
+    - added tracker box width and height controls in config with live apply and clamp limits
+    - persisted tracker box width and height settings across reload/restart
+    - fixed shared box resize jitter by removing forced window re-anchoring during width/height changes
+    - normalized tracker title and row alignment to the current box width for consistent header positioning
+    - added resize mode switch for box controls: Uniform (normalize all tracker sizes) or Relative (preserve per-tracker layout deltas)
 
 
 1.0 LTC Window(Mainline)

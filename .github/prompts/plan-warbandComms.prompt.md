@@ -39,6 +39,9 @@ Full internal rename will be done first (as requested), then the checkbox/UI vis
 - Milestone 4A refinement: keep LayoutEditor resize behavior intuitive (box/text scale in same direction) while syncing LayoutEditor hidden state with tracker visibility changes.
 - Milestone 4A hardening: avoid duplicate LayoutEditor registration side-effects and clean up legacy typo window registrations (interupt) that can produce phantom draggable boxes.
 - Milestone 4B: box size controls (width/height, with sane min/max clamps).
+- Milestone 4B implementation: added config controls for shared tracker width/height, live apply to all tracker windows, and persisted clamped settings.
+- Milestone 4B refinement: normalize title/row alignment to current tracker width and avoid forced re-anchoring during shared resize (prevents position jitter/bounce).
+- Milestone 4B UX compare: add switchable resize mode (Uniform vs Relative) so shared controls can either normalize all tracker sizes or preserve per-tracker deltas from LayoutEditor.
 - Milestone 4C: background opacity control (and optional background color if low effort).
 - Milestone 4D: header simplification (remove clutter formatting, improve readability).
 - Milestone 4E: header emphasis options (color and weight/style presets).

@@ -29,6 +29,7 @@
     - refined header emphasis: titles are now left-aligned for steadier strong styling, soft tone removed, and red/green/blue tones added
     - simplified header styles to Clean/Caps (legacy Strong now maps to Caps) and added default title padding/margins
     - increased top header spacing inside tracker boxes and updated LTC title text to "Leading the Charge"
+    - phase 5 kickoff: added stabilization/release checklist and verification matrix in README
 
 
 1.0 LTC Window(Mainline)

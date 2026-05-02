@@ -44,6 +44,47 @@ Examples:
 - This release includes a full rename from RetWBComms to WarbandComms.
 - Existing saved settings from previous naming are not auto-migrated.
 
+## Phase 5 Stabilization Checklist
+
+Run this checklist before release tagging:
+
+1. Load and startup
+- Addon loads without XML/Lua errors.
+- `/wbc` opens config and toggles display correctly.
+
+2. Tracker visibility and LayoutEditor
+- Verify global enable toggle and per-tracker toggles remain in sync.
+- Verify hidden trackers stay hidden in LayoutEditor and no phantom entries appear.
+
+3. UI sizing and readability
+- Verify `Uniform` and `Relative` resize modes both behave as expected.
+- Verify row text scaling also scales career icons and does not overflow timer column.
+- Verify header spacing and readability at multiple text sizes.
+- Verify header tone/style cycle: Bright/Gold/Red/Green/Blue + Clean/Caps.
+
+4. Tracker content behavior
+- Validate ordering and row updates for LTC, Challenge, Channels, and Interrupt.
+- Confirm `LTC` header displays as `Leading the Charge`.
+- Validate long names are truncated and remain within box bounds.
+
+5. Protocol and compatibility
+- Verify outbound messages use `[WBC]`.
+- Verify inbound compatibility still accepts `[RET]`/`[DEVA]` during transition.
+- Verify one-time deprecation warning appears for legacy tags.
+
+6. Persistence
+- Reload UI and relog to verify settings persist:
+   - tracker visibility
+   - width/height
+   - resize mode
+   - background opacity
+   - header/row text scales
+   - header tone/style
+
+7. Optional release gate
+- Run `/wbc test` in a controlled environment and confirm expected rows update.
+- Smoke-test in an active warband with at least one other player using current build.
+
 ## Development Notes
 
 - Main entrypoint: `WarbandComms.lua`

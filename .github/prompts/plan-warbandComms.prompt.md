@@ -4,7 +4,7 @@ Full internal rename will be done first (as requested), then the checkbox/UI vis
 
 **Steps**
 1. Phase 0 - Baseline and safety snapshot
-- Confirm startup/load path and UI registration flow in RetWBComms.lua, RetWBComms.mod, RetWBComms.xml, config.lua, and ui.lua.
+- Confirm startup/load path and UI registration flow in WarbandComms.lua, WarbandComms.mod, WarbandComms.xml, config.lua, and ui.lua.
 - Capture a pre-change checklist: slash commands available, tracker windows visible/hidden behavior, and current saved settings keys.
 - Note expected intentional breakages (no backward compatibility migration, per user decision).
 
@@ -48,6 +48,8 @@ Full internal rename will be done first (as requested), then the checkbox/UI vis
 - Milestone 4D implementation: simplified tracker headers (plain readable titles without decorative separators), improved title spacing, and tuned header contrast for readability.
 - Milestone 4E: header emphasis options (color and weight/style presets).
 - Milestone 4E implementation: added configurable header emphasis presets with live-applied tone options and style presets for cleaner or stronger title treatment.
+- Milestone 4E refinements: switched title alignment to left with extra header spacing, expanded tone choices (removed soft; added red/green/blue), and simplified style choices to Clean/Caps (legacy Strong maps to Caps).
+- Milestone 4E refinements: updated LTC display label to "Leading the Charge" for improved readability.
 - After each milestone, run in-client verification before moving to next milestone.
 
 6. Phase 5 - Stabilization and release prep (depends on 4)
@@ -55,6 +57,11 @@ Full internal rename will be done first (as requested), then the checkbox/UI vis
 - Validate inter-player communication behavior still works with chosen naming/protocol strategy.
 - Update changelog with explicit breaking changes and migration notes.
 - Tag release candidate and gather user feedback loop.
+
+**Phase 5 kickoff (in progress)**
+- Added a dedicated stabilization and release checklist in README to run through in-client before tagging.
+- Completed static editor validation on touched Lua/XML files (no parser errors reported).
+- Pending: in-client matrix run across trackers, resize modes, header presets, and cross-client comms.
 
 **Relevant files**
 - c:/Warhammer Online - Return of Reckoning/Interface/AddOns/WarbandComms/WarbandComms.lua - Main namespace, init flow, saved settings root, chat protocol handling.

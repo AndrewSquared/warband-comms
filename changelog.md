@@ -47,6 +47,7 @@
     - fully wired reference UI handlers in config.lua for copied controls from `ui-controls-reference.xml`
     - fixed tracker toggling flow: enabling an individual tracker now re-syncs master toggle state so that single trackers can be shown immediately after Toggle All was turned off
     - refined Toggle All semantics: it now acts as a set-all action while tracker visibility/updates are governed by individual tracker toggles; master checkbox reflects "all trackers enabled"
+    - added cross-platform packaging workflow via `scripts/package_release.py` with separate `test` and `release` build modes driven by the `WarbandComms.mod` runtime manifest
 
 
 1.0 LTC Window(Mainline)

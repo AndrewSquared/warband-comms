@@ -17,3 +17,6 @@ Thumbs.db
 
 # Optional local test output
 test-output/
+
+# Release packaging output
+dist/

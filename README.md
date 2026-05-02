@@ -7,7 +7,7 @@ Warband Comms is a Return of Reckoning addon that tracks key warband ability coo
 - Tracks selected warband abilities (challenge, channels, interrupts, and Leading the Charge `LTC`)
 - Displays active timers by warband member
 - Optional center-screen notification support per tracker
-- Slash-command driven config access and testing helpers
+- Slash-command driven config access, with optional in-client test helpers for development builds
 
 ## Installation (Return of Reckoning)
 
@@ -15,6 +15,49 @@ Warband Comms is a Return of Reckoning addon that tracks key warband ability coo
    - `Warhammer Online - Return of Reckoning/Interface/AddOns/WarbandComms`
 2. Make sure `WarbandComms.mod` is present in that folder.
 3. Start the game and enable the addon in the addon list.
+
+## Packaging Releases
+
+Use the cross-platform packaging script to create either a development test build or a handoff-ready release build from the runtime manifest.
+
+Release build:
+
+```bash
+python scripts/package_release.py --build release --clean
+```
+
+Test build:
+
+```bash
+python scripts/package_release.py --build test --clean
+```
+
+If your machine uses a different launcher name, use the equivalent interpreter command for your environment, for example:
+
+```bash
+py -3 scripts/package_release.py --build release --clean
+python3 scripts/package_release.py --build test --clean
+```
+
+This produces zip files in `dist/`:
+
+- `WarbandComms-v4.0.0.zip` for the release build
+- `WarbandComms-v4.0.0-test.zip` for the test build
+
+Packaging behavior:
+
+- The script reads `WarbandComms.mod` as the source of truth for runtime files.
+- Both zips contain a single top-level `WarbandComms/` folder ready to drop into `Interface/AddOns/`.
+- Repo-only files such as `.git/`, `.github/`, `CONTRIBUTING.md`, `CODE_OF_CONDUCT.md`, `changelog.md`, and `ui-controls-reference.xml` are not included.
+- `README.md` is excluded by default to keep the addon package minimal; add `--include-readme` if you want it in the zip.
+- The `test` build keeps `tests.lua` and the `/wbc test` and `/wbc selftest` commands intact for in-client addon testing.
+- The `release` build removes `tests.lua` from the packaged `WarbandComms.mod` and strips the test-only slash command paths from the packaged `slash.lua`.
+
+Lua addon testing note:
+
+- For pure Lua projects, testing is often done with standalone tools such as `busted` or `luaunit`.
+- For game addons like this one, a large part of testing is usually done inside the client because game APIs, UI state, and event flow do not exist outside the game.
+- `tests.lua` is the in-client test harness for this addon, and `slash.lua` exposes that harness through `/wbc test` in development-oriented builds.
 
 ## Commands
 
@@ -25,14 +68,14 @@ Warband Comms is a Return of Reckoning addon that tracks key warband ability coo
 Subcommands:
 
 - `clear` - clears current tracker UI data
-- `test` - runs local test data flow
-- `selftest` - toggles `/say` self-test mode
+- `test` - runs local test data flow in test builds
+- `selftest` - toggles `/say` self-test mode in test builds
 
 Examples:
 
 - `/wbc`
 - `/wbc clear`
-- `/wbc test`
+- `/wbc test` in a test build
 
 ## Current Release
 
@@ -77,8 +120,13 @@ Run this checklist before release tagging:
    - header tone/style
 
 7. Optional release gate
-- Run `/wbc test` in a controlled environment and confirm expected rows update.
-- Smoke-test in an active warband with at least one other player using current build.
+- Generate a test build and run `/wbc test` in a controlled environment to confirm expected rows update.
+- Smoke-test in an active warband with at least one other player using the current build.
+
+8. Package output
+- Run `python scripts/package_release.py --build release --clean`.
+- Optionally run `python scripts/package_release.py --build test --clean` for an in-client validation package.
+- Confirm the generated zip contains one top-level `WarbandComms/` folder and only the intended runtime files for that build type.
 
 ## Development Notes
 
@@ -86,6 +134,7 @@ Run this checklist before release tagging:
 - Module metadata: `WarbandComms.mod`
 - UI definitions: `config.xml`, `config-template.xml`, `ui-template.xml`
 - Runtime logic: `config.lua`, `ui.lua`, `slash.lua`, `ability_cooldowns.lua`
+- Release packaging: `scripts/package_release.py`
 
 ### UI Control Compatibility
 

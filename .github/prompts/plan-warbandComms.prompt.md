@@ -45,6 +45,7 @@ Full internal rename will be done first (as requested), then the checkbox/UI vis
 - Milestone 4C: background opacity control (and optional background color if low effort).
 - Milestone 4C implementation: added shared background opacity control with persisted setting, clamp limits, and live apply across all tracker windows.
 - Milestone 4D: header simplification (remove clutter formatting, improve readability).
+- Milestone 4D implementation: simplified tracker headers (plain readable titles without decorative separators), improved title spacing, and tuned header contrast for readability.
 - Milestone 4E: header emphasis options (color and weight/style presets).
 - After each milestone, run in-client verification before moving to next milestone.
 

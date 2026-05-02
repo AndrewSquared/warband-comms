@@ -21,6 +21,10 @@
     - cleaned up realm-specific protocol tags by using a single comms key: [WBC]
     - temporary compatibility: still accepts incoming legacy tags [RET]/[DEVA] while emitting [WBC]
     - deprecation notice: legacy [RET]/[DEVA] parser path is deprecated and scheduled for removal in a future release
+    - fixed tracker row text overflow by constraining name/timer layout and truncating long names inside box bounds
+    - row text size control now also scales career icons and keeps icon/name spacing aligned
+    - adjusted background opacity clamp to full 0%-100% range
+    - simplified tracker headers for readability (plain titles, cleaner spacing, improved contrast)
 
 
 1.0 LTC Window(Mainline)

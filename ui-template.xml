@@ -54,7 +54,7 @@
                     <Size><AbsPoint x="125" y="20" /></Size>
                     <Anchors>
                         <Anchor point="topleft" relativePoint="topleft" relativeTo="$parent">
-                            <AbsPoint x="0" y="-2" />
+							<AbsPoint x="0" y="0" />
                         </Anchor>
                     </Anchors>
                 </Label>
@@ -63,7 +63,7 @@
                 <ListBox name="$parentList" rowdef="WarbandCommsRowTemplate" visiblerows="12" rowspacing="0">
                     <Anchors>
                         <Anchor point="topleft" relativePoint="topleft" relativeTo="$parent">
-                            <AbsPoint x="0" y="15" /> <!-- start below title -->
+							<AbsPoint x="0" y="18" /> <!-- start below title -->
                         </Anchor>
                     </Anchors>
                 </ListBox>

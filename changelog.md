@@ -25,6 +25,10 @@
     - row text size control now also scales career icons and keeps icon/name spacing aligned
     - adjusted background opacity clamp to full 0%-100% range
     - simplified tracker headers for readability (plain titles, cleaner spacing, improved contrast)
+    - added header emphasis presets in config with live-applied tone and style options for tracker titles
+    - refined header emphasis: titles are now left-aligned for steadier strong styling, soft tone removed, and red/green/blue tones added
+    - simplified header styles to Clean/Caps (legacy Strong now maps to Caps) and added default title padding/margins
+    - increased top header spacing inside tracker boxes and updated LTC title text to "Leading the Charge"
 
 
 1.0 LTC Window(Mainline)

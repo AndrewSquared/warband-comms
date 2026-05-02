@@ -18,11 +18,26 @@ local function SyncConfigButtonForTracker(trackerName, isEnabled)
 end
 
 local TRACKER_TITLES = {
-	LTC = "LTC",
+	LTC = "Leading the Charge",
 	challenge = "Challenge",
 	channels = "Channels",
 	interrupt = "Interrupt",
 }
+
+local HEADER_TONES = {
+	bright = { 225, 225, 225 },
+	gold = { 244, 214, 96 },
+	red = { 230, 90, 90 },
+	green = { 92, 195, 0 },
+	blue = { 90, 160, 235 },
+}
+
+local HEADER_STYLE_SCALE = {
+	clean = 1.00,
+	caps = 1.00,
+}
+
+local HEADER_TEXT_PAD = "  "
 
 local function FormatTrackerTitle(tracker)
 	if TRACKER_TITLES[tracker] then
@@ -32,6 +47,28 @@ local function FormatTrackerTitle(tracker)
 	local title = tracker or ""
 	title = string.gsub(title, "(%l)(%u)", "%1 %2")
 	return string.gsub(title, "^%l", string.upper)
+end
+
+local function GetStyledTrackerTitle(tracker)
+	local title = FormatTrackerTitle(tracker)
+	local style = WarbandComms.GetHeaderStyle()
+	if style == "caps" then
+		return string.upper(title)
+	end
+	return title
+end
+
+function WarbandComms.ApplyTrackerHeaderAppearance(tracker)
+	local window = WarbandComms.AddonName .. tracker:upper()
+	local windowTitle = window .. "Title"
+	local tone = HEADER_TONES[WarbandComms.GetHeaderTone()] or HEADER_TONES.bright
+	local style = WarbandComms.GetHeaderStyle()
+	local headerScale = WarbandComms.GetHeaderTextScale() * (HEADER_STYLE_SCALE[style] or 1.0)
+	local paddedTitle = HEADER_TEXT_PAD .. GetStyledTrackerTitle(tracker) .. HEADER_TEXT_PAD
+
+	LabelSetText(windowTitle, towstring(paddedTitle))
+	LabelSetTextColor(windowTitle, tone[1], tone[2], tone[3])
+	WindowSetScale(windowTitle, math.max(0.7, math.min(1.8, headerScale)))
 end
 
 local function GetTrackerRowMetrics(rowScale)
@@ -82,10 +119,8 @@ end
 
 function WarbandComms.ApplyTextScale(tracker)
 	local window = WarbandComms.AddonName .. tracker:upper()
-	local headerScale = WarbandComms.GetHeaderTextScale()
 	local rowScale = WarbandComms.GetRowTextScale()
-	local windowTitle = window .. "Title"
-	WindowSetScale(windowTitle, headerScale)
+	WarbandComms.ApplyTrackerHeaderAppearance(tracker)
 
 	local listWindow = window .. "ListRow"
 	for i = 1, 12 do
@@ -106,7 +141,7 @@ function WarbandComms.ApplyTrackerInternalLayout(tracker)
 	end
 
 	local titleName = window .. "Title"
-	WindowSetDimensions(titleName, width, 20)
+	WindowSetDimensions(titleName, math.max(40, width - 12), 20)
 
 	local listName = window .. "List"
 	local _, windowHeight = WindowGetDimensions(window)
@@ -195,12 +230,6 @@ function WarbandComms.CreateUI(tracker)
 	WarbandComms.ApplyTrackerBackgroundAlpha(tracker)
 	WindowSetScale(window, 1.0)
 	WarbandComms.ApplyTrackerDimensions(tracker)
-
-
-	local windowTitle = window .. "Title"
-	local titleText = FormatTrackerTitle(tracker)
-	LabelSetText(windowTitle, towstring(titleText))
-	LabelSetTextColor(windowTitle, 225, 225, 225)
 	WarbandComms.ApplyTextScale(tracker)
 end
 

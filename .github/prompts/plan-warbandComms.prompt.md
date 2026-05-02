@@ -47,6 +47,7 @@ Full internal rename will be done first (as requested), then the checkbox/UI vis
 - Milestone 4D: header simplification (remove clutter formatting, improve readability).
 - Milestone 4D implementation: simplified tracker headers (plain readable titles without decorative separators), improved title spacing, and tuned header contrast for readability.
 - Milestone 4E: header emphasis options (color and weight/style presets).
+- Milestone 4E implementation: added configurable header emphasis presets with live-applied tone options and style presets for cleaner or stronger title treatment.
 - After each milestone, run in-client verification before moving to next milestone.
 
 6. Phase 5 - Stabilization and release prep (depends on 4)
@@ -56,19 +57,19 @@ Full internal rename will be done first (as requested), then the checkbox/UI vis
 - Tag release candidate and gather user feedback loop.
 
 **Relevant files**
-- c:/Warhammer Online - Return of Reckoning/Interface/AddOns/RetWBComms/RetWBComms.lua - Main namespace, init flow, saved settings root, chat protocol handling.
-- c:/Warhammer Online - Return of Reckoning/Interface/AddOns/RetWBComms/RetWBComms.mod - Addon metadata, module load identity, version alignment.
-- c:/Warhammer Online - Return of Reckoning/Interface/AddOns/RetWBComms/RetWBComms.xml - XML includes and UI asset wiring.
-- c:/Warhammer Online - Return of Reckoning/Interface/AddOns/RetWBComms/config.lua - Settings UI generation, checkbox handlers, tracker/global toggles.
-- c:/Warhammer Online - Return of Reckoning/Interface/AddOns/RetWBComms/config.xml - Config window naming and structure.
-- c:/Warhammer Online - Return of Reckoning/Interface/AddOns/RetWBComms/config-template.xml - Config control template naming.
-- c:/Warhammer Online - Return of Reckoning/Interface/AddOns/RetWBComms/ui.lua - Tracker window creation, header formatting, color/alpha application.
-- c:/Warhammer Online - Return of Reckoning/Interface/AddOns/RetWBComms/ui-template.xml - Row/header layout, fonts, dimensions.
-- c:/Warhammer Online - Return of Reckoning/Interface/AddOns/RetWBComms/slash.lua - Slash aliases and deprecation additions.
-- c:/Warhammer Online - Return of Reckoning/Interface/AddOns/RetWBComms/changelog.md - Breaking change and milestone notes.
-- c:/Warhammer Online - Return of Reckoning/Interface/AddOns/RetWBComms/README.md - New project docs and governance.
-- c:/Warhammer Online - Return of Reckoning/Interface/AddOns/RetWBComms/.gitignore - Repo hygiene.
-- c:/Warhammer Online - Return of Reckoning/Interface/AddOns/RetWBComms/LICENSE - License text (after selection).
+- c:/Warhammer Online - Return of Reckoning/Interface/AddOns/WarbandComms/WarbandComms.lua - Main namespace, init flow, saved settings root, chat protocol handling.
+- c:/Warhammer Online - Return of Reckoning/Interface/AddOns/WarbandComms/WarbandComms.mod - Addon metadata, module load identity, version alignment.
+- c:/Warhammer Online - Return of Reckoning/Interface/AddOns/WarbandComms/WarbandComms.xml - XML includes and UI asset wiring.
+- c:/Warhammer Online - Return of Reckoning/Interface/AddOns/WarbandComms/config.lua - Settings UI generation, checkbox handlers, tracker/global toggles.
+- c:/Warhammer Online - Return of Reckoning/Interface/AddOns/WarbandComms/config.xml - Config window naming and structure.
+- c:/Warhammer Online - Return of Reckoning/Interface/AddOns/WarbandComms/config-template.xml - Config control template naming.
+- c:/Warhammer Online - Return of Reckoning/Interface/AddOns/WarbandComms/ui.lua - Tracker window creation, header formatting, color/alpha application.
+- c:/Warhammer Online - Return of Reckoning/Interface/AddOns/WarbandComms/ui-template.xml - Row/header layout, fonts, dimensions.
+- c:/Warhammer Online - Return of Reckoning/Interface/AddOns/WarbandComms/slash.lua - Slash aliases and deprecation additions.
+- c:/Warhammer Online - Return of Reckoning/Interface/AddOns/WarbandComms/changelog.md - Breaking change and milestone notes.
+- c:/Warhammer Online - Return of Reckoning/Interface/AddOns/WarbandComms/README.md - New project docs and governance.
+- c:/Warhammer Online - Return of Reckoning/Interface/AddOns/WarbandComms/.gitignore - Repo hygiene.
+- c:/Warhammer Online - Return of Reckoning/Interface/AddOns/WarbandComms/LICENSE - License text (after selection).
 
 **Verification**
 1. Launch addon and confirm module loads with no XML/Lua reference errors after rename.
@@ -93,4 +94,4 @@ Full internal rename will be done first (as requested), then the checkbox/UI vis
 1. License checkpoint: choose MIT vs GPL-3.0 vs Apache-2.0 before public release branch cut.
 2. Communication protocol risk: if chat tag format changes during rename, mixed-version warbands may lose events.
 3. Temporary protocol compatibility: parser currently accepts legacy incoming tags [RET]/[DEVA] while emitting [WBC]; legacy acceptance is deprecated and should be removed in a future release after rollout.
-3. Name migration risk: if file/folder/module identity changes, loader behavior must be revalidated in client immediately after Phase 2.
+4. Name migration risk: if file/folder/module identity changes, loader behavior must be revalidated in client immediately after Phase 2.

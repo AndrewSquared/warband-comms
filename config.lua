@@ -1,5 +1,20 @@
 local configWindow = WarbandComms.AddonName .. "Config"
 
+local HEADER_TONE_ORDER = { "bright", "gold", "red", "green", "blue" }
+local HEADER_TONE_LABELS = {
+	bright = L"Bright",
+	gold = L"Gold",
+	red = L"Red",
+	green = L"Green",
+	blue = L"Blue",
+}
+
+local HEADER_STYLE_ORDER = { "clean", "caps" }
+local HEADER_STYLE_LABELS = {
+	clean = L"Clean",
+	caps = L"Caps",
+}
+
 local function IsTrackerVisible(trackerName)
 	return WarbandComms.IsTrackerVisible(trackerName)
 end
@@ -44,6 +59,20 @@ end
 local function RefreshBackgroundAlphaLabel()
 	local percent = math.floor((WarbandComms.GetBackgroundAlpha() * 100) + 0.5)
 	LabelSetText(configWindow .. "BackgroundOpacityValue", towstring(tostring(percent) .. "%"))
+end
+
+local function RefreshHeaderEmphasisLabels()
+	LabelSetText(configWindow .. "HeaderToneButtonValue", HEADER_TONE_LABELS[WarbandComms.GetHeaderTone()] or L"Bright")
+	LabelSetText(configWindow .. "HeaderStyleButtonValue", HEADER_STYLE_LABELS[WarbandComms.GetHeaderStyle()] or L"Clean")
+end
+
+local function GetNextPresetValue(order, currentValue)
+	for index, value in ipairs(order) do
+		if value == currentValue then
+			return order[(index % #order) + 1]
+		end
+	end
+	return order[1]
 end
 
 local function ApplyTextScaleToAllTrackers()
@@ -104,12 +133,15 @@ function WarbandComms.InitConfig(version)
 	LabelSetText(configWindow .. "TrackerHeightIncreaseButtonLabel", L"+")
 	LabelSetText(configWindow .. "SizeApplyModeLabel", L"Resize Mode")
 	LabelSetText(configWindow .. "BackgroundOpacityLabel", L"Background")
+	LabelSetText(configWindow .. "HeaderToneLabel", L"Header Tone")
+	LabelSetText(configWindow .. "HeaderStyleLabel", L"Header Style")
 	LabelSetText(configWindow .. "BackgroundOpacityDecreaseButtonLabel", L"-")
 	LabelSetText(configWindow .. "BackgroundOpacityIncreaseButtonLabel", L"+")
 	RefreshTextScaleLabels()
 	RefreshSizeLabels()
 	RefreshSizeModeLabel()
 	RefreshBackgroundAlphaLabel()
+	RefreshHeaderEmphasisLabels()
 
 	-- Dynamically add trackers
 	local tracker_index = 0
@@ -122,7 +154,7 @@ function WarbandComms.InitConfig(version)
 
 		WindowClearAnchors(window)
         -- place rows under the header controls
-		WindowAddAnchor(window, "topleft", configWindow, "topleft", 20, 224 + (tracker_index * 40))
+		WindowAddAnchor(window, "topleft", configWindow, "topleft", 20, 250 + (tracker_index * 40))
 		tracker_index = tracker_index + 1
 
 		local buttonName = window .. "Button"
@@ -150,7 +182,7 @@ function WarbandComms.InitConfig(version)
 
 		WindowClearAnchors(window)
 		-- place rows under the header controls
-		WindowAddAnchor(window, "topleft", configWindow, "topleft", 350, 224 + (notification_index * 40))
+		WindowAddAnchor(window, "topleft", configWindow, "topleft", 350, 250 + (notification_index * 40))
 		notification_index = notification_index + 1
 
 		local buttonName = window .. "Button"
@@ -167,7 +199,7 @@ function WarbandComms.InitConfig(version)
 		end
 	end
 	-- Resize config window to fit all trackers
-	WindowSetDimensions(configWindow, 700, 274 + (tracker_index * 50))
+	WindowSetDimensions(configWindow, 700, 300 + (tracker_index * 50))
 end
 
 function WarbandComms.ChangeHeaderTextSize(delta)
@@ -196,6 +228,18 @@ end
 
 function WarbandComms.IncreaseRowTextSize()
 	WarbandComms.ChangeRowTextSize(0.1)
+end
+
+function WarbandComms.ToggleHeaderTone()
+	WarbandComms.Settings.headerTone = GetNextPresetValue(HEADER_TONE_ORDER, WarbandComms.GetHeaderTone())
+	RefreshHeaderEmphasisLabels()
+	ApplyTextScaleToAllTrackers()
+end
+
+function WarbandComms.ToggleHeaderStyle()
+	WarbandComms.Settings.headerStyle = GetNextPresetValue(HEADER_STYLE_ORDER, WarbandComms.GetHeaderStyle())
+	RefreshHeaderEmphasisLabels()
+	ApplyTextScaleToAllTrackers()
 end
 
 function WarbandComms.ChangeTrackerWidth(delta)

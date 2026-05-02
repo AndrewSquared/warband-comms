@@ -357,6 +357,62 @@
                     </Windows>
                 </Button>
 
+                <Label name="$parentHeaderToneLabel" font="font_clear_small" textalign="left">
+                    <Size><AbsPoint x="100" y="20" /></Size>
+                    <Anchors>
+                        <Anchor point="topleft" relativePoint="topleft" relativeTo="$parent">
+                            <AbsPoint x="20" y="154" />
+                        </Anchor>
+                    </Anchors>
+                </Label>
+                <Button name="$parentHeaderToneButton" inherits="EA_Button_Default">
+                    <Size><AbsPoint x="106" y="20" /></Size>
+                    <Anchors>
+                        <Anchor point="topleft" relativePoint="topleft" relativeTo="$parent">
+                            <AbsPoint x="128" y="154" />
+                        </Anchor>
+                    </Anchors>
+                    <EventHandlers>
+                        <EventHandler event="OnLButtonUp" function="WarbandComms.ToggleHeaderTone" />
+                    </EventHandlers>
+                    <Windows>
+                        <Label name="$parentValue" font="font_clear_small" textalign="center">
+                            <Size><AbsPoint x="106" y="20" /></Size>
+                            <Anchors>
+                                <Anchor point="center" relativePoint="center" relativeTo="$parent" />
+                            </Anchors>
+                        </Label>
+                    </Windows>
+                </Button>
+
+                <Label name="$parentHeaderStyleLabel" font="font_clear_small" textalign="left">
+                    <Size><AbsPoint x="100" y="20" /></Size>
+                    <Anchors>
+                        <Anchor point="topleft" relativePoint="topleft" relativeTo="$parent">
+                            <AbsPoint x="350" y="154" />
+                        </Anchor>
+                    </Anchors>
+                </Label>
+                <Button name="$parentHeaderStyleButton" inherits="EA_Button_Default">
+                    <Size><AbsPoint x="106" y="20" /></Size>
+                    <Anchors>
+                        <Anchor point="topleft" relativePoint="topleft" relativeTo="$parent">
+                            <AbsPoint x="435" y="154" />
+                        </Anchor>
+                    </Anchors>
+                    <EventHandlers>
+                        <EventHandler event="OnLButtonUp" function="WarbandComms.ToggleHeaderStyle" />
+                    </EventHandlers>
+                    <Windows>
+                        <Label name="$parentValue" font="font_clear_small" textalign="center">
+                            <Size><AbsPoint x="106" y="20" /></Size>
+                            <Anchors>
+                                <Anchor point="center" relativePoint="center" relativeTo="$parent" />
+                            </Anchors>
+                        </Label>
+                    </Windows>
+                </Button>
+
                 <!-- dynamically generated tracker checkbox and labels -->
 
                 <!-- Notifications Title -->

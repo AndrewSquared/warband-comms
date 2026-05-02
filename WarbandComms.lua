@@ -215,6 +215,24 @@ function WarbandComms.GetBackgroundAlpha()
 	return WarbandComms.ClampBackgroundAlpha(WarbandComms.Settings.backgroundAlpha)
 end
 
+function WarbandComms.GetHeaderTone()
+	local tone = WarbandComms.Settings.headerTone
+	if tone ~= "bright" and tone ~= "gold" and tone ~= "red" and tone ~= "green" and tone ~= "blue" then
+		tone = "bright"
+	end
+	return tone
+end
+
+function WarbandComms.GetHeaderStyle()
+	local style = WarbandComms.Settings.headerStyle
+	if style == "strong" then
+		style = "caps"
+	elseif style ~= "clean" and style ~= "caps" then
+		style = "clean"
+	end
+	return style
+end
+
 function WarbandComms.OnInitialize()
 	RegisterEventHandler(SystemData.Events.CHAT_TEXT_ARRIVED, "WarbandComms.TextArrived");
 	RegisterEventHandler(SystemData.Events.PLAYER_BEGIN_CAST, "WarbandComms.OnCast")
@@ -237,6 +255,8 @@ function WarbandComms.OnInitialize()
 		trackerHeight = WarbandComms.DefaultTrackerHeight,
 		sizeApplyMode = "relative",
 		backgroundAlpha = 0.60,
+		headerTone = "bright",
+		headerStyle = "clean",
 		version = version,
 		showOnStartup = true,
 		notifications = {
@@ -267,12 +287,20 @@ function WarbandComms.OnInitialize()
 	if WarbandComms.Settings.backgroundAlpha == nil then
 		WarbandComms.Settings.backgroundAlpha = defaultSettings.backgroundAlpha
 	end
+	if WarbandComms.Settings.headerTone == nil then
+		WarbandComms.Settings.headerTone = defaultSettings.headerTone
+	end
+	if WarbandComms.Settings.headerStyle == nil then
+		WarbandComms.Settings.headerStyle = defaultSettings.headerStyle
+	end
 	WarbandComms.Settings.headerTextScale = WarbandComms.GetHeaderTextScale()
 	WarbandComms.Settings.rowTextScale = WarbandComms.GetRowTextScale()
 	WarbandComms.Settings.trackerWidth = WarbandComms.GetTrackerWidth()
 	WarbandComms.Settings.trackerHeight = WarbandComms.GetTrackerHeight()
 	WarbandComms.Settings.sizeApplyMode = WarbandComms.GetSizeApplyMode()
 	WarbandComms.Settings.backgroundAlpha = WarbandComms.GetBackgroundAlpha()
+	WarbandComms.Settings.headerTone = WarbandComms.GetHeaderTone()
+	WarbandComms.Settings.headerStyle = WarbandComms.GetHeaderStyle()
 
 	for _, v in pairs(WarbandComms.trackedAbilities) do
 		WarbandComms.Trackers[v.tracker] = {}

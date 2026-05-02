@@ -302,6 +302,61 @@
                     </Windows>
                 </Button>
 
+                <Label name="$parentBackgroundOpacityLabel" font="font_clear_small" textalign="left">
+                    <Size><AbsPoint x="100" y="20" /></Size>
+                    <Anchors>
+                        <Anchor point="topleft" relativePoint="topleft" relativeTo="$parent">
+                            <AbsPoint x="350" y="128" />
+                        </Anchor>
+                    </Anchors>
+                </Label>
+                <Button name="$parentBackgroundOpacityDecreaseButton" inherits="EA_Button_Default">
+                    <Size><AbsPoint x="24" y="20" /></Size>
+                    <Anchors>
+                        <Anchor point="topleft" relativePoint="topleft" relativeTo="$parent">
+                            <AbsPoint x="435" y="128" />
+                        </Anchor>
+                    </Anchors>
+                    <EventHandlers>
+                        <EventHandler event="OnLButtonUp" function="WarbandComms.DecreaseBackgroundOpacity" />
+                    </EventHandlers>
+                    <Windows>
+                        <Label name="$parentLabel" font="font_clear_medium_bold" textalign="center">
+                            <Size><AbsPoint x="24" y="20" /></Size>
+                            <Anchors>
+                                <Anchor point="center" relativePoint="center" relativeTo="$parent" />
+                            </Anchors>
+                        </Label>
+                    </Windows>
+                </Button>
+                <Label name="$parentBackgroundOpacityValue" font="font_clear_small" textalign="center">
+                    <Size><AbsPoint x="50" y="20" /></Size>
+                    <Anchors>
+                        <Anchor point="topleft" relativePoint="topleft" relativeTo="$parent">
+                            <AbsPoint x="463" y="128" />
+                        </Anchor>
+                    </Anchors>
+                </Label>
+                <Button name="$parentBackgroundOpacityIncreaseButton" inherits="EA_Button_Default">
+                    <Size><AbsPoint x="24" y="20" /></Size>
+                    <Anchors>
+                        <Anchor point="topleft" relativePoint="topleft" relativeTo="$parent">
+                            <AbsPoint x="517" y="128" />
+                        </Anchor>
+                    </Anchors>
+                    <EventHandlers>
+                        <EventHandler event="OnLButtonUp" function="WarbandComms.IncreaseBackgroundOpacity" />
+                    </EventHandlers>
+                    <Windows>
+                        <Label name="$parentLabel" font="font_clear_medium_bold" textalign="center">
+                            <Size><AbsPoint x="24" y="20" /></Size>
+                            <Anchors>
+                                <Anchor point="center" relativePoint="center" relativeTo="$parent" />
+                            </Anchors>
+                        </Label>
+                    </Windows>
+                </Button>
+
                 <!-- dynamically generated tracker checkbox and labels -->
 
                 <!-- Notifications Title -->

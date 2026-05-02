@@ -17,6 +17,44 @@ local function SyncConfigButtonForTracker(trackerName, isEnabled)
 	ButtonSetPressedFlag(buttonName, isEnabled)
 end
 
+local function FitNameToTrackerRow(tracker, name)
+	local width = WarbandComms.GetTrackerWidth()
+	local scale = WarbandComms.GetRowTextScale()
+	local windowScale = 1.0
+
+	local window = WarbandComms.AddonName .. tracker:upper()
+	if WindowGetDimensions then
+		local currentWidth = WindowGetDimensions(window)
+		if currentWidth and currentWidth > 0 then
+			width = currentWidth
+		end
+	end
+	if WindowGetScale then
+		local currentScale = WindowGetScale(window)
+		if currentScale and currentScale > 0 then
+			windowScale = currentScale
+		end
+	end
+
+	if not name or name == "" then return "" end
+
+	-- Match row layout math so text fitting stays consistent with live anchors/sizes.
+	local timerWidth = 28
+	local usablePixels = math.max(12, width - (17 + timerWidth + 8))
+	local avgCharPixels = math.max(1, 6 * scale * windowScale)
+	local maxChars = math.max(4, math.floor(usablePixels / avgCharPixels))
+
+	if string.len(name) <= maxChars then
+		return name
+	end
+
+	if maxChars <= 3 then
+		return string.sub(name, 1, maxChars)
+	end
+
+	return string.sub(name, 1, maxChars - 3) .. "..."
+end
+
 function WarbandComms.ApplyTextScale(tracker)
 	local window = WarbandComms.AddonName .. tracker:upper()
 	local headerScale = WarbandComms.GetHeaderTextScale()
@@ -52,15 +90,14 @@ function WarbandComms.ApplyTrackerInternalLayout(tracker)
 
 	local rowBase = window .. "ListRow"
 	local timerWidth = 28
-	local timerX = math.max(96, width - (timerWidth + 4))
-	local nameWidth = math.max(40, timerX - 17)
+	local nameWidth = math.max(12, width - (17 + timerWidth + 8))
 	for i = 1, 12 do
 		local rowName = rowBase .. i
 		WindowSetDimensions(rowName, width, 12)
 		WindowSetDimensions(rowName .. "Name", nameWidth, 15)
 		WindowSetDimensions(rowName .. "Timer", timerWidth, 15)
 		WindowClearAnchors(rowName .. "Timer")
-		WindowAddAnchor(rowName .. "Timer", "topleft", rowName, "topleft", timerX, 0)
+		WindowAddAnchor(rowName .. "Timer", "topright", rowName, "topright", -2, 0)
 	end
 end
 
@@ -92,6 +129,11 @@ function WarbandComms.AdjustTrackerDimensionsRelative(tracker, deltaWidth, delta
 	WarbandComms.ApplyTrackerInternalLayout(tracker)
 end
 
+function WarbandComms.ApplyTrackerBackgroundAlpha(tracker)
+	local window = WarbandComms.AddonName .. tracker:upper()
+	WindowSetAlpha(window .. "Background", WarbandComms.GetBackgroundAlpha())
+end
+
 function WarbandComms.OnTrackerWindowShown()
 	if WarbandComms.suppressTrackerWindowSync then return end
 
@@ -118,7 +160,7 @@ function WarbandComms.CreateUI(tracker)
 	CreateWindowFromTemplate (window, "WarbandCommsUITemplate", "Root")
 	WarbandComms.SetTrackerWindowVisibility(tracker)
 	WindowSetTintColor (window.."Background", 0, 0, 0)
-	WindowSetAlpha (window.."Background", 0.60)
+	WarbandComms.ApplyTrackerBackgroundAlpha(tracker)
 	WindowSetScale(window, 1.0)
 	WarbandComms.ApplyTrackerDimensions(tracker)
 
@@ -144,12 +186,13 @@ function WarbandComms.UpdateUI(tracker, abilityList, nearlyReadyTime)
 			local listName = listWindow .. listIndex .. "Name"
 			local listTimer = listWindow .. listIndex .. "Timer"
 			local name = trackedMember.name
+			local displayName = FitNameToTrackerRow(tracker, name)
 			local timer = trackedMember.timer
 			local duration = trackedMember.duration
 			local cooldown = trackedMember.cooldown
 			local careerIcon = trackedMember.careerIcon or ""
 
-			LabelSetText(listName, towstring(name))
+			LabelSetText(listName, towstring(displayName))
 			LabelSetText(listTimer, towstring(timer))
 			LabelSetText(listWindow .. listIndex .. "Icon", towstring(careerIcon))
 

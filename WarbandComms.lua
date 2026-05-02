@@ -51,6 +51,11 @@ WarbandComms.ChatChannels = {
 
 local MAX_CDR = 5 -- max cooldown reduction in seconds
 local MIN_CD = 2.5 -- above GCD
+local DEFAULT_COMMS_KEY = "[WBC]"
+local LEGACY_COMMS_KEYS = {
+	["[RET]"] = true,
+	["[DEVA]"] = true,
+}
 
 WarbandComms.trackedAbilities = {
 	[28301] = {name = "LTC", cooldown = 120, duration = 10, tracker= "LTC", nofify=true},
@@ -76,6 +81,18 @@ WarbandComms.trackedAbilities = {
 	--
 	--[610] = {name = "Bellow", cooldown = 60, duration = 10, tracker= "bellow", notify=true, fixedCooldown=true}, --
 }
+
+function WarbandComms.IsAcceptedCommsKey(key)
+	if key == DEFAULT_COMMS_KEY then
+		return true, false
+	end
+
+	if LEGACY_COMMS_KEYS[key] then
+		return true, true
+	end
+
+	return false, false
+end
 
 function WarbandComms.RefreshTrackerKeyIndex()
 	local map = {}
@@ -189,17 +206,23 @@ function WarbandComms.GetSizeApplyMode()
 	return mode
 end
 
+function WarbandComms.ClampBackgroundAlpha(value)
+	local numeric = tonumber(value) or 0.60
+	return min(1.0, max(0.0, numeric))
+end
+
+function WarbandComms.GetBackgroundAlpha()
+	return WarbandComms.ClampBackgroundAlpha(WarbandComms.Settings.backgroundAlpha)
+end
+
 function WarbandComms.OnInitialize()
 	RegisterEventHandler(SystemData.Events.CHAT_TEXT_ARRIVED, "WarbandComms.TextArrived");
 	RegisterEventHandler(SystemData.Events.PLAYER_BEGIN_CAST, "WarbandComms.OnCast")
 	RegisterEventHandler(SystemData.Events.BATTLEGROUP_UPDATED, "WarbandComms.OnBattleGroupUpdated")
 	RegisterEventHandler( SystemData.Events.GROUP_LEAVE, "WarbandComms.OnBattleGroupUpdated")
 
-	if GameData.Player.realm == GameData.Realm.ORDER then
-		WarbandComms.commsKey = "[RET]"
-	elseif GameData.Player.realm == GameData.Realm.DESTRUCTION then
-		WarbandComms.commsKey = "[DEVA]"
-	end
+	WarbandComms.commsKey = DEFAULT_COMMS_KEY
+	WarbandComms.legacyCommsWarningShown = false
 
 	local defaultSettings = {
 		enabled = true,
@@ -213,6 +236,7 @@ function WarbandComms.OnInitialize()
 		trackerWidth = WarbandComms.DefaultTrackerWidth,
 		trackerHeight = WarbandComms.DefaultTrackerHeight,
 		sizeApplyMode = "relative",
+		backgroundAlpha = 0.60,
 		version = version,
 		showOnStartup = true,
 		notifications = {
@@ -240,11 +264,15 @@ function WarbandComms.OnInitialize()
 	if WarbandComms.Settings.sizeApplyMode == nil then
 		WarbandComms.Settings.sizeApplyMode = defaultSettings.sizeApplyMode
 	end
+	if WarbandComms.Settings.backgroundAlpha == nil then
+		WarbandComms.Settings.backgroundAlpha = defaultSettings.backgroundAlpha
+	end
 	WarbandComms.Settings.headerTextScale = WarbandComms.GetHeaderTextScale()
 	WarbandComms.Settings.rowTextScale = WarbandComms.GetRowTextScale()
 	WarbandComms.Settings.trackerWidth = WarbandComms.GetTrackerWidth()
 	WarbandComms.Settings.trackerHeight = WarbandComms.GetTrackerHeight()
 	WarbandComms.Settings.sizeApplyMode = WarbandComms.GetSizeApplyMode()
+	WarbandComms.Settings.backgroundAlpha = WarbandComms.GetBackgroundAlpha()
 
 	for _, v in pairs(WarbandComms.trackedAbilities) do
 		WarbandComms.Trackers[v.tracker] = {}
@@ -458,8 +486,13 @@ function WarbandComms.TextArrived()
 		local text = tostring(chatData.text)
 		-- Expected: [key]:tracker:duration:cooldown[:careerIcon]
 		local key, tracker, duration, cooldown, careerIcon = text:match("^(%b[]):([^:]+):(%d+):(%d+):?(.*)$")
-
-		if key ~= WarbandComms.commsKey then return end
+		local accepted, isLegacy = WarbandComms.IsAcceptedCommsKey(key)
+		if not accepted then return end
+		if isLegacy and not WarbandComms.legacyCommsWarningShown then
+			WarbandComms.legacyCommsWarningShown = true
+			-- Temporary compatibility path: remove legacy [RET]/[DEVA] acceptance in a future release.
+			EA_ChatWindow.Print(L"[WarbandComms] Deprecated incoming comms tag detected ([RET]/[DEVA]). Compatibility is temporary and will be removed in a future release; please update all clients.")
+		end
 		careerIcon = careerIcon or ""
 
 		local sender = tostring(chatData.name)

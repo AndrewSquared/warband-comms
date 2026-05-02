@@ -17,6 +17,10 @@
     - fixed shared box resize jitter by removing forced window re-anchoring during width/height changes
     - normalized tracker title and row alignment to the current box width for consistent header positioning
     - added resize mode switch for box controls: Uniform (normalize all tracker sizes) or Relative (preserve per-tracker layout deltas)
+    - added background opacity controls in config with live apply and persisted setting
+    - cleaned up realm-specific protocol tags by using a single comms key: [WBC]
+    - temporary compatibility: still accepts incoming legacy tags [RET]/[DEVA] while emitting [WBC]
+    - deprecation notice: legacy [RET]/[DEVA] parser path is deprecated and scheduled for removal in a future release
 
 
 1.0 LTC Window(Mainline)

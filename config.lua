@@ -41,6 +41,11 @@ local function RefreshSizeModeLabel()
 	RefreshSizeLabels()
 end
 
+local function RefreshBackgroundAlphaLabel()
+	local percent = math.floor((WarbandComms.GetBackgroundAlpha() * 100) + 0.5)
+	LabelSetText(configWindow .. "BackgroundOpacityValue", towstring(tostring(percent) .. "%"))
+end
+
 local function ApplyTextScaleToAllTrackers()
 	for trackerName, _ in pairs(WarbandComms.Trackers) do
 		WarbandComms.ApplyTextScale(trackerName)
@@ -60,6 +65,12 @@ end
 local function ApplyTrackerSizeDeltaToAllTrackers(deltaWidth, deltaHeight)
 	for trackerName, _ in pairs(WarbandComms.Trackers) do
 		WarbandComms.AdjustTrackerDimensionsRelative(trackerName, deltaWidth, deltaHeight)
+	end
+end
+
+local function ApplyBackgroundAlphaToAllTrackers()
+	for trackerName, _ in pairs(WarbandComms.Trackers) do
+		WarbandComms.ApplyTrackerBackgroundAlpha(trackerName)
 	end
 end
 
@@ -92,9 +103,13 @@ function WarbandComms.InitConfig(version)
 	LabelSetText(configWindow .. "TrackerHeightDecreaseButtonLabel", L"-")
 	LabelSetText(configWindow .. "TrackerHeightIncreaseButtonLabel", L"+")
 	LabelSetText(configWindow .. "SizeApplyModeLabel", L"Resize Mode")
+	LabelSetText(configWindow .. "BackgroundOpacityLabel", L"Background")
+	LabelSetText(configWindow .. "BackgroundOpacityDecreaseButtonLabel", L"-")
+	LabelSetText(configWindow .. "BackgroundOpacityIncreaseButtonLabel", L"+")
 	RefreshTextScaleLabels()
 	RefreshSizeLabels()
 	RefreshSizeModeLabel()
+	RefreshBackgroundAlphaLabel()
 
 	-- Dynamically add trackers
 	local tracker_index = 0
@@ -107,7 +122,7 @@ function WarbandComms.InitConfig(version)
 
 		WindowClearAnchors(window)
         -- place rows under the header controls
-		WindowAddAnchor(window, "topleft", configWindow, "topleft", 20, 196 + (tracker_index * 40))
+		WindowAddAnchor(window, "topleft", configWindow, "topleft", 20, 224 + (tracker_index * 40))
 		tracker_index = tracker_index + 1
 
 		local buttonName = window .. "Button"
@@ -135,7 +150,7 @@ function WarbandComms.InitConfig(version)
 
 		WindowClearAnchors(window)
 		-- place rows under the header controls
-		WindowAddAnchor(window, "topleft", configWindow, "topleft", 350, 196 + (notification_index * 40))
+		WindowAddAnchor(window, "topleft", configWindow, "topleft", 350, 224 + (notification_index * 40))
 		notification_index = notification_index + 1
 
 		local buttonName = window .. "Button"
@@ -152,7 +167,7 @@ function WarbandComms.InitConfig(version)
 		end
 	end
 	-- Resize config window to fit all trackers
-	WindowSetDimensions(configWindow, 700, 246 + (tracker_index * 50))
+	WindowSetDimensions(configWindow, 700, 274 + (tracker_index * 50))
 end
 
 function WarbandComms.ChangeHeaderTextSize(delta)
@@ -229,6 +244,20 @@ function WarbandComms.ToggleSizeApplyMode()
 		EA_ChatWindow.Print(L"[WarbandComms] Resize Mode: Uniform (normalize all tracker sizes)")
 	end
 	RefreshSizeModeLabel()
+end
+
+function WarbandComms.ChangeBackgroundOpacity(delta)
+	WarbandComms.Settings.backgroundAlpha = WarbandComms.ClampBackgroundAlpha(WarbandComms.GetBackgroundAlpha() + delta)
+	RefreshBackgroundAlphaLabel()
+	ApplyBackgroundAlphaToAllTrackers()
+end
+
+function WarbandComms.DecreaseBackgroundOpacity()
+	WarbandComms.ChangeBackgroundOpacity(-0.05)
+end
+
+function WarbandComms.IncreaseBackgroundOpacity()
+	WarbandComms.ChangeBackgroundOpacity(0.05)
 end
 
 function WarbandComms.ToggleAllTrackers()

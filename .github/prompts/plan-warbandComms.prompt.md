@@ -43,6 +43,7 @@ Full internal rename will be done first (as requested), then the checkbox/UI vis
 - Milestone 4B refinement: normalize title/row alignment to current tracker width and avoid forced re-anchoring during shared resize (prevents position jitter/bounce).
 - Milestone 4B UX compare: add switchable resize mode (Uniform vs Relative) so shared controls can either normalize all tracker sizes or preserve per-tracker deltas from LayoutEditor.
 - Milestone 4C: background opacity control (and optional background color if low effort).
+- Milestone 4C implementation: added shared background opacity control with persisted setting, clamp limits, and live apply across all tracker windows.
 - Milestone 4D: header simplification (remove clutter formatting, improve readability).
 - Milestone 4E: header emphasis options (color and weight/style presets).
 - After each milestone, run in-client verification before moving to next milestone.
@@ -90,4 +91,5 @@ Full internal rename will be done first (as requested), then the checkbox/UI vis
 **Further Considerations**
 1. License checkpoint: choose MIT vs GPL-3.0 vs Apache-2.0 before public release branch cut.
 2. Communication protocol risk: if chat tag format changes during rename, mixed-version warbands may lose events.
+3. Temporary protocol compatibility: parser currently accepts legacy incoming tags [RET]/[DEVA] while emitting [WBC]; legacy acceptance is deprecated and should be removed in a future release after rollout.
 3. Name migration risk: if file/folder/module identity changes, loader behavior must be revalidated in client immediately after Phase 2.

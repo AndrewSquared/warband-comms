@@ -5,26 +5,7 @@ function WarbandComms.InitSlash()
 		LibSlash.RegisterSlashCmd("warbandcomms", function (msg) WarbandComms.Slash(msg) end)
 		LibSlash.RegisterSlashCmd("wb-comms", function (msg) WarbandComms.Slash(msg) end)
 		LibSlash.RegisterSlashCmd("wbc", function (msg) WarbandComms.Slash(msg) end)
-		LibSlash.RegisterSlashCmd("retwbcomms", function (msg) WarbandComms.DeprecatedRetwbcommsSlash(msg) end)
-		LibSlash.RegisterSlashCmd("rwc", function (msg) WarbandComms.DeprecatedRwcSlash(msg) end)
-		LibSlash.RegisterSlashCmd("wbcomms", function (msg) WarbandComms.Slash(msg) end)
-		LibSlash.RegisterSlashCmd("ret", function (msg) WarbandComms.DeprecatedRetSlash(msg) end)
 	end
-end
-
-function WarbandComms.DeprecatedRetwbcommsSlash(msg)
-	EA_ChatWindow.Print(towstring("[WarbandComms] '/retwbcomms' is deprecated. Use /wbc (or /wb-comms)."))
-	WarbandComms.Slash(msg)
-end
-
-function WarbandComms.DeprecatedRwcSlash(msg)
-	EA_ChatWindow.Print(towstring("[WarbandComms] '/rwc' is deprecated. Use /wbc (or /wb-comms)."))
-	WarbandComms.Slash(msg)
-end
-
-function WarbandComms.DeprecatedRetSlash(msg)
-	EA_ChatWindow.Print(towstring("[WarbandComms] '/ret' is deprecated. Use /wbc (or /wb-comms)."))
-	WarbandComms.Slash(msg)
 end
 
 function WarbandComms.Slash(msg)

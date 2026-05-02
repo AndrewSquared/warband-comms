@@ -24,6 +24,13 @@ local TRACKER_TITLES = {
 	interrupt = "Interrupt",
 }
 
+local TRACKER_SHORT_TITLES = {
+	LTC = { "LTC" },
+	challenge = { "CHAL" },
+	channels = { "CHNL" },
+	interrupt = { "INT" },
+}
+
 local HEADER_TONES = {
 	bright = { 225, 225, 225 },
 	gold = { 244, 214, 96 },
@@ -38,6 +45,40 @@ local HEADER_STYLE_SCALE = {
 }
 
 local HEADER_TEXT_PAD = "  "
+
+local function GetTrackerWindowWidth(window)
+	local width = WarbandComms.GetTrackerWidth()
+	if WindowGetDimensions then
+		local currentWidth = WindowGetDimensions(window)
+		if currentWidth and currentWidth > 0 then
+			width = currentWidth
+		end
+	end
+	return width
+end
+
+local function FitHeaderTextToTracker(tracker, title, requestedScale)
+	local window = WarbandComms.AddonName .. tracker:upper()
+	local width = GetTrackerWindowWidth(window)
+	local clampedScale = math.max(0.7, math.min(1.8, requestedScale or 1.0))
+	local usablePixels = math.max(24, width - 12)
+	local avgCharPixels = math.max(1, 6 * clampedScale)
+	local maxChars = math.max(4, math.floor(usablePixels / avgCharPixels))
+	local paddedTitle = HEADER_TEXT_PAD .. title .. HEADER_TEXT_PAD
+	if string.len(paddedTitle) <= maxChars then
+		return title, clampedScale
+	end
+
+	local shortTitles = TRACKER_SHORT_TITLES[tracker] or {}
+	for _, shortTitle in ipairs(shortTitles) do
+		local paddedShortTitle = HEADER_TEXT_PAD .. shortTitle .. HEADER_TEXT_PAD
+		if string.len(paddedShortTitle) <= maxChars then
+			return shortTitle, clampedScale
+		end
+	end
+
+	return shortTitles[#shortTitles] or title, clampedScale
+end
 
 local function FormatTrackerTitle(tracker)
 	if TRACKER_TITLES[tracker] then
@@ -64,11 +105,12 @@ function WarbandComms.ApplyTrackerHeaderAppearance(tracker)
 	local tone = HEADER_TONES[WarbandComms.GetHeaderTone()] or HEADER_TONES.bright
 	local style = WarbandComms.GetHeaderStyle()
 	local headerScale = WarbandComms.GetHeaderTextScale() * (HEADER_STYLE_SCALE[style] or 1.0)
-	local paddedTitle = HEADER_TEXT_PAD .. GetStyledTrackerTitle(tracker) .. HEADER_TEXT_PAD
+	local fittedTitle, fittedScale = FitHeaderTextToTracker(tracker, GetStyledTrackerTitle(tracker), headerScale)
+	local paddedTitle = HEADER_TEXT_PAD .. fittedTitle .. HEADER_TEXT_PAD
 
 	LabelSetText(windowTitle, towstring(paddedTitle))
 	LabelSetTextColor(windowTitle, tone[1], tone[2], tone[3])
-	WindowSetScale(windowTitle, math.max(0.7, math.min(1.8, headerScale)))
+	WindowSetScale(windowTitle, fittedScale)
 end
 
 local function GetTrackerRowMetrics(rowScale)
@@ -137,13 +179,7 @@ end
 
 function WarbandComms.ApplyTrackerInternalLayout(tracker)
 	local window = WarbandComms.AddonName .. tracker:upper()
-	local width = WarbandComms.GetTrackerWidth()
-	if WindowGetDimensions then
-		local currentWidth = WindowGetDimensions(window)
-		if currentWidth and currentWidth > 0 then
-			width = currentWidth
-		end
-	end
+	local width = GetTrackerWindowWidth(window)
 
 	local titleName = window .. "Title"
 	WindowSetDimensions(titleName, math.max(40, width - 12), 20)

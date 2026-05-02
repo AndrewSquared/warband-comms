@@ -41,6 +41,12 @@
     - adjusted config layout spacing/alignment based on in-client review: improved label-to-value spacing, aligned tracker/notification section headers, and restored equal checkbox size for Toggle All and all sub-toggles
     - fixed config regressions: Toggle All now updates all tracker checkbox states, checkbox boxes render again, notification rows sit closer to headers (including LTC), and +/- brackets no longer clip
     - fixed tracker list click layering: tracker rows now start below Toggle All so the master toggle remains fully clickable
+    - enabled forward UI control compatibility for future config work: switched XML schema references to EASystem.xsd and added reusable config.lua helpers for checkbox, editbox, and combobox behavior
+    - added `ui-controls-reference.xml` as a non-loaded copy/paste template pack for future controls (checkbox rows, numeric inputs, combobox rows, add/remove buttons, and scroll shells)
+    - removed deprecated/legacy slash aliases (`/ret`, `/retwbcomms`, `/rwc`, `/wbcomms`) and kept canonical slash commands only (`/warbandcomms`, `/wb-comms`, `/wbc`)
+    - fully wired reference UI handlers in config.lua for copied controls from `ui-controls-reference.xml`
+    - fixed tracker toggling flow: enabling an individual tracker now re-syncs master toggle state so that single trackers can be shown immediately after Toggle All was turned off
+    - refined Toggle All semantics: it now acts as a set-all action while tracker visibility/updates are governed by individual tracker toggles; master checkbox reflects "all trackers enabled"
 
 
 1.0 LTC Window(Mainline)

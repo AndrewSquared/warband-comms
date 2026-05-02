@@ -106,7 +106,6 @@ end
 function WarbandComms.IsTrackerVisible(trackerName)
 	trackerName = WarbandComms.ResolveTrackerName(trackerName)
 	return trackerName ~= nil
-		and WarbandComms.Settings.enabled
 		and WarbandComms.Settings[trackerName] == true
 end
 
@@ -392,8 +391,6 @@ end
 function WarbandComms.OnUpdate(elapsed)
     WarbandComms.elapsed = WarbandComms.elapsed + elapsed
 
-	if not WarbandComms.Settings.enabled then return end
-
     -- Check and update chat messages every throttle2 (0.1s)
     if WarbandComms.elapsed - (WarbandComms.lastChatUpdate or 0) >= throttle2 then
         WarbandComms.lastChatUpdate = WarbandComms.elapsed
@@ -467,7 +464,6 @@ end
 
 function WarbandComms.OnCast(actionId, isChannel, desiredCastTime, averageLatency)
 	if averageLatency then return end -- stops double messages
-	if not WarbandComms.Settings.enabled then return end
 
 	local ability = WarbandComms.trackedAbilities[actionId]
 	if not ability then return end
@@ -512,8 +508,6 @@ function WarbandComms.OnCast(actionId, isChannel, desiredCastTime, averageLatenc
 end
 
 function WarbandComms.TextArrived()
-	if not WarbandComms.Settings.enabled then return end
-
 	local chatData = GameData.ChatData
 	local chatType = chatData.type
     if WarbandComms.ChatChannels[chatType] then

@@ -86,6 +86,121 @@ local function SetEnabledLabelColor(labelName, isEnabled)
 	end
 end
 
+local function AreAllTrackersEnabled()
+	for trackerName, _ in pairs(WarbandComms.Trackers) do
+		if WarbandComms.Settings[trackerName] ~= true then
+			return false
+		end
+	end
+	return true
+end
+
+-- Shared UI primitives for future controls (checkboxes, dropdowns, inputs).
+function WarbandComms.UIEnsureCheckboxState(buttonName, settingState)
+	if not buttonName or not DoesWindowExist(buttonName) then return end
+	ButtonSetStayDownFlag(buttonName, true)
+	ButtonSetPressedFlag(buttonName, settingState == true)
+end
+
+function WarbandComms.UIResolveCheckboxToggle(buttonName, settingState)
+	if not buttonName or not DoesWindowExist(buttonName) then
+		return not (settingState == true)
+	end
+
+	ButtonSetStayDownFlag(buttonName, true)
+	local uiPressed = ButtonGetPressedFlag(buttonName)
+	local uiPressedBool = (uiPressed == true) or (uiPressed == 1)
+	local current = (settingState == true)
+
+	if uiPressedBool == current then
+		return not current
+	end
+
+	return uiPressedBool
+end
+
+function WarbandComms.UISetEditBoxTextIfExists(editBoxName, textValue)
+	if not editBoxName or not DoesWindowExist(editBoxName) then return end
+	TextEditBoxSetText(editBoxName, towstring(textValue or ""))
+end
+
+function WarbandComms.UIPopulateComboBox(comboName, items, selectedIndex)
+	if not comboName or not DoesWindowExist(comboName) then return end
+	ComboBoxClearMenuItems(comboName)
+
+	for _, item in ipairs(items or {}) do
+		ComboBoxAddMenuItem(comboName, towstring(item))
+	end
+
+	if selectedIndex and selectedIndex > 0 then
+		ComboBoxSetSelectedMenuItem(comboName, selectedIndex)
+	end
+end
+
+local function GetReferenceState()
+	WarbandComms.ReferenceControlState = WarbandComms.ReferenceControlState or {
+		toggle = false,
+		numeric = nil,
+		comboIndex = 0,
+		items = {},
+	}
+	return WarbandComms.ReferenceControlState
+end
+
+local function GetActiveWindowNameSafe()
+	return SystemData.ActiveWindow and SystemData.ActiveWindow.name or nil
+end
+
+function WarbandComms.OnReferenceToggle()
+	local state = GetReferenceState()
+	local buttonName = GetActiveWindowNameSafe()
+	state.toggle = WarbandComms.UIResolveCheckboxToggle(buttonName, state.toggle)
+	WarbandComms.UIEnsureCheckboxState(buttonName, state.toggle)
+end
+
+function WarbandComms.OnReferenceNumericChanged()
+	local state = GetReferenceState()
+	local editBoxName = GetActiveWindowNameSafe()
+	if not editBoxName or not DoesWindowExist(editBoxName) then return end
+
+	local rawText = TextEditBoxGetText(editBoxName)
+	local text = tostring(rawText or "")
+	if WStringToString and type(rawText) == "wstring" then
+		text = WStringToString(rawText)
+	end
+
+	local numeric = tonumber(text)
+	if numeric then
+		state.numeric = numeric
+	end
+end
+
+function WarbandComms.OnReferenceComboChanged()
+	local state = GetReferenceState()
+	local comboName = GetActiveWindowNameSafe()
+	if not comboName or not DoesWindowExist(comboName) then return end
+
+	state.comboIndex = ComboBoxGetSelectedMenuItem(comboName) or 0
+end
+
+function WarbandComms.OnReferenceAdd()
+	local state = GetReferenceState()
+	local nextId = #state.items + 1
+	state.items[nextId] = {
+		id = nextId,
+		toggle = state.toggle,
+		numeric = state.numeric,
+		comboIndex = state.comboIndex,
+	}
+end
+
+function WarbandComms.OnReferenceDelete()
+	local state = GetReferenceState()
+	if #state.items > 0 then
+		table.remove(state.items)
+	end
+end
+
 local function ApplyControlLabelStyling()
 	local softLabels = {
 		"HeaderTextSizeLabel",
@@ -187,8 +302,9 @@ function WarbandComms.InitConfig(version)
 
 	LabelSetText(configWindow .. "TrackerTitle", L"Toggle All")
 	LabelSetText(configWindow .. "TrackerGroupTitle", L"Trackers")
-	local enabled = WarbandComms.Settings.enabled
-	ButtonSetPressedFlag("WarbandCommsConfigEnableTrackersButton", enabled)
+	local allEnabled = AreAllTrackersEnabled()
+	WarbandComms.Settings.enabled = allEnabled
+	ButtonSetPressedFlag("WarbandCommsConfigEnableTrackersButton", allEnabled)
 
 	LabelSetText(configWindow .. "NotificationsTitle", L"Tracker Appearance")
 	LabelSetText(configWindow .. "NotificationGroupTitle", L"Center Screen Notifications")
@@ -237,8 +353,7 @@ function WarbandComms.InitConfig(version)
 		LabelSetText(labelName, towstring(trackerName:sub(1,1):upper() .. trackerName:sub(2)))
 		ButtonSetPressedFlag(buttonName, WarbandComms.Settings[trackerName] == true)
 
-		local enabled = WarbandComms.Settings.enabled
-		SetEnabledLabelColor(labelName, enabled)
+		SetEnabledLabelColor(labelName, WarbandComms.Settings[trackerName] == true)
 	end
 
 	-- dynamically add notifications
@@ -412,8 +527,7 @@ function WarbandComms.ResetBackgroundOpacity()
 end
 
 function WarbandComms.ToggleAllTrackers()
-	local enabled = WarbandComms.Settings.enabled
-	enabled = not enabled
+	local enabled = not AreAllTrackersEnabled()
 
 	WarbandComms.Settings.enabled = enabled
 	ButtonSetPressedFlag("WarbandCommsConfigEnableTrackersButton", enabled)
@@ -426,6 +540,12 @@ function WarbandComms.ToggleAllTrackers()
 		SetEnabledLabelColor(labelName, enabled)
 		ApplyTrackerVisibility(trackerName)
 	end
+end
+
+local function SyncMasterToggleFromTrackerStates()
+	local allEnabled = AreAllTrackersEnabled()
+	WarbandComms.Settings.enabled = allEnabled
+	ButtonSetPressedFlag("WarbandCommsConfigEnableTrackersButton", allEnabled)
 end
 
 function WarbandComms.OnClose()
@@ -457,6 +577,8 @@ function WarbandComms.ToggleTracker()
 
 	WarbandComms.Settings[trackerName] = not WarbandComms.Settings[trackerName]
 	ButtonSetPressedFlag(activeWindowName, WarbandComms.Settings[trackerName])
+	SetEnabledLabelColor(WarbandComms.AddonName .. "Config" .. trackerName:upper() .. "Label", WarbandComms.Settings[trackerName] == true)
+	SyncMasterToggleFromTrackerStates()
 
 	ApplyTrackerVisibility(trackerName)
 end

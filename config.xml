@@ -1,4 +1,4 @@
-<Interface xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xsi:noNamespaceSchemaLocation="../../Interface.xsd">
+<Interface xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xsi:noNamespaceSchemaLocation="../../EASystem.xsd">
     <Windows>
         <Window name="WarbandCommsConfig" inherits="EA_Window_Default" movable="true">
             <Size>

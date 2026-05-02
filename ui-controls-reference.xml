@@ -1,0 +1,150 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!--
+  WarbandComms UI Control Reference
+  ---------------------------------
+  This file is intentionally NOT loaded by WarbandComms.mod.
+  It exists as a copy/paste reference for future UI work.
+-->
+<Interface xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xsi:noNamespaceSchemaLocation="../../EASystem.xsd">
+  <Windows>
+
+    <!-- Copy target: default checkbox row control -->
+    <Window name="WarbandCommsReferenceCheckboxRow" movable="false">
+      <Size><AbsPoint x="300" y="28" /></Size>
+      <Windows>
+        <Button name="$parentToggle" inherits="EA_Button_DefaultCheckBox">
+          <Size><AbsPoint x="24" y="24" /></Size>
+          <Anchors>
+            <Anchor point="topleft" relativePoint="topleft" relativeTo="$parent">
+              <AbsPoint x="0" y="2" />
+            </Anchor>
+          </Anchors>
+          <EventHandlers>
+            <EventHandler event="OnLButtonUp" function="WarbandComms.OnReferenceToggle" />
+          </EventHandlers>
+        </Button>
+        <Label name="$parentLabel" font="font_clear_medium" textalign="left">
+          <Size><AbsPoint x="260" y="24" /></Size>
+          <Anchors>
+            <Anchor point="topleft" relativePoint="topleft" relativeTo="$parent">
+              <AbsPoint x="28" y="2" />
+            </Anchor>
+          </Anchors>
+        </Label>
+      </Windows>
+    </Window>
+
+    <!-- Copy target: numeric input control -->
+    <Window name="WarbandCommsReferenceNumericInputRow" movable="false">
+      <Size><AbsPoint x="300" y="32" /></Size>
+      <Windows>
+        <Label name="$parentLabel" font="font_clear_small" textalign="left">
+          <Size><AbsPoint x="120" y="24" /></Size>
+          <Anchors>
+            <Anchor point="topleft" relativePoint="topleft" relativeTo="$parent">
+              <AbsPoint x="0" y="4" />
+            </Anchor>
+          </Anchors>
+        </Label>
+        <EditBox name="$parentInput" inherits="EA_EditBox_DefaultFrame" input="numbers" maxchars="6">
+          <Size><AbsPoint x="84" y="28" /></Size>
+          <Anchors>
+            <Anchor point="topleft" relativePoint="topleft" relativeTo="$parent">
+              <AbsPoint x="124" y="2" />
+            </Anchor>
+          </Anchors>
+          <EventHandlers>
+            <EventHandler event="OnTextChanged" function="WarbandComms.OnReferenceNumericChanged" />
+          </EventHandlers>
+        </EditBox>
+      </Windows>
+    </Window>
+
+    <!-- Copy target: combobox selector row -->
+    <Window name="WarbandCommsReferenceComboRow" movable="false">
+      <Size><AbsPoint x="300" y="32" /></Size>
+      <Windows>
+        <Label name="$parentLabel" font="font_clear_small" textalign="left">
+          <Size><AbsPoint x="120" y="24" /></Size>
+          <Anchors>
+            <Anchor point="topleft" relativePoint="topleft" relativeTo="$parent">
+              <AbsPoint x="0" y="4" />
+            </Anchor>
+          </Anchors>
+        </Label>
+        <ComboBox name="$parentCombo" inherits="EA_ComboBox_DefaultResizableSmall">
+          <Anchors>
+            <Anchor point="topleft" relativePoint="topleft" relativeTo="$parent">
+              <AbsPoint x="124" y="2" />
+            </Anchor>
+          </Anchors>
+          <EventHandlers>
+            <EventHandler event="OnSelChanged" function="WarbandComms.OnReferenceComboChanged" />
+            <EventHandler event="OnSelectionChanged" function="WarbandComms.OnReferenceComboChanged" />
+          </EventHandlers>
+        </ComboBox>
+      </Windows>
+    </Window>
+
+    <!-- Copy target: add/remove action buttons -->
+    <Window name="WarbandCommsReferenceActionButtons" movable="false">
+      <Size><AbsPoint x="180" y="32" /></Size>
+      <Windows>
+        <Button name="$parentAddButton" inherits="EA_Button_DefaultResizeable" font="font_clear_small" text="+ Add">
+          <Size><AbsPoint x="90" y="30" /></Size>
+          <Anchors>
+            <Anchor point="topleft" relativePoint="topleft" relativeTo="$parent">
+              <AbsPoint x="0" y="1" />
+            </Anchor>
+          </Anchors>
+          <EventHandlers>
+            <EventHandler event="OnLButtonUp" function="WarbandComms.OnReferenceAdd" />
+          </EventHandlers>
+        </Button>
+
+        <Button name="$parentDeleteButton" inherits="EA_Button_DefaultMinus">
+          <Size><AbsPoint x="24" y="24" /></Size>
+          <Anchors>
+            <Anchor point="topleft" relativePoint="topleft" relativeTo="$parent">
+              <AbsPoint x="100" y="4" />
+            </Anchor>
+          </Anchors>
+          <EventHandlers>
+            <EventHandler event="OnLButtonUp" function="WarbandComms.OnReferenceDelete" />
+          </EventHandlers>
+        </Button>
+      </Windows>
+    </Window>
+
+    <!-- Copy target: scrollable dynamic list shell -->
+    <Window name="WarbandCommsReferenceScrollShell" movable="false">
+      <Size><AbsPoint x="340" y="240" /></Size>
+      <Windows>
+        <ScrollWindow name="$parentList" childscrollwindow="$parentScrollChild" scrollbar="$parentScrollbar" lineheight="32" autoHideScrollBar="true">
+          <Size><AbsPoint x="340" y="240" /></Size>
+          <Anchors>
+            <Anchor point="topleft" relativePoint="topleft" relativeTo="$parent" />
+          </Anchors>
+          <Windows>
+            <VerticalScrollbar name="$parentScrollbar" inherits="EA_ScrollBar_DefaultVerticalChain" layer="popup">
+              <Size><AbsPoint x="24" y="240" /></Size>
+              <Anchors>
+                <Anchor point="topright" relativePoint="topright" relativeTo="$parent">
+                  <AbsPoint x="16" y="0" />
+                </Anchor>
+              </Anchors>
+            </VerticalScrollbar>
+
+            <Window name="$parentScrollChild">
+              <Size><AbsPoint x="314" y="240" /></Size>
+              <Anchors>
+                <Anchor point="topleft" relativePoint="topleft" relativeTo="$parent" />
+              </Anchors>
+            </Window>
+          </Windows>
+        </ScrollWindow>
+      </Windows>
+    </Window>
+
+  </Windows>
+</Interface>

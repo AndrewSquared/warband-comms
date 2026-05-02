@@ -21,10 +21,9 @@ Full internal rename will be done first (as requested), then the checkbox/UI vis
   - XML window/template names
   - Mod metadata and file/module references
 - Keep selected slash strategy:
-  - Keep existing aliases for transition
-  - Mark /ret as deprecated
-  - Add /wb-comms and /wbc aliases if command parser accepts hyphen tokenization
-- Update documentation to reflect new command set and deprecation messaging.
+  - Use canonical commands only: /warbandcomms, /wb-comms, /wbc
+  - Remove deprecated/legacy aliases from runtime registration and docs
+- Update documentation to reflect the canonical command set.
 
 4. Phase 3 - Fix checkbox/UI visibility sync bug (depends on 2)
 - Unify tracker visibility computation into one helper used by both toggle paths:
@@ -87,7 +86,7 @@ Full internal rename will be done first (as requested), then the checkbox/UI vis
 - c:/Warhammer Online - Return of Reckoning/Interface/AddOns/WarbandComms/config-template.xml - Config control template naming.
 - c:/Warhammer Online - Return of Reckoning/Interface/AddOns/WarbandComms/ui.lua - Tracker window creation, header formatting, color/alpha application.
 - c:/Warhammer Online - Return of Reckoning/Interface/AddOns/WarbandComms/ui-template.xml - Row/header layout, fonts, dimensions.
-- c:/Warhammer Online - Return of Reckoning/Interface/AddOns/WarbandComms/slash.lua - Slash aliases and deprecation additions.
+- c:/Warhammer Online - Return of Reckoning/Interface/AddOns/WarbandComms/slash.lua - Slash command registration and command handlers.
 - c:/Warhammer Online - Return of Reckoning/Interface/AddOns/WarbandComms/changelog.md - Breaking change and milestone notes.
 - c:/Warhammer Online - Return of Reckoning/Interface/AddOns/WarbandComms/README.md - New project docs and governance.
 - c:/Warhammer Online - Return of Reckoning/Interface/AddOns/WarbandComms/.gitignore - Repo hygiene.
@@ -95,7 +94,7 @@ Full internal rename will be done first (as requested), then the checkbox/UI vis
 
 **Verification**
 1. Launch addon and confirm module loads with no XML/Lua reference errors after rename.
-2. Confirm all slash aliases work, including deprecation message behavior for /ret and new aliases if added.
+2. Confirm canonical slash commands work: /warbandcomms, /wb-comms, /wbc.
 3. Reproduce prior checkbox mismatch case and verify fixed behavior for:
 - tracker checked + global off
 - tracker unchecked + global on
@@ -117,7 +116,7 @@ Full internal rename will be done first (as requested), then the checkbox/UI vis
 - Include: no backward compatibility migration for saved settings/chat protocol by default.
 - Include: first functional milestone is checkbox/UI visibility sync fix.
 - Include: remaining UI improvements shipped one-by-one with local client testing.
-- Include: keep current aliases, deprecate /ret, and evaluate /wb-comms + /wbc.
+- Include: canonical slash command set only (/warbandcomms, /wb-comms, /wbc).
 - Include: immediate removal of RET/DEVA protocol compatibility as a breaking change.
 - Include: medium settings UI refactor (layout consistency + maintainability), not a full redesign.
 - Exclude: temporary dual-send fallback and legacy protocol compatibility modes.

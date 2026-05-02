@@ -21,10 +21,6 @@ Warband Comms is a Return of Reckoning addon that tracks key warband ability coo
 - `/warbandcomms`
 - `/wb-comms`
 - `/wbc`
-- `/wbcomms` (legacy)
-- `/retwbcomms` (deprecated; still works and prints guidance)
-- `/rwc` (deprecated; still works and prints guidance)
-- `/ret` (deprecated; still works and prints guidance)
 
 Subcommands:
 
@@ -69,8 +65,7 @@ Run this checklist before release tagging:
 
 5. Protocol and compatibility
 - Verify outbound messages use `[WBC]`.
-- Verify inbound compatibility still accepts `[RET]`/`[DEVA]` during transition.
-- Verify one-time deprecation warning appears for legacy tags.
+- Verify inbound behavior is strict `[WBC]` only (`[RET]`/`[DEVA]` are ignored).
 
 6. Persistence
 - Reload UI and relog to verify settings persist:
@@ -91,6 +86,27 @@ Run this checklist before release tagging:
 - Module metadata: `WarbandComms.mod`
 - UI definitions: `config.xml`, `config-template.xml`, `ui-template.xml`
 - Runtime logic: `config.lua`, `ui.lua`, `slash.lua`, `ability_cooldowns.lua`
+
+### UI Control Compatibility
+
+- XML schema references use `EASystem.xsd` to match working addon patterns for default WAR controls.
+- Existing and future controls can safely use templates such as:
+   - `EA_Button_Default`, `EA_Button_DefaultResizeable`, `EA_Button_DefaultCheckBox`, `EA_Button_DefaultMinus`
+   - `EA_EditBox_DefaultFrame`
+   - `EA_ComboBox_DefaultResizable`, `EA_ComboBox_DefaultResizableSmall`
+   - `ScrollWindow` + `VerticalScrollbar` (`EA_ScrollBar_DefaultVerticalChain`)
+- `config.lua` includes reusable helpers for robust control behavior across template quirks:
+   - `WarbandComms.UIEnsureCheckboxState`
+   - `WarbandComms.UIResolveCheckboxToggle`
+   - `WarbandComms.UISetEditBoxTextIfExists`
+   - `WarbandComms.UIPopulateComboBox`
+- Copy-ready XML control examples for future expansion are in `ui-controls-reference.xml` (intentionally not loaded by `WarbandComms.mod`).
+- Reference handlers are fully wired in `config.lua` for copied controls:
+   - `WarbandComms.OnReferenceToggle`
+   - `WarbandComms.OnReferenceNumericChanged`
+   - `WarbandComms.OnReferenceComboChanged`
+   - `WarbandComms.OnReferenceAdd`
+   - `WarbandComms.OnReferenceDelete`
 
 ## License
 

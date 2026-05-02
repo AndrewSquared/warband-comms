@@ -28,6 +28,7 @@ local tremove = table.remove
 local tsort = table.sort
 local SendChatText = SendChatText
 local max = math.max
+local min = math.min
 local floor = math.floor
 local next = next
 
@@ -119,9 +120,45 @@ function WarbandComms.SetTrackerWindowVisibility(trackerName)
 	if not trackerName then return end
 
 	local uiName = WarbandComms.AddonName .. trackerName:upper()
+	local isVisible = WarbandComms.IsTrackerVisible(trackerName)
 	WarbandComms.suppressTrackerWindowSync = true
-	WindowSetShowing(uiName, WarbandComms.IsTrackerVisible(trackerName))
+	WindowSetShowing(uiName, isVisible)
+	if LayoutEditor and LayoutEditor.RegisterWindow then
+		if LayoutEditor.UnregisterWindow then
+			LayoutEditor.UnregisterWindow(uiName)
+		end
+		LayoutEditor.RegisterWindow(
+			uiName,
+			towstring(WarbandComms.AddonName .. trackerName),
+			towstring(WarbandComms.AddonName),
+			not isVisible,
+			false,
+			true,
+			nil
+		)
+	end
 	WarbandComms.suppressTrackerWindowSync = false
+end
+
+function WarbandComms.CleanupLegacyLayoutWindows()
+	if not LayoutEditor or not LayoutEditor.UnregisterWindow then return end
+
+	-- Remove legacy typo registrations that can show as phantom white boxes.
+	LayoutEditor.UnregisterWindow(WarbandComms.AddonName .. "INTERUPT")
+	LayoutEditor.UnregisterWindow(WarbandComms.AddonName .. "interupt")
+end
+
+function WarbandComms.ClampTextScale(value)
+	local numeric = tonumber(value) or 1.0
+	return min(1.5, max(0.7, numeric))
+end
+
+function WarbandComms.GetHeaderTextScale()
+	return WarbandComms.ClampTextScale(WarbandComms.Settings.headerTextScale)
+end
+
+function WarbandComms.GetRowTextScale()
+	return WarbandComms.ClampTextScale(WarbandComms.Settings.rowTextScale)
 end
 
 function WarbandComms.OnInitialize()
@@ -143,6 +180,8 @@ function WarbandComms.OnInitialize()
 		channels = true,
 		interrupt = true,
 		bellow = true,
+		headerTextScale = 1.0,
+		rowTextScale = 1.0,
 		version = version,
 		showOnStartup = true,
 		notifications = {
@@ -155,6 +194,15 @@ function WarbandComms.OnInitialize()
 		WarbandComms.Settings = defaultSettings
 	end
 
+	if WarbandComms.Settings.headerTextScale == nil then
+		WarbandComms.Settings.headerTextScale = defaultSettings.headerTextScale
+	end
+	if WarbandComms.Settings.rowTextScale == nil then
+		WarbandComms.Settings.rowTextScale = defaultSettings.rowTextScale
+	end
+	WarbandComms.Settings.headerTextScale = WarbandComms.GetHeaderTextScale()
+	WarbandComms.Settings.rowTextScale = WarbandComms.GetRowTextScale()
+
 	for _, v in pairs(WarbandComms.trackedAbilities) do
 		WarbandComms.Trackers[v.tracker] = {}
 		if v.notify then
@@ -163,6 +211,7 @@ function WarbandComms.OnInitialize()
 	end
 	WarbandComms.RefreshTrackerKeyIndex()
 	WarbandComms.NormalizeTrackerSettingsKeys()
+	WarbandComms.CleanupLegacyLayoutWindows()
 
 	WarbandComms.InitConfig(version)
 	WarbandComms.InitSlash()

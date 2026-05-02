@@ -17,6 +17,20 @@ local function SyncConfigButtonForTracker(trackerName, isEnabled)
 	ButtonSetPressedFlag(buttonName, isEnabled)
 end
 
+function WarbandComms.ApplyTextScale(tracker)
+	local window = WarbandComms.AddonName .. tracker:upper()
+	local headerScale = WarbandComms.GetHeaderTextScale()
+	local rowScale = WarbandComms.GetRowTextScale()
+	local windowTitle = window .. "Title"
+	WindowSetScale(windowTitle, headerScale)
+
+	local listWindow = window .. "ListRow"
+	for i = 1, 12 do
+		WindowSetScale(listWindow .. i .. "Name", rowScale)
+		WindowSetScale(listWindow .. i .. "Timer", rowScale)
+	end
+end
+
 function WarbandComms.OnTrackerWindowShown()
 	if WarbandComms.suppressTrackerWindowSync then return end
 
@@ -42,15 +56,6 @@ function WarbandComms.CreateUI(tracker)
 
 	CreateWindowFromTemplate (window, "WarbandCommsUITemplate", "Root")
 	WarbandComms.SetTrackerWindowVisibility(tracker)
-    LayoutEditor.RegisterWindow (
-        window,
-        towstring(WarbandComms.AddonName..tracker),
-        towstring(WarbandComms.AddonName),
-        false,
-        false,
-        true,
-        nil
-    )
 	WindowSetTintColor (window.."Background", 0, 0, 0)
 	WindowSetAlpha (window.."Background", 0.60)
 	WindowSetScale(window, 1.0)
@@ -61,11 +66,13 @@ function WarbandComms.CreateUI(tracker)
 	local titleText = "-- " .. string.upper(tracker) .. " --"
 	LabelSetText(windowTitle, towstring(titleText))
 	LabelSetTextColor(windowTitle, 165, 165, 165)
+	WarbandComms.ApplyTextScale(tracker)
 end
 
 function WarbandComms.UpdateUI(tracker, abilityList, nearlyReadyTime)
 	local window = WarbandComms.AddonName .. tracker:upper()
     if not WindowGetShowing(window) then return end
+	WarbandComms.ApplyTextScale(tracker)
 
 	local listWindow = window .. "ListRow"
 	local listIndex = 1

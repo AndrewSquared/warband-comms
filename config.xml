@@ -54,6 +54,116 @@
                     </EventHandlers>
                 </Button>
 
+                <Label name="$parentHeaderTextSizeLabel" font="font_clear_small" textalign="left">
+                    <Size><AbsPoint x="100" y="20" /></Size>
+                    <Anchors>
+                        <Anchor point="topleft" relativePoint="topleft" relativeTo="$parent">
+                            <AbsPoint x="20" y="76" />
+                        </Anchor>
+                    </Anchors>
+                </Label>
+                <Button name="$parentHeaderTextSizeDecreaseButton" inherits="EA_Button_Default">
+                    <Size><AbsPoint x="24" y="20" /></Size>
+                    <Anchors>
+                        <Anchor point="topleft" relativePoint="topleft" relativeTo="$parent">
+                            <AbsPoint x="128" y="76" />
+                        </Anchor>
+                    </Anchors>
+                    <EventHandlers>
+                        <EventHandler event="OnLButtonUp" function="WarbandComms.DecreaseHeaderTextSize" />
+                    </EventHandlers>
+                    <Windows>
+                        <Label name="$parentLabel" font="font_clear_medium_bold" textalign="center">
+                            <Size><AbsPoint x="24" y="20" /></Size>
+                            <Anchors>
+                                <Anchor point="center" relativePoint="center" relativeTo="$parent" />
+                            </Anchors>
+                        </Label>
+                    </Windows>
+                </Button>
+                <Label name="$parentHeaderTextSizeValue" font="font_clear_small" textalign="center">
+                    <Size><AbsPoint x="50" y="20" /></Size>
+                    <Anchors>
+                        <Anchor point="topleft" relativePoint="topleft" relativeTo="$parent">
+                            <AbsPoint x="156" y="76" />
+                        </Anchor>
+                    </Anchors>
+                </Label>
+                <Button name="$parentHeaderTextSizeIncreaseButton" inherits="EA_Button_Default">
+                    <Size><AbsPoint x="24" y="20" /></Size>
+                    <Anchors>
+                        <Anchor point="topleft" relativePoint="topleft" relativeTo="$parent">
+                            <AbsPoint x="210" y="76" />
+                        </Anchor>
+                    </Anchors>
+                    <EventHandlers>
+                        <EventHandler event="OnLButtonUp" function="WarbandComms.IncreaseHeaderTextSize" />
+                    </EventHandlers>
+                    <Windows>
+                        <Label name="$parentLabel" font="font_clear_medium_bold" textalign="center">
+                            <Size><AbsPoint x="24" y="20" /></Size>
+                            <Anchors>
+                                <Anchor point="center" relativePoint="center" relativeTo="$parent" />
+                            </Anchors>
+                        </Label>
+                    </Windows>
+                </Button>
+
+                <Label name="$parentRowTextSizeLabel" font="font_clear_small" textalign="left">
+                    <Size><AbsPoint x="100" y="20" /></Size>
+                    <Anchors>
+                        <Anchor point="topleft" relativePoint="topleft" relativeTo="$parent">
+                            <AbsPoint x="350" y="76" />
+                        </Anchor>
+                    </Anchors>
+                </Label>
+                <Button name="$parentRowTextSizeDecreaseButton" inherits="EA_Button_Default">
+                    <Size><AbsPoint x="24" y="20" /></Size>
+                    <Anchors>
+                        <Anchor point="topleft" relativePoint="topleft" relativeTo="$parent">
+                            <AbsPoint x="435" y="76" />
+                        </Anchor>
+                    </Anchors>
+                    <EventHandlers>
+                        <EventHandler event="OnLButtonUp" function="WarbandComms.DecreaseRowTextSize" />
+                    </EventHandlers>
+                    <Windows>
+                        <Label name="$parentLabel" font="font_clear_medium_bold" textalign="center">
+                            <Size><AbsPoint x="24" y="20" /></Size>
+                            <Anchors>
+                                <Anchor point="center" relativePoint="center" relativeTo="$parent" />
+                            </Anchors>
+                        </Label>
+                    </Windows>
+                </Button>
+                <Label name="$parentRowTextSizeValue" font="font_clear_small" textalign="center">
+                    <Size><AbsPoint x="50" y="20" /></Size>
+                    <Anchors>
+                        <Anchor point="topleft" relativePoint="topleft" relativeTo="$parent">
+                            <AbsPoint x="463" y="76" />
+                        </Anchor>
+                    </Anchors>
+                </Label>
+                <Button name="$parentRowTextSizeIncreaseButton" inherits="EA_Button_Default">
+                    <Size><AbsPoint x="24" y="20" /></Size>
+                    <Anchors>
+                        <Anchor point="topleft" relativePoint="topleft" relativeTo="$parent">
+                            <AbsPoint x="517" y="76" />
+                        </Anchor>
+                    </Anchors>
+                    <EventHandlers>
+                        <EventHandler event="OnLButtonUp" function="WarbandComms.IncreaseRowTextSize" />
+                    </EventHandlers>
+                    <Windows>
+                        <Label name="$parentLabel" font="font_clear_medium_bold" textalign="center">
+                            <Size><AbsPoint x="24" y="20" /></Size>
+                            <Anchors>
+                                <Anchor point="center" relativePoint="center" relativeTo="$parent" />
+                            </Anchors>
+                        </Label>
+                    </Windows>
+                </Button>
+
                 <!-- dynamically generated tracker checkbox and labels -->
 
                 <!-- Notifications Title -->

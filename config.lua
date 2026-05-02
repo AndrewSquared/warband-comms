@@ -8,6 +8,21 @@ local function ApplyTrackerVisibility(trackerName)
 	WarbandComms.SetTrackerWindowVisibility(trackerName)
 end
 
+local function FormatPercentLabel(scale)
+	return towstring(tostring(math.floor((scale * 100) + 0.5)) .. "%")
+end
+
+local function RefreshTextScaleLabels()
+	LabelSetText(configWindow .. "HeaderTextSizeValue", FormatPercentLabel(WarbandComms.GetHeaderTextScale()))
+	LabelSetText(configWindow .. "RowTextSizeValue", FormatPercentLabel(WarbandComms.GetRowTextScale()))
+end
+
+local function ApplyTextScaleToAllTrackers()
+	for trackerName, _ in pairs(WarbandComms.Trackers) do
+		WarbandComms.ApplyTextScale(trackerName)
+	end
+end
+
 function WarbandComms.InitConfig(version)
     local configWindow = WarbandComms.AddonName .. "Config"
     WarbandComms.configWindow = configWindow -- so OnClose has the exact name
@@ -24,6 +39,13 @@ function WarbandComms.InitConfig(version)
 	ButtonSetPressedFlag("WarbandCommsConfigEnableTrackersButton", enabled)
 
 	LabelSetText(configWindow .. "NotificationsTitle", L"Center Screen Notifications")
+	LabelSetText(configWindow .. "HeaderTextSizeLabel", L"Header Text")
+	LabelSetText(configWindow .. "RowTextSizeLabel", L"Row Text")
+	LabelSetText(configWindow .. "HeaderTextSizeDecreaseButtonLabel", L"-")
+	LabelSetText(configWindow .. "HeaderTextSizeIncreaseButtonLabel", L"+")
+	LabelSetText(configWindow .. "RowTextSizeDecreaseButtonLabel", L"-")
+	LabelSetText(configWindow .. "RowTextSizeIncreaseButtonLabel", L"+")
+	RefreshTextScaleLabels()
 
 	-- Dynamically add trackers
 	local tracker_index = 0
@@ -36,7 +58,7 @@ function WarbandComms.InitConfig(version)
 
 		WindowClearAnchors(window)
         -- place rows under the header controls
-		WindowAddAnchor(window, "topleft", configWindow, "topleft", 20, 100 + (tracker_index * 40))
+		WindowAddAnchor(window, "topleft", configWindow, "topleft", 20, 140 + (tracker_index * 40))
 		tracker_index = tracker_index + 1
 
 		local buttonName = window .. "Button"
@@ -64,7 +86,7 @@ function WarbandComms.InitConfig(version)
 
 		WindowClearAnchors(window)
 		-- place rows under the header controls
-		WindowAddAnchor(window, "topleft", configWindow, "topleft", 350, 100 + (notification_index * 40))
+		WindowAddAnchor(window, "topleft", configWindow, "topleft", 350, 140 + (notification_index * 40))
 		notification_index = notification_index + 1
 
 		local buttonName = window .. "Button"
@@ -81,7 +103,35 @@ function WarbandComms.InitConfig(version)
 		end
 	end
 	-- Resize config window to fit all trackers
-	WindowSetDimensions(configWindow, 700, 150 + (tracker_index * 50))
+	WindowSetDimensions(configWindow, 700, 190 + (tracker_index * 50))
+end
+
+function WarbandComms.ChangeHeaderTextSize(delta)
+	WarbandComms.Settings.headerTextScale = WarbandComms.ClampTextScale(WarbandComms.GetHeaderTextScale() + delta)
+	RefreshTextScaleLabels()
+	ApplyTextScaleToAllTrackers()
+end
+
+function WarbandComms.ChangeRowTextSize(delta)
+	WarbandComms.Settings.rowTextScale = WarbandComms.ClampTextScale(WarbandComms.GetRowTextScale() + delta)
+	RefreshTextScaleLabels()
+	ApplyTextScaleToAllTrackers()
+end
+
+function WarbandComms.DecreaseHeaderTextSize()
+	WarbandComms.ChangeHeaderTextSize(-0.1)
+end
+
+function WarbandComms.IncreaseHeaderTextSize()
+	WarbandComms.ChangeHeaderTextSize(0.1)
+end
+
+function WarbandComms.DecreaseRowTextSize()
+	WarbandComms.ChangeRowTextSize(-0.1)
+end
+
+function WarbandComms.IncreaseRowTextSize()
+	WarbandComms.ChangeRowTextSize(0.1)
 end
 
 function WarbandComms.ToggleAllTrackers()

@@ -36,6 +36,8 @@ Full internal rename will be done first (as requested), then the checkbox/UI vis
 
 5. Phase 4 - UI improvements delivered incrementally (depends on 3)
 - Milestone 4A: independent text size control (header and row text, shared or split settings).
+- Milestone 4A refinement: keep LayoutEditor resize behavior intuitive (box/text scale in same direction) while syncing LayoutEditor hidden state with tracker visibility changes.
+- Milestone 4A hardening: avoid duplicate LayoutEditor registration side-effects and clean up legacy typo window registrations (interupt) that can produce phantom draggable boxes.
 - Milestone 4B: box size controls (width/height, with sane min/max clamps).
 - Milestone 4C: background opacity control (and optional background color if low effort).
 - Milestone 4D: header simplification (remove clutter formatting, improve readability).

@@ -31,6 +31,7 @@
     - increased top header spacing inside tracker boxes and updated LTC title text to "Leading the Charge"
     - phase 5 kickoff: added stabilization/release checklist and verification matrix in README
     - fixed row name vertical overlap by making row height scale-aware with centered row icons
+    - fixed local self-cast updates: outgoing tracked casts now mirror into local tracker rows even when own /wb chat does not echo back
 
 
 1.0 LTC Window(Mainline)

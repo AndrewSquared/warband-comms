@@ -429,6 +429,19 @@ function WarbandComms.OnUpdate(elapsed)
 					local careerIcon = WarbandComms.PlayerCareer.icon or ""
             		local message = chatData.message .. ":" .. tostring(cooldown or 0) .. ":" .. careerIcon
             		SendChatText(towstring(message), L"")
+
+					-- Some clients/channels do not echo our own outbound message back through CHAT_TEXT_ARRIVED.
+					-- Mirror local cast state so self-casts are always visible in tracker rows.
+					if chatData.tracker and WarbandComms.Trackers[chatData.tracker] then
+						local localName = tostring(WarbandComms.FixString(GameData.Player.name))
+						WarbandComms.Trackers[chatData.tracker][localName] = {
+							name = localName,
+							timer = cooldown,
+							cooldown = cooldown,
+							duration = chatData.duration,
+							careerIcon = careerIcon,
+						}
+					end
 	            	tremove(WarbandComms.SendChatQueue, 1)
 					WarbandComms.SendChatQueuedByAction[chatData.actionId] = nil
 				end
@@ -495,6 +508,8 @@ function WarbandComms.OnCast(actionId, isChannel, desiredCastTime, averageLatenc
 		local chatData = {
 			message = message,
 			actionId = actionId,
+			tracker = tracker,
+			duration = duration,
 			mininimum_allowed_cooldown = mininimum_allowed_cooldown,
 			fixed_cooldown = fixed_cooldown,
 		}

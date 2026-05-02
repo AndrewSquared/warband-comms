@@ -53,15 +53,28 @@ Full internal rename will be done first (as requested), then the checkbox/UI vis
 - After each milestone, run in-client verification before moving to next milestone.
 
 6. Phase 5 - Stabilization and release prep (depends on 4)
-- Validate all trackers across classes and realms.
-- Validate inter-player communication behavior still works with chosen naming/protocol strategy.
-- Update changelog with explicit breaking changes and migration notes.
-- Tag release candidate and gather user feedback loop.
+- 5A Protocol hard-break implementation:
+  - remove legacy incoming compatibility for [RET]/[DEVA]
+  - keep [WBC] as the single outbound/inbound protocol key
+  - remove legacy deprecation warning path tied to legacy key acceptance
+- 5B Breaking-change communication:
+  - document protocol break clearly in changelog and README
+  - add migration note: mixed-version warbands are not supported after this change
+- 5C Settings UI medium refactor:
+  - introduce layout constants in config.lua to reduce hardcoded coordinates
+  - normalize control alignment/spacing and dynamic section placement
+  - fix window height calculation to use max(tracker rows, notification rows)
+  - consolidate repeated label/color init logic for maintainability
+- 5D Stabilization and release prep:
+  - validate all trackers across classes and realms
+  - validate inter-player communication behavior for WBC-only clients
+  - tag release candidate and gather user feedback loop
 
 **Phase 5 kickoff (in progress)**
 - Added a dedicated stabilization and release checklist in README to run through in-client before tagging.
 - Completed static editor validation on touched Lua/XML files (no parser errors reported).
-- Pending: in-client matrix run across trackers, resize modes, header presets, and cross-client comms.
+- Decision confirmed: remove RET/DEVA compatibility now (breaking change), no temporary dual-send fallback.
+- Pending: implement 5A protocol hard-break and 5C settings UI medium refactor, then run in-client matrix.
 
 **Relevant files**
 - c:/Warhammer Online - Return of Reckoning/Interface/AddOns/WarbandComms/WarbandComms.lua - Main namespace, init flow, saved settings root, chat protocol handling.
@@ -88,6 +101,14 @@ Full internal rename will be done first (as requested), then the checkbox/UI vis
 4. Confirm LayoutEditor reflects real visibility state after each toggle action.
 5. After each UI milestone, verify readability in active combat and idle states on common resolutions.
 6. Validate persistence by reload/restart: settings, visibility states, and layout positions remain as expected.
+7. Confirm protocol hard-break behavior:
+- WBC-only clients interoperate normally.
+- Legacy RET/DEVA messages are ignored.
+- Mixed-version warbands are expected to be non-interoperable.
+8. Confirm settings UI refactor behavior:
+- control rows align evenly across columns
+- dynamic tracker/notification sections size and anchor correctly
+- config window height fits larger of tracker/notification lists
 
 **Decisions**
 - Include: full internal+external rename now.
@@ -95,10 +116,13 @@ Full internal rename will be done first (as requested), then the checkbox/UI vis
 - Include: first functional milestone is checkbox/UI visibility sync fix.
 - Include: remaining UI improvements shipped one-by-one with local client testing.
 - Include: keep current aliases, deprecate /ret, and evaluate /wb-comms + /wbc.
+- Include: immediate removal of RET/DEVA protocol compatibility as a breaking change.
+- Include: medium settings UI refactor (layout consistency + maintainability), not a full redesign.
+- Exclude: temporary dual-send fallback and legacy protocol compatibility modes.
 - Exclude for now: broad feature additions unrelated to current UX/rename goals.
 
 **Further Considerations**
 1. License checkpoint: choose MIT vs GPL-3.0 vs Apache-2.0 before public release branch cut.
-2. Communication protocol risk: if chat tag format changes during rename, mixed-version warbands may lose events.
-3. Temporary protocol compatibility: parser currently accepts legacy incoming tags [RET]/[DEVA] while emitting [WBC]; legacy acceptance is deprecated and should be removed in a future release after rollout.
+2. Communication protocol compatibility is intentionally strict after Phase 5A: all participants must run WBC-only versions.
+3. Release note visibility: breaking protocol change should be highlighted in release title/body and changelog top section.
 4. Name migration risk: if file/folder/module identity changes, loader behavior must be revalidated in client immediately after Phase 2.

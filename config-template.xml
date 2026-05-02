@@ -1,0 +1,28 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<Interface xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xsi:noNamespaceSchemaLocation="../../Interface.xsd">
+	<Windows>
+        <!-- Lightweight row container; not movable; no hard-coded anchors/size -->
+        <Window name="WarbandCommsConfigTemplate" inherits="EA_Window_Default" movable="false">
+            <Windows>
+                <Button name="$parentButton" inherits="EA_Button_DefaultCheckBox">
+                    <Anchors>
+                        <Anchor point="topleft" relativePoint="topleft" relativeTo="$parent">
+                            <AbsPoint x="0" y="2"/>
+                        </Anchor>
+                    </Anchors>
+                    <EventHandlers>
+                        <EventHandler event="OnLButtonUp" function="WarbandComms.ToggleTracker" />
+                    </EventHandlers>
+                </Button>
+                <Label name="$parentLabel" font="font_clear_medium_bold">
+                    <Size><AbsPoint x="260" y="20"/></Size>
+                    <Anchors>
+                        <Anchor point="topleft" relativePoint="topleft" relativeTo="$parent">
+                            <AbsPoint x="28" y="2"/>
+                        </Anchor>
+                    </Anchors>
+                </Label>
+            </Windows>
+        </Window>
+    </Windows>
+</Interface>

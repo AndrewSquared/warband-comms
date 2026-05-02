@@ -1,0 +1,19 @@
+# OS noise
+.DS_Store
+Thumbs.db
+
+# Editor settings
+.vscode/
+.idea/
+*.code-workspace
+
+# Temp and logs
+*.tmp
+*.temp
+*.log
+
+# Lua bytecode / compiled artifacts (if generated externally)
+*.luac
+
+# Optional local test output
+test-output/

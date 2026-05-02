@@ -1,0 +1,73 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<Interface xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xsi:noNamespaceSchemaLocation="../../Interface.xsd">
+	<Windows>
+        <Window name="WarbandCommsRowTemplate">
+			<Size><AbsPoint x="130" y="12" /></Size>
+			<Windows>
+				<Label name="$parentIcon" font="font_clear_tiny" textalign="left">
+					<Size><AbsPoint x="15" y="15" /></Size>
+					<Anchors>
+						<Anchor point="topleft" relativePoint="topleft" relativeTo="$parent">
+							<AbsPoint x="1" y="0" />
+						</Anchor>
+					</Anchors>
+				</Label>
+				<Label name="$parentName" font="font_clear_tiny" textalign="left">
+					<Size><AbsPoint x="80" y="15" /></Size>
+					<Anchors>
+						<Anchor point="topleft" relativePoint="topleft" relativeTo="$parent">
+							<AbsPoint x="17" y="0" />
+						</Anchor>
+					</Anchors>
+				</Label>
+				<Label name="$parentTimer" font="font_clear_tiny" textalign="right">
+					<Size><AbsPoint x="28" y="15" /></Size>
+					<Anchors>
+						<Anchor point="topleft" relativePoint="topleft" relativeTo="$parent">
+							<AbsPoint x="96" y="0" />
+						</Anchor>
+					</Anchors>
+				</Label>
+			</Windows>
+		</Window>
+		<Window name="WarbandCommsUITemplate" inherits="EA_Window_Default" movable="true" savesettings="true">
+			<EventHandlers>
+				<EventHandler event="OnShown" function="WarbandComms.OnTrackerWindowShown" />
+				<EventHandler event="OnHidden" function="WarbandComms.OnTrackerWindowHidden" />
+			</EventHandlers>
+			<Anchors>
+                <Anchor point="center" relativePoint="center" relativeTo="Root">
+                        <AbsPoint x="0" y="0" />
+                </Anchor>
+			</Anchors>
+			<Size><!--dynamically set --></Size>
+			<Windows>
+                <FullResizeImage name="$parentBackground" inherits="EA_FullResizeImage_TintableSolidBackground">
+                    <Anchors>
+                        <Anchor point="topleft" relativePoint="topleft" relativeTo="$parent" />
+                        <Anchor point="bottomright" relativePoint="bottomright" relativeTo="$parent" />
+                    </Anchors>
+                </FullResizeImage>
+
+                <!-- TITLE LABEL -->
+                <Label name="$parentTitle" font="font_clear_tiny" textalign="center">
+                    <Size><AbsPoint x="125" y="20" /></Size>
+                    <Anchors>
+                        <Anchor point="topleft" relativePoint="topleft" relativeTo="$parent">
+                            <AbsPoint x="0" y="-2" />
+                        </Anchor>
+                    </Anchors>
+                </Label>
+
+                <!-- LISTBOX below title -->
+                <ListBox name="$parentList" rowdef="WarbandCommsRowTemplate" visiblerows="12" rowspacing="0">
+                    <Anchors>
+                        <Anchor point="topleft" relativePoint="topleft" relativeTo="$parent">
+                            <AbsPoint x="0" y="15" /> <!-- start below title -->
+                        </Anchor>
+                    </Anchors>
+                </ListBox>
+			</Windows>
+		</Window>
+	</Windows>
+</Interface>

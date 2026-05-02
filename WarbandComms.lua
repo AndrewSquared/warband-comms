@@ -52,10 +52,6 @@ WarbandComms.ChatChannels = {
 local MAX_CDR = 5 -- max cooldown reduction in seconds
 local MIN_CD = 2.5 -- above GCD
 local DEFAULT_COMMS_KEY = "[WBC]"
-local LEGACY_COMMS_KEYS = {
-	["[RET]"] = true,
-	["[DEVA]"] = true,
-}
 
 WarbandComms.trackedAbilities = {
 	[28301] = {name = "LTC", cooldown = 120, duration = 10, tracker= "LTC", nofify=true},
@@ -85,10 +81,6 @@ WarbandComms.trackedAbilities = {
 function WarbandComms.IsAcceptedCommsKey(key)
 	if key == DEFAULT_COMMS_KEY then
 		return true, false
-	end
-
-	if LEGACY_COMMS_KEYS[key] then
-		return true, true
 	end
 
 	return false, false
@@ -240,7 +232,6 @@ function WarbandComms.OnInitialize()
 	RegisterEventHandler( SystemData.Events.GROUP_LEAVE, "WarbandComms.OnBattleGroupUpdated")
 
 	WarbandComms.commsKey = DEFAULT_COMMS_KEY
-	WarbandComms.legacyCommsWarningShown = false
 
 	local defaultSettings = {
 		enabled = true,
@@ -529,13 +520,8 @@ function WarbandComms.TextArrived()
 		local text = tostring(chatData.text)
 		-- Expected: [key]:tracker:duration:cooldown[:careerIcon]
 		local key, tracker, duration, cooldown, careerIcon = text:match("^(%b[]):([^:]+):(%d+):(%d+):?(.*)$")
-		local accepted, isLegacy = WarbandComms.IsAcceptedCommsKey(key)
+		local accepted = WarbandComms.IsAcceptedCommsKey(key)
 		if not accepted then return end
-		if isLegacy and not WarbandComms.legacyCommsWarningShown then
-			WarbandComms.legacyCommsWarningShown = true
-			-- Temporary compatibility path: remove legacy [RET]/[DEVA] acceptance in a future release.
-			EA_ChatWindow.Print(L"[WarbandComms] Deprecated incoming comms tag detected ([RET]/[DEVA]). Compatibility is temporary and will be removed in a future release; please update all clients.")
-		end
 		careerIcon = careerIcon or ""
 
 		local sender = tostring(chatData.name)

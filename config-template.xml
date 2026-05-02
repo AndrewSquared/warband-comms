@@ -5,6 +5,7 @@
         <Window name="WarbandCommsConfigTemplate" inherits="EA_Window_Default" movable="false">
             <Windows>
                 <Button name="$parentButton" inherits="EA_Button_DefaultCheckBox">
+                    <Size><AbsPoint x="20" y="20"/></Size>
                     <Anchors>
                         <Anchor point="topleft" relativePoint="topleft" relativeTo="$parent">
                             <AbsPoint x="0" y="2"/>

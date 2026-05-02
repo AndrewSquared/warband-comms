@@ -1,5 +1,22 @@
 local configWindow = WarbandComms.AddonName .. "Config"
 
+local LAYOUT = {
+	leftColumnX = 20,
+	rightColumnX = 350,
+	trackerRowsStartY = 252,
+	notificationRowsStartY = 224,
+	dynamicRowSpacingY = 34,
+	baseWindowHeight = 300,
+	windowWidth = 700,
+}
+
+local COLORS = {
+	enabledText = { 255, 255, 255 },
+	disabledText = { 108, 108, 108 },
+	softSetting = { 198, 198, 198 },
+	valueGold = { 244, 214, 96 },
+}
+
 local HEADER_TONE_ORDER = { "bright", "gold", "red", "green", "blue" }
 local HEADER_TONE_LABELS = {
 	bright = L"Bright",
@@ -28,8 +45,8 @@ local function FormatPercentLabel(scale)
 end
 
 local function RefreshTextScaleLabels()
-	LabelSetText(configWindow .. "HeaderTextSizeValue", FormatPercentLabel(WarbandComms.GetHeaderTextScale()))
-	LabelSetText(configWindow .. "RowTextSizeValue", FormatPercentLabel(WarbandComms.GetRowTextScale()))
+	LabelSetText(configWindow .. "HeaderTextSizeValueText", FormatPercentLabel(WarbandComms.GetHeaderTextScale()))
+	LabelSetText(configWindow .. "RowTextSizeValueText", FormatPercentLabel(WarbandComms.GetRowTextScale()))
 end
 
 local function RefreshSizeLabels()
@@ -38,11 +55,11 @@ local function RefreshSizeLabels()
 	if WarbandComms.GetSizeApplyMode() == "relative" then
 		local widthDelta = width - WarbandComms.DefaultTrackerWidth
 		local heightDelta = height - WarbandComms.DefaultTrackerHeight
-		LabelSetText(configWindow .. "TrackerWidthValue", towstring(string.format("%+d", widthDelta)))
-		LabelSetText(configWindow .. "TrackerHeightValue", towstring(string.format("%+d", heightDelta)))
+		LabelSetText(configWindow .. "TrackerWidthValueText", towstring(string.format("%+d", widthDelta)))
+		LabelSetText(configWindow .. "TrackerHeightValueText", towstring(string.format("%+d", heightDelta)))
 	else
-		LabelSetText(configWindow .. "TrackerWidthValue", towstring(tostring(width)))
-		LabelSetText(configWindow .. "TrackerHeightValue", towstring(tostring(height)))
+		LabelSetText(configWindow .. "TrackerWidthValueText", towstring(tostring(width)))
+		LabelSetText(configWindow .. "TrackerHeightValueText", towstring(tostring(height)))
 	end
 end
 
@@ -58,7 +75,61 @@ end
 
 local function RefreshBackgroundAlphaLabel()
 	local percent = math.floor((WarbandComms.GetBackgroundAlpha() * 100) + 0.5)
-	LabelSetText(configWindow .. "BackgroundOpacityValue", towstring(tostring(percent) .. "%"))
+	LabelSetText(configWindow .. "BackgroundOpacityValueText", towstring(tostring(percent) .. "%"))
+end
+
+local function SetEnabledLabelColor(labelName, isEnabled)
+	if isEnabled then
+		LabelSetTextColor(labelName, COLORS.enabledText[1], COLORS.enabledText[2], COLORS.enabledText[3])
+	else
+		LabelSetTextColor(labelName, COLORS.disabledText[1], COLORS.disabledText[2], COLORS.disabledText[3])
+	end
+end
+
+local function ApplyControlLabelStyling()
+	local softLabels = {
+		"HeaderTextSizeLabel",
+		"RowTextSizeLabel",
+		"TrackerWidthLabel",
+		"TrackerHeightLabel",
+		"SizeApplyModeLabel",
+		"BackgroundOpacityLabel",
+		"HeaderToneLabel",
+		"HeaderStyleLabel",
+	}
+	for _, suffix in ipairs(softLabels) do
+		LabelSetTextColor(configWindow .. suffix, COLORS.softSetting[1], COLORS.softSetting[2], COLORS.softSetting[3])
+	end
+
+	local valueLabels = {
+		"HeaderTextSizeValueText",
+		"RowTextSizeValueText",
+		"TrackerWidthValueText",
+		"TrackerHeightValueText",
+		"BackgroundOpacityValueText",
+		"SizeApplyModeButtonValue",
+		"HeaderToneButtonValue",
+		"HeaderStyleButtonValue",
+	}
+	for _, suffix in ipairs(valueLabels) do
+		LabelSetTextColor(configWindow .. suffix, COLORS.valueGold[1], COLORS.valueGold[2], COLORS.valueGold[3])
+	end
+
+	local plusMinusLabels = {
+		"HeaderTextSizeDecreaseButtonLabel",
+		"HeaderTextSizeIncreaseButtonLabel",
+		"RowTextSizeDecreaseButtonLabel",
+		"RowTextSizeIncreaseButtonLabel",
+		"TrackerWidthDecreaseButtonLabel",
+		"TrackerWidthIncreaseButtonLabel",
+		"TrackerHeightDecreaseButtonLabel",
+		"TrackerHeightIncreaseButtonLabel",
+		"BackgroundOpacityDecreaseButtonLabel",
+		"BackgroundOpacityIncreaseButtonLabel",
+	}
+	for _, suffix in ipairs(plusMinusLabels) do
+		LabelSetTextColor(configWindow .. suffix, COLORS.valueGold[1], COLORS.valueGold[2], COLORS.valueGold[3])
+	end
 end
 
 local function RefreshHeaderEmphasisLabels()
@@ -114,34 +185,37 @@ function WarbandComms.InitConfig(version)
 	LabelSetText(configWindow .. "TitleBarText", towstring(WarbandComms.AddonName .. " v" .. version))
 	LabelSetText(configWindow .. "InfoLabel", L"Type /wbc to see this again.")
 
-	LabelSetText(configWindow .. "TrackerTitle", L"Cooldown Trackers")
+	LabelSetText(configWindow .. "TrackerTitle", L"Toggle All")
+	LabelSetText(configWindow .. "TrackerGroupTitle", L"Trackers")
 	local enabled = WarbandComms.Settings.enabled
 	ButtonSetPressedFlag("WarbandCommsConfigEnableTrackersButton", enabled)
 
-	LabelSetText(configWindow .. "NotificationsTitle", L"Center Screen Notifications")
+	LabelSetText(configWindow .. "NotificationsTitle", L"Tracker Appearance")
+	LabelSetText(configWindow .. "NotificationGroupTitle", L"Center Screen Notifications")
 	LabelSetText(configWindow .. "HeaderTextSizeLabel", L"Header Text")
 	LabelSetText(configWindow .. "RowTextSizeLabel", L"Row Text")
-	LabelSetText(configWindow .. "HeaderTextSizeDecreaseButtonLabel", L"-")
-	LabelSetText(configWindow .. "HeaderTextSizeIncreaseButtonLabel", L"+")
-	LabelSetText(configWindow .. "RowTextSizeDecreaseButtonLabel", L"-")
-	LabelSetText(configWindow .. "RowTextSizeIncreaseButtonLabel", L"+")
+	LabelSetText(configWindow .. "HeaderTextSizeDecreaseButtonLabel", L"[-]")
+	LabelSetText(configWindow .. "HeaderTextSizeIncreaseButtonLabel", L"[+]")
+	LabelSetText(configWindow .. "RowTextSizeDecreaseButtonLabel", L"[-]")
+	LabelSetText(configWindow .. "RowTextSizeIncreaseButtonLabel", L"[+]")
 	LabelSetText(configWindow .. "TrackerWidthLabel", L"Box Width")
 	LabelSetText(configWindow .. "TrackerHeightLabel", L"Box Height")
-	LabelSetText(configWindow .. "TrackerWidthDecreaseButtonLabel", L"-")
-	LabelSetText(configWindow .. "TrackerWidthIncreaseButtonLabel", L"+")
-	LabelSetText(configWindow .. "TrackerHeightDecreaseButtonLabel", L"-")
-	LabelSetText(configWindow .. "TrackerHeightIncreaseButtonLabel", L"+")
+	LabelSetText(configWindow .. "TrackerWidthDecreaseButtonLabel", L"[-]")
+	LabelSetText(configWindow .. "TrackerWidthIncreaseButtonLabel", L"[+]")
+	LabelSetText(configWindow .. "TrackerHeightDecreaseButtonLabel", L"[-]")
+	LabelSetText(configWindow .. "TrackerHeightIncreaseButtonLabel", L"[+]")
 	LabelSetText(configWindow .. "SizeApplyModeLabel", L"Resize Mode")
 	LabelSetText(configWindow .. "BackgroundOpacityLabel", L"Background")
 	LabelSetText(configWindow .. "HeaderToneLabel", L"Header Tone")
 	LabelSetText(configWindow .. "HeaderStyleLabel", L"Header Style")
-	LabelSetText(configWindow .. "BackgroundOpacityDecreaseButtonLabel", L"-")
-	LabelSetText(configWindow .. "BackgroundOpacityIncreaseButtonLabel", L"+")
+	LabelSetText(configWindow .. "BackgroundOpacityDecreaseButtonLabel", L"[-]")
+	LabelSetText(configWindow .. "BackgroundOpacityIncreaseButtonLabel", L"[+]")
 	RefreshTextScaleLabels()
 	RefreshSizeLabels()
 	RefreshSizeModeLabel()
 	RefreshBackgroundAlphaLabel()
 	RefreshHeaderEmphasisLabels()
+	ApplyControlLabelStyling()
 
 	-- Dynamically add trackers
 	local tracker_index = 0
@@ -154,7 +228,7 @@ function WarbandComms.InitConfig(version)
 
 		WindowClearAnchors(window)
         -- place rows under the header controls
-		WindowAddAnchor(window, "topleft", configWindow, "topleft", 20, 250 + (tracker_index * 40))
+		WindowAddAnchor(window, "topleft", configWindow, "topleft", LAYOUT.leftColumnX, LAYOUT.trackerRowsStartY + (tracker_index * LAYOUT.dynamicRowSpacingY))
 		tracker_index = tracker_index + 1
 
 		local buttonName = window .. "Button"
@@ -164,11 +238,7 @@ function WarbandComms.InitConfig(version)
 		ButtonSetPressedFlag(buttonName, WarbandComms.Settings[trackerName] == true)
 
 		local enabled = WarbandComms.Settings.enabled
-		if enabled then
-			LabelSetTextColor(labelName, 255, 255, 255)
-		else
-			LabelSetTextColor(labelName, 108, 108, 108)
-		end
+		SetEnabledLabelColor(labelName, enabled)
 	end
 
 	-- dynamically add notifications
@@ -182,7 +252,7 @@ function WarbandComms.InitConfig(version)
 
 		WindowClearAnchors(window)
 		-- place rows under the header controls
-		WindowAddAnchor(window, "topleft", configWindow, "topleft", 350, 250 + (notification_index * 40))
+		WindowAddAnchor(window, "topleft", configWindow, "topleft", LAYOUT.rightColumnX, LAYOUT.notificationRowsStartY + (notification_index * LAYOUT.dynamicRowSpacingY))
 		notification_index = notification_index + 1
 
 		local buttonName = window .. "Button"
@@ -192,14 +262,11 @@ function WarbandComms.InitConfig(version)
 		ButtonSetPressedFlag(buttonName, WarbandComms.Settings.notifications[trackerName] == true)
 
 		local enabled = WarbandComms.Settings.notifications[trackerName] == true
-		if enabled then
-			LabelSetTextColor(labelName, 255, 255, 255)
-		else
-			LabelSetTextColor(labelName, 108, 108, 108)
-		end
+		SetEnabledLabelColor(labelName, enabled)
 	end
 	-- Resize config window to fit all trackers
-	WindowSetDimensions(configWindow, 700, 300 + (tracker_index * 50))
+	local maxRows = math.max(tracker_index, notification_index)
+	WindowSetDimensions(configWindow, LAYOUT.windowWidth, LAYOUT.baseWindowHeight + (maxRows * LAYOUT.dynamicRowSpacingY))
 end
 
 function WarbandComms.ChangeHeaderTextSize(delta)
@@ -228,6 +295,18 @@ end
 
 function WarbandComms.IncreaseRowTextSize()
 	WarbandComms.ChangeRowTextSize(0.1)
+end
+
+function WarbandComms.ResetHeaderTextSize()
+	WarbandComms.Settings.headerTextScale = 1.0
+	RefreshTextScaleLabels()
+	ApplyTextScaleToAllTrackers()
+end
+
+function WarbandComms.ResetRowTextSize()
+	WarbandComms.Settings.rowTextScale = 1.0
+	RefreshTextScaleLabels()
+	ApplyTextScaleToAllTrackers()
 end
 
 function WarbandComms.ToggleHeaderTone()
@@ -270,12 +349,34 @@ function WarbandComms.IncreaseTrackerWidth()
 	WarbandComms.ChangeTrackerWidth(10)
 end
 
+function WarbandComms.ResetTrackerWidth()
+	if WarbandComms.GetSizeApplyMode() == "uniform" then
+		WarbandComms.Settings.trackerWidth = WarbandComms.DefaultTrackerWidth
+		RefreshSizeLabels()
+		ApplyTrackerSizeToAllTrackers()
+	else
+		local delta = WarbandComms.DefaultTrackerWidth - WarbandComms.GetTrackerWidth()
+		WarbandComms.ChangeTrackerWidth(delta)
+	end
+end
+
 function WarbandComms.DecreaseTrackerHeight()
 	WarbandComms.ChangeTrackerHeight(-10)
 end
 
 function WarbandComms.IncreaseTrackerHeight()
 	WarbandComms.ChangeTrackerHeight(10)
+end
+
+function WarbandComms.ResetTrackerHeight()
+	if WarbandComms.GetSizeApplyMode() == "uniform" then
+		WarbandComms.Settings.trackerHeight = WarbandComms.DefaultTrackerHeight
+		RefreshSizeLabels()
+		ApplyTrackerSizeToAllTrackers()
+	else
+		local delta = WarbandComms.DefaultTrackerHeight - WarbandComms.GetTrackerHeight()
+		WarbandComms.ChangeTrackerHeight(delta)
+	end
 end
 
 function WarbandComms.ToggleSizeApplyMode()
@@ -304,6 +405,12 @@ function WarbandComms.IncreaseBackgroundOpacity()
 	WarbandComms.ChangeBackgroundOpacity(0.05)
 end
 
+function WarbandComms.ResetBackgroundOpacity()
+	WarbandComms.Settings.backgroundAlpha = 0.60
+	RefreshBackgroundAlphaLabel()
+	ApplyBackgroundAlphaToAllTrackers()
+end
+
 function WarbandComms.ToggleAllTrackers()
 	local enabled = WarbandComms.Settings.enabled
 	enabled = not enabled
@@ -312,13 +419,11 @@ function WarbandComms.ToggleAllTrackers()
 	ButtonSetPressedFlag("WarbandCommsConfigEnableTrackersButton", enabled)
 
 	for trackerName, _ in pairs(WarbandComms.Trackers) do
+		WarbandComms.Settings[trackerName] = enabled
+		local buttonName = WarbandComms.AddonName .. "Config" .. trackerName:upper() .. "Button"
 		local labelName = WarbandComms.AddonName .. "Config" .. trackerName:upper() .. "Label"
-		-- set white or dark grey if enabled/disabled
-		if enabled then
-			LabelSetTextColor(labelName, 255, 255, 255)
-		else
-			LabelSetTextColor(labelName, 108, 108, 108)
-		end
+		ButtonSetPressedFlag(buttonName, enabled)
+		SetEnabledLabelColor(labelName, enabled)
 		ApplyTrackerVisibility(trackerName)
 	end
 end

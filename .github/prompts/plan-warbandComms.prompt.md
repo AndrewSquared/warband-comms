@@ -74,7 +74,9 @@ Full internal rename will be done first (as requested), then the checkbox/UI vis
 - Added a dedicated stabilization and release checklist in README to run through in-client before tagging.
 - Completed static editor validation on touched Lua/XML files (no parser errors reported).
 - Decision confirmed: remove RET/DEVA compatibility now (breaking change), no temporary dual-send fallback.
-- Pending: implement 5A protocol hard-break and 5C settings UI medium refactor, then run in-client matrix.
+- Completed: 5A protocol hard-break implementation (WBC-only inbound/outbound behavior).
+- Completed: 5C settings UI medium refactor (grouping cleanup, layout constants, clickable value controls).
+- Pending: run in-client verification matrix for 5A/5C and perform any follow-up tuning.
 
 **Relevant files**
 - c:/Warhammer Online - Return of Reckoning/Interface/AddOns/WarbandComms/WarbandComms.lua - Main namespace, init flow, saved settings root, chat protocol handling.

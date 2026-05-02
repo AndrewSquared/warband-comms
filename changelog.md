@@ -32,6 +32,15 @@
     - phase 5 kickoff: added stabilization/release checklist and verification matrix in README
     - fixed row name vertical overlap by making row height scale-aware with centered row icons
     - fixed local self-cast updates: outgoing tracked casts now mirror into local tracker rows even when own /wb chat does not echo back
+    - BREAKING: removed legacy [RET]/[DEVA] protocol compatibility; addon now accepts and emits [WBC] only
+    - cleaned up config settings grouping: tracker appearance controls are now clearly separated from notification toggles
+    - improved config control ergonomics: value fields are now clickable reset controls (header/row text, width/height, background opacity)
+    - refactored config layout logic with shared constants, consistent dynamic row spacing, and max-column window height sizing
+    - moved master tracker checkbox to the tracker list area as "Toggle All" and reduced individual tracker toggle size for clearer visual hierarchy
+    - polished config visual hierarchy: centered Tracker Appearance heading, softened setting labels, gold value text, and clearer +/- button presentation
+    - adjusted config layout spacing/alignment based on in-client review: improved label-to-value spacing, aligned tracker/notification section headers, and restored equal checkbox size for Toggle All and all sub-toggles
+    - fixed config regressions: Toggle All now updates all tracker checkbox states, checkbox boxes render again, notification rows sit closer to headers (including LTC), and +/- brackets no longer clip
+    - fixed tracker list click layering: tracker rows now start below Toggle All so the master toggle remains fully clickable
 
 
 1.0 LTC Window(Mainline)

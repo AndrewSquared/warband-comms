@@ -302,20 +302,15 @@ function WarbandComms.UpdateUI(tracker, abilityList, nearlyReadyTime)
 
 			if timer <= 0 then
 				LabelSetText(listTimer, towstring(""))
-				LabelSetTextColor(listName, 255, 255, 255)
+				LabelSetTextColor(listName, 92, 195, 0)
+				LabelSetTextColor(listTimer, 92, 195, 0)
 			else
 				if timer >= (cooldown - duration) then -- active
-					LabelSetTextColor(listName, 92, 195, 0)
-					LabelSetTextColor(listTimer, 92, 195, 0)
-				elseif timer > nearlyReadyTime then -- on cooldown
-					LabelSetTextColor(listTimer, 182, 135, 0)
-					LabelSetTextColor(listName, 182, 135, 0)
-				elseif timer >= 1 then -- nearly ready
-					LabelSetTextColor(listTimer, 222, 222, 0)
-					LabelSetTextColor(listName, 222, 222, 0)
-				elseif timer < 1 then
 					LabelSetTextColor(listTimer, 255, 255, 255)
 					LabelSetTextColor(listName, 255, 255, 255)
+				else -- on cooldown
+					LabelSetTextColor(listTimer, 230, 90, 90)
+					LabelSetTextColor(listName, 230, 90, 90)
 				end
 			end
 			listIndex = listIndex + 1

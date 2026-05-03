@@ -52,10 +52,13 @@ WarbandComms.ChatChannels = {
 local MAX_CDR = 5 -- max cooldown reduction in seconds
 local MIN_CD = 2.5 -- above GCD
 local DEFAULT_COMMS_KEY = "[WBC]"
+local LEGACY_ORDER_COMMS_KEY = "[RET]"
+local LEGACY_DESTRO_COMMS_KEY = "[DEVA]"
 
 WarbandComms.trackedAbilities = {
 	[28301] = {name = "LTC", cooldown = 120, duration = 10, tracker= "LTC", nofify=true},
 	[27044] = {name = "Into The Fray", cooldown = 120, duration = 4, tracker= "LTC", notify=true},
+	[613] = {name = "Immaculate Defense", cooldown = 180, duration = 10, tracker= "LTC", notify=true, fixedCooldown=true},
 	-- Challenges for tanks
 	[8021] = {name = "Challenge", cooldown = 30, duration=7, tracker= "challenge"}, --KOTBS
 	[9013] = {name = "Challenge", cooldown = 30, duration=7, tracker= "challenge"}, --SM
@@ -83,7 +86,67 @@ function WarbandComms.IsAcceptedCommsKey(key)
 		return true, false
 	end
 
+	if key == LEGACY_ORDER_COMMS_KEY or key == LEGACY_DESTRO_COMMS_KEY then
+		return true, true
+	end
+
 	return false, false
+end
+
+function WarbandComms.GetLegacyRealmCommsKey()
+	if GameData and GameData.Player and GameData.Player.realm == GameData.Realm.ORDER then
+		return LEGACY_ORDER_COMMS_KEY
+	end
+
+	if GameData and GameData.Player and GameData.Player.realm == GameData.Realm.DESTRUCTION then
+		return LEGACY_DESTRO_COMMS_KEY
+	end
+
+	return nil
+end
+
+function WarbandComms.GetOutboundCommsKey()
+	local legacyRealmKey = WarbandComms.GetLegacyRealmCommsKey()
+	if legacyRealmKey then
+		return legacyRealmKey
+	end
+
+	return DEFAULT_COMMS_KEY
+end
+
+function WarbandComms.GetAcceptedCommsKeys()
+	return {
+		DEFAULT_COMMS_KEY,
+		LEGACY_ORDER_COMMS_KEY,
+		LEGACY_DESTRO_COMMS_KEY,
+	}
+end
+
+function WarbandComms.PrintSelfCheck()
+	local realmName = "Unknown"
+	if GameData and GameData.Player and GameData.Player.realm == GameData.Realm.ORDER then
+		realmName = "Order"
+	elseif GameData and GameData.Player and GameData.Player.realm == GameData.Realm.DESTRUCTION then
+		realmName = "Destruction"
+	end
+
+	local outbound = WarbandComms.commsKey or WarbandComms.GetOutboundCommsKey()
+	local accepted = table.concat(WarbandComms.GetAcceptedCommsKeys(), ", ")
+	local activeTrackers = 0
+	local totalTrackers = 0
+	for trackerName, _ in pairs(WarbandComms.Trackers) do
+		totalTrackers = totalTrackers + 1
+		if WarbandComms.Settings and WarbandComms.Settings[trackerName] == true then
+			activeTrackers = activeTrackers + 1
+		end
+	end
+
+	EA_ChatWindow.Print(towstring("[WarbandComms] Self-check"))
+	EA_ChatWindow.Print(towstring("[WarbandComms] Realm: " .. realmName))
+	EA_ChatWindow.Print(towstring("[WarbandComms] Outbound key: " .. tostring(outbound)))
+	EA_ChatWindow.Print(towstring("[WarbandComms] Accepted inbound keys: " .. accepted))
+	EA_ChatWindow.Print(towstring("[WarbandComms] Trackers enabled: " .. tostring(activeTrackers) .. "/" .. tostring(totalTrackers)))
+	EA_ChatWindow.Print(towstring("[WarbandComms] selfTest: " .. tostring(WarbandComms.selfTest)))
 end
 
 function WarbandComms.RefreshTrackerKeyIndex()
@@ -230,7 +293,7 @@ function WarbandComms.OnInitialize()
 	RegisterEventHandler(SystemData.Events.BATTLEGROUP_UPDATED, "WarbandComms.OnBattleGroupUpdated")
 	RegisterEventHandler( SystemData.Events.GROUP_LEAVE, "WarbandComms.OnBattleGroupUpdated")
 
-	WarbandComms.commsKey = DEFAULT_COMMS_KEY
+	WarbandComms.commsKey = WarbandComms.GetOutboundCommsKey()
 
 	local defaultSettings = {
 		enabled = true,

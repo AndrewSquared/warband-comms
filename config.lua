@@ -239,8 +239,14 @@ local function ApplyControlLabelStyling()
 		"TrackerWidthIncreaseButtonLabel",
 		"TrackerHeightDecreaseButtonLabel",
 		"TrackerHeightIncreaseButtonLabel",
+		"SizeApplyModeDecreaseButtonLabel",
+		"SizeApplyModeIncreaseButtonLabel",
 		"BackgroundOpacityDecreaseButtonLabel",
 		"BackgroundOpacityIncreaseButtonLabel",
+		"HeaderToneDecreaseButtonLabel",
+		"HeaderToneIncreaseButtonLabel",
+		"HeaderStyleDecreaseButtonLabel",
+		"HeaderStyleIncreaseButtonLabel",
 	}
 	for _, suffix in ipairs(plusMinusLabels) do
 		LabelSetTextColor(configWindow .. suffix, COLORS.valueGold[1], COLORS.valueGold[2], COLORS.valueGold[3])
@@ -256,6 +262,15 @@ local function GetNextPresetValue(order, currentValue)
 	for index, value in ipairs(order) do
 		if value == currentValue then
 			return order[(index % #order) + 1]
+		end
+	end
+	return order[1]
+end
+
+local function GetPreviousPresetValue(order, currentValue)
+	for index, value in ipairs(order) do
+		if value == currentValue then
+			return order[((index - 2 + #order) % #order) + 1]
 		end
 	end
 	return order[1]
@@ -324,8 +339,14 @@ function WarbandComms.InitConfig(version)
 	LabelSetText(configWindow .. "BackgroundOpacityLabel", L"Background")
 	LabelSetText(configWindow .. "HeaderToneLabel", L"Header Tone")
 	LabelSetText(configWindow .. "HeaderStyleLabel", L"Header Style")
+	LabelSetText(configWindow .. "SizeApplyModeDecreaseButtonLabel", L"[-]")
+	LabelSetText(configWindow .. "SizeApplyModeIncreaseButtonLabel", L"[+]")
 	LabelSetText(configWindow .. "BackgroundOpacityDecreaseButtonLabel", L"[-]")
 	LabelSetText(configWindow .. "BackgroundOpacityIncreaseButtonLabel", L"[+]")
+	LabelSetText(configWindow .. "HeaderToneDecreaseButtonLabel", L"[-]")
+	LabelSetText(configWindow .. "HeaderToneIncreaseButtonLabel", L"[+]")
+	LabelSetText(configWindow .. "HeaderStyleDecreaseButtonLabel", L"[-]")
+	LabelSetText(configWindow .. "HeaderStyleIncreaseButtonLabel", L"[+]")
 	RefreshTextScaleLabels()
 	RefreshSizeLabels()
 	RefreshSizeModeLabel()
@@ -425,12 +446,32 @@ function WarbandComms.ResetRowTextSize()
 end
 
 function WarbandComms.ToggleHeaderTone()
+	WarbandComms.IncreaseHeaderTone()
+end
+
+function WarbandComms.DecreaseHeaderTone()
+	WarbandComms.Settings.headerTone = GetPreviousPresetValue(HEADER_TONE_ORDER, WarbandComms.GetHeaderTone())
+	RefreshHeaderEmphasisLabels()
+	ApplyTextScaleToAllTrackers()
+end
+
+function WarbandComms.IncreaseHeaderTone()
 	WarbandComms.Settings.headerTone = GetNextPresetValue(HEADER_TONE_ORDER, WarbandComms.GetHeaderTone())
 	RefreshHeaderEmphasisLabels()
 	ApplyTextScaleToAllTrackers()
 end
 
 function WarbandComms.ToggleHeaderStyle()
+	WarbandComms.IncreaseHeaderStyle()
+end
+
+function WarbandComms.DecreaseHeaderStyle()
+	WarbandComms.Settings.headerStyle = GetPreviousPresetValue(HEADER_STYLE_ORDER, WarbandComms.GetHeaderStyle())
+	RefreshHeaderEmphasisLabels()
+	ApplyTextScaleToAllTrackers()
+end
+
+function WarbandComms.IncreaseHeaderStyle()
 	WarbandComms.Settings.headerStyle = GetNextPresetValue(HEADER_STYLE_ORDER, WarbandComms.GetHeaderStyle())
 	RefreshHeaderEmphasisLabels()
 	ApplyTextScaleToAllTrackers()
@@ -504,6 +545,14 @@ function WarbandComms.ToggleSizeApplyMode()
 		EA_ChatWindow.Print(L"[WarbandComms] Resize Mode: Uniform (normalize all tracker sizes)")
 	end
 	RefreshSizeModeLabel()
+end
+
+function WarbandComms.DecreaseSizeApplyMode()
+	WarbandComms.ToggleSizeApplyMode()
+end
+
+function WarbandComms.IncreaseSizeApplyMode()
+	WarbandComms.ToggleSizeApplyMode()
 end
 
 function WarbandComms.ChangeBackgroundOpacity(delta)

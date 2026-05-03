@@ -15,7 +15,8 @@ function WarbandComms.PrintSlashHelp()
 		"/wbc clear - clear tracker UI data",
 		"/wbc selfcheck - print protocol and runtime diagnostics",
 		"/wbc help - show this help",
-		"/wbc test - run local test harness (test builds)",
+		"/wbc testboxes - run tracker-box test harness (test builds)",
+		"/wbc testcenter - show LTC/ID center-screen notification samples (test builds)",
 		"/wbc selftest - toggle /say self-test mode (test builds)",
 	}
 
@@ -37,8 +38,18 @@ function WarbandComms.Slash(msg)
 	else
 		if command == "clear" then
 			WarbandComms.ClearUI()
-        elseif command == "test" then
-            WarbandComms.StartTest()
+		elseif command == "testboxes" or command == "test" then
+			if WarbandComms.StartTest then
+				WarbandComms.StartTest()
+			else
+				EA_ChatWindow.Print(towstring("[WarbandComms] Test harness is only available in test builds."))
+			end
+		elseif command == "testcenter" or command == "test-center" or command == "test center" then
+			if WarbandComms.StartCenterNotificationTest then
+				WarbandComms.StartCenterNotificationTest()
+			else
+				EA_ChatWindow.Print(towstring("[WarbandComms] Center test is only available in test builds."))
+			end
         elseif command == "selftest" then
             WarbandComms.selfTest = not WarbandComms.selfTest
 			EA_ChatWindow.Print(towstring("[WarbandComms] selfTest is now " .. tostring(WarbandComms.selfTest)))

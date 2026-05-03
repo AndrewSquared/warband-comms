@@ -1,7 +1,6 @@
 from __future__ import annotations
 
 import argparse
-import re
 import shutil
 import sys
 import xml.etree.ElementTree as ET
@@ -28,15 +27,17 @@ def parse_args() -> argparse.Namespace:
         help="Directory for the generated zip file. Defaults to ./dist",
     )
     parser.add_argument(
-        "--include-readme",
-        action="store_true",
-        help="Include README.md in the packaged addon folder.",
+        "--no-readme",
+        action="store_false",
+        dest="include_readme",
+        help="Do not include README.md in the packaged addon folder.",
     )
     parser.add_argument(
         "--clean",
         action="store_true",
         help="Remove the output directory before packaging.",
     )
+    parser.set_defaults(include_readme=True)
     return parser.parse_args()
 
 
@@ -87,18 +88,51 @@ def build_release_manifest(mod_path: Path) -> str:
 
 
 def build_release_slash(source_text: str) -> str:
-    pattern = re.compile(
-        r'\n[ \t]*elseif msg == "test" then\n'
-        r'[ \t]*WarbandComms\.StartTest\(\)\n'
-        r'[ \t]*elseif msg == "selftest" then\n'
-        r'[ \t]*WarbandComms\.selfTest = not WarbandComms\.selfTest\n'
-        r'[ \t]*EA_ChatWindow\.Print\(towstring\("\[WarbandComms\] selfTest is now " \.\. tostring\(WarbandComms\.selfTest\)\)\)\n'
-        r'[ \t]*WarbandComms\.ChatChannels\[SystemData\.ChatLogFilters\.SAY\] = WarbandComms\.selfTest'
-    )
-    updated_text, replacements = pattern.subn("", source_text, count=1)
-    if replacements != 1:
-        raise RuntimeError("slash.lua did not match the expected test command block for release packaging")
-    return updated_text
+    lines = source_text.splitlines(True)
+
+    testboxes_head = 'elseif command == "testboxes" or command == "test" then'
+    testcenter_head = 'elseif command == "testcenter" or command == "test-center" or command == "test center" then'
+    selftest_head = 'elseif command == "selftest" then'
+    selfcheck_head = 'elseif command == "selfcheck" then'
+
+    def contains(haystack: str, needle: str) -> bool:
+        return needle in haystack
+
+    output: list[str] = []
+    index = 0
+    stripped_any = False
+
+    while index < len(lines):
+        line = lines[index]
+
+        if contains(line, testboxes_head):
+            stripped_any = True
+            index += 1
+            while index < len(lines) and not contains(lines[index], testcenter_head):
+                index += 1
+            continue
+
+        if contains(line, testcenter_head):
+            stripped_any = True
+            index += 1
+            while index < len(lines) and not contains(lines[index], selftest_head):
+                index += 1
+            continue
+
+        if contains(line, selftest_head):
+            stripped_any = True
+            index += 1
+            while index < len(lines) and not contains(lines[index], selfcheck_head):
+                index += 1
+            continue
+
+        output.append(line)
+        index += 1
+
+    if not stripped_any:
+        raise RuntimeError("slash.lua did not match any expected test command blocks for release packaging")
+
+    return "".join(output)
 
 
 def get_runtime_files(runtime_files: list[str], build_type: str, include_readme: bool) -> list[str]:
@@ -115,6 +149,24 @@ def get_runtime_files(runtime_files: list[str], build_type: str, include_readme:
             seen.add(file_name)
             deduped_files.append(file_name)
     return deduped_files
+
+
+def dedupe_file_list(file_names: list[str]) -> list[str]:
+    deduped_files: list[str] = []
+    seen: set[str] = set()
+    for file_name in file_names:
+        if file_name not in seen:
+            seen.add(file_name)
+            deduped_files.append(file_name)
+    return deduped_files
+
+
+def get_license_files(repo_root: Path) -> list[str]:
+    license_files: list[str] = []
+    for candidate in sorted(repo_root.glob("LICENSE*")):
+        if candidate.is_file():
+            license_files.append(candidate.name)
+    return license_files
 
 
 def get_zip_name(addon_name: str, addon_version: str, build_type: str) -> str:
@@ -136,6 +188,7 @@ def build_release(
 
     addon_name, addon_version, runtime_files = load_manifest(mod_path)
     runtime_files = get_runtime_files(runtime_files, build_type, include_readme)
+    runtime_files = dedupe_file_list(runtime_files + get_license_files(repo_root))
 
     output_dir = output_dir if output_dir.is_absolute() else repo_root / output_dir
     if clean and output_dir.exists():

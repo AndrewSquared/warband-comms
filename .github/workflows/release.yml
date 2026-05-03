@@ -1,0 +1,61 @@
+name: Release Publish
+
+on:
+  push:
+    tags:
+      - 'v*'
+
+permissions:
+  contents: write
+
+jobs:
+  release:
+    runs-on: ubuntu-latest
+
+    steps:
+      - name: Checkout
+        uses: actions/checkout@v4
+
+      - name: Setup Python
+        uses: actions/setup-python@v5
+        with:
+          python-version: '3.11'
+
+      - name: Validate versions, changelog, and tag alignment
+        run: python3 scripts/validate_release_state.py --tag "${GITHUB_REF_NAME}"
+
+      - name: Build release package
+        run: python3 scripts/package_release.py --build release --clean
+
+      - name: Validate release package contents
+        run: |
+          VERSION=$(python3 - <<'PY'
+          import xml.etree.ElementTree as ET
+          root = ET.parse('WarbandComms.mod').getroot()
+          print(root.find('UiMod').get('version'))
+          PY
+          )
+          python3 scripts/validate_release_state.py --build release --zip "dist/WarbandComms-v${VERSION}.zip"
+
+      - name: Prepare release notes from changelog
+        run: python3 scripts/extract_changelog_section.py --input changelog.md --output release_notes.md
+
+      - name: Read version
+        id: version
+        run: |
+          VERSION=$(python3 - <<'PY'
+          import xml.etree.ElementTree as ET
+          root = ET.parse('WarbandComms.mod').getroot()
+          print(root.find('UiMod').get('version'))
+          PY
+          )
+          echo "value=${VERSION}" >> "$GITHUB_OUTPUT"
+
+      - name: Create GitHub release and upload zip
+        uses: softprops/action-gh-release@v2
+        with:
+          tag_name: ${{ github.ref_name }}
+          body_path: release_notes.md
+          files: dist/WarbandComms-v${{ steps.version.outputs.value }}.zip
+          prerelease: false
+          make_latest: true

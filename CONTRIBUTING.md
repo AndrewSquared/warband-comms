@@ -72,4 +72,10 @@ Notes:
 - The `test` build keeps `tests.lua` and the `/wbc test` and `/wbc selftest` paths for in-client validation.
 - The `release` build removes `tests.lua` from the packaged manifest and strips the test-only command paths from the packaged `slash.lua`.
 - Repo maintenance files and development-only reference files are intentionally excluded from the generated zip.
-- Use `--include-readme` if the target distribution channel expects a readme inside the addon folder.
+- `README.md` is included by default; use `--no-readme` to omit it.
+
+## CI/CD Expectations
+
+- Pull requests should pass the `PR Validation` GitHub Actions workflow before merge.
+- Maintainer in-client validation is still required before tagging a release.
+- Pushing a `vX.Y.Z` tag triggers the automated `Release Publish` workflow and uploads the release zip to GitHub Releases.

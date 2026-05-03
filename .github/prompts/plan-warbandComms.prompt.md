@@ -72,6 +72,13 @@ Full internal rename will be done first (as requested), then the checkbox/UI vis
   - validate inter-player communication behavior for mixed-version and WBC-only clients
   - tag release candidate and gather user feedback loop
 
+7. Phase 6 - CI/CD release automation (depends on 5)
+- Add shared release-state validation script for version sync, changelog top-entry checks, and package structure checks.
+- Add PR workflow (`PR Validation`) to run validation checks and build/verify both release and test zips.
+- Add tag workflow (`Release Publish`) triggered by `vX.Y.Z` to build release zip, validate it, generate notes from changelog, and upload GitHub Release asset.
+- Add PR template with explicit maintainer in-client validation gate before tagging.
+- Update README/CONTRIBUTING/RELEASING docs so the developer path is: PR -> approval + in-client validation -> tag -> automated GitHub release asset upload.
+
 Decision change (2026-05-03): superseded prior WBC-only hard-break plan; adopted silent transition compatibility to minimize chat noise and preserve mixed-version warband interoperability.
 
 **Phase 5 kickoff (in progress)**
@@ -119,6 +126,13 @@ Latest in-client verification notes (2026-05-03):
 - Steps 2 and 3: pass for title behavior; compact abbreviations are showing appropriately during the tested transitions.
 - Step 4: pass; ready-state timer displays green `0` as expected.
 - Additional finding from testing: very short heights could cause overflow; mitigation has now been implemented and needs re-check during the next sweep.
+
+**Phase 6 kickoff (in progress)**
+- Added `scripts/validate_release_state.py` for version/changelog/package validation.
+- Added `.github/workflows/pr-validate.yml` for pull-request packaging/validation checks.
+- Added `.github/workflows/release.yml` for tag-driven release publishing with changelog-based notes.
+- Added `.github/pull_request_template.md` with explicit maintainer in-client release gate checkbox.
+- Pending: run first dry-run release tag and confirm GitHub release asset upload behavior end-to-end.
 
 **Relevant files**
 - c:/Warhammer Online - Return of Reckoning/Interface/AddOns/WarbandComms/WarbandComms.lua - Main namespace, init flow, saved settings root, chat protocol handling.

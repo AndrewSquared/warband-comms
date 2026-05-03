@@ -51,10 +51,16 @@ Reload UI and relog to verify settings persist:
 
 ## 8. Package output
 
+<<<<<<< HEAD
 - [ ] Run `python scripts/package_release.py --build release --clean`.
 - [ ] Optionally run `python scripts/package_release.py --build test --clean` for an in-client validation package.
 - [ ] On Windows, if `python` is not recognized or routes to Microsoft Store, use `py -3` (or full interpreter path) instead.
 - [ ] Confirm the generated zip contains one top-level `WarbandComms/` folder, `README.md`, `LICENSE`, and only the intended runtime files for that build type.
+=======
+- [ ] Ensure PR checks passed (`PR Validation` GitHub Actions workflow).
+- [ ] Optional local preflight: run `python3 scripts/validate_release_state.py`.
+- [ ] Optional local package smoke test: run `python3 scripts/package_release.py --build release --clean`.
+>>>>>>> c910be1 (test: first swag at release automation)
 
 ## 9. Tag and publish
 
@@ -62,5 +68,6 @@ Reload UI and relog to verify settings persist:
 - [ ] Keep versioning aligned with protocol state: use a minor release while `[RET]` / `[DEVA]` compatibility remains, and save `4.0.0` for the compatibility removal release.
 - [ ] Commit final changelog entry and any last fixes.
 - [ ] Confirm `LICENSE` exists at repo root and `README.md` references MIT licensing.
-- [ ] `git tag v<version>` and push.
-- [ ] Attach the release zip to the GitHub release.
+- [ ] Complete maintainer in-client validation and PR approval before tagging.
+- [ ] Run `git tag v<version>` and `git push origin v<version>`.
+- [ ] Confirm `Release Publish` workflow completes and attaches `WarbandComms-v<version>.zip` to the GitHub Release.

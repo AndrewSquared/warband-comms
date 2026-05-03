@@ -142,6 +142,14 @@ Packaging behavior:
 - The `test` build keeps `tests.lua` and test-only slash command paths for in-client addon testing (`/wbc testboxes`, `/wbc testcenter`, `/wbc selftest`, plus `/wbc test` compatibility alias).
 - The `release` build removes `tests.lua` from the packaged `WarbandComms.mod` and strips the test-only slash command paths from the packaged `slash.lua`.
 
+### Automated Release Flow
+
+- Pull requests run `PR Validation` in GitHub Actions (version/changelog checks plus test+release packaging validation).
+- Maintainer in-client validation remains a required manual gate before release tagging.
+- Create and push a tag in the form `vX.Y.Z` to trigger `Release Publish`.
+- The release workflow builds `WarbandComms-vX.Y.Z.zip`, validates package structure, and attaches it to the GitHub Release.
+- Release notes are sourced from the latest top section in `changelog.md`.
+
 Lua addon testing note:
 
 - For pure Lua projects, testing is often done with standalone tools such as `busted` or `luaunit`.

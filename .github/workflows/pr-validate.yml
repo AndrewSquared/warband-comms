@@ -1,0 +1,48 @@
+name: PR Validation
+
+on:
+  pull_request:
+    branches:
+      - main
+
+jobs:
+  validate:
+    runs-on: ubuntu-latest
+
+    steps:
+      - name: Checkout
+        uses: actions/checkout@v4
+
+      - name: Setup Python
+        uses: actions/setup-python@v5
+        with:
+          python-version: '3.11'
+
+      - name: Validate versions and changelog
+        run: python3 scripts/validate_release_state.py
+
+      - name: Build release package
+        run: python3 scripts/package_release.py --build release --clean
+
+      - name: Validate release package contents
+        run: |
+          VERSION=$(python3 - <<'PY'
+          import xml.etree.ElementTree as ET
+          root = ET.parse('WarbandComms.mod').getroot()
+          print(root.find('UiMod').get('version'))
+          PY
+          )
+          python3 scripts/validate_release_state.py --build release --zip "dist/WarbandComms-v${VERSION}.zip"
+
+      - name: Build test package
+        run: python3 scripts/package_release.py --build test --clean
+
+      - name: Validate test package contents
+        run: |
+          VERSION=$(python3 - <<'PY'
+          import xml.etree.ElementTree as ET
+          root = ET.parse('WarbandComms.mod').getroot()
+          print(root.find('UiMod').get('version'))
+          PY
+          )
+          python3 scripts/validate_release_state.py --build test --zip "dist/WarbandComms-v${VERSION}-test.zip"

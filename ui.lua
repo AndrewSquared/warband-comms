@@ -247,21 +247,28 @@ function WarbandComms.ApplyTrackerInternalLayout(tracker)
 	local summarySep1 = window .. "SummarySep1"
 	local summarySep2 = window .. "SummarySep2"
 	local headerY = 3
+	-- Offsets from window topright, computed left-to-right from the right edge.
+	-- Layout (right to left): [pad][cooldown][sep2][active][sep1][ready]
+	local cdRight   = -HEADER_SUMMARY_RIGHT_PAD
+	local sep2Right = cdRight   - HEADER_SUMMARY_COUNT_WIDTH
+	local actRight  = sep2Right - HEADER_SUMMARY_SEPARATOR_WIDTH
+	local sep1Right = actRight  - HEADER_SUMMARY_COUNT_WIDTH
+	local rdyRight  = sep1Right - HEADER_SUMMARY_SEPARATOR_WIDTH
 	WindowSetDimensions(summaryCooldown, HEADER_SUMMARY_COUNT_WIDTH, 20)
 	WindowClearAnchors(summaryCooldown)
-	WindowAddAnchor(summaryCooldown, "topright", window, "topright", -HEADER_SUMMARY_RIGHT_PAD, headerY)
+	WindowAddAnchor(summaryCooldown, "topright", window, "topright", cdRight, headerY)
 	WindowSetDimensions(summarySep2, HEADER_SUMMARY_SEPARATOR_WIDTH, 20)
 	WindowClearAnchors(summarySep2)
-	WindowAddAnchor(summarySep2, "topright", summaryCooldown, "topleft", 0, 0)
+	WindowAddAnchor(summarySep2, "topright", window, "topright", sep2Right, headerY)
 	WindowSetDimensions(summaryActive, HEADER_SUMMARY_COUNT_WIDTH, 20)
 	WindowClearAnchors(summaryActive)
-	WindowAddAnchor(summaryActive, "topright", summarySep2, "topleft", 0, 0)
+	WindowAddAnchor(summaryActive, "topright", window, "topright", actRight, headerY)
 	WindowSetDimensions(summarySep1, HEADER_SUMMARY_SEPARATOR_WIDTH, 20)
 	WindowClearAnchors(summarySep1)
-	WindowAddAnchor(summarySep1, "topright", summaryActive, "topleft", 0, 0)
+	WindowAddAnchor(summarySep1, "topright", window, "topright", sep1Right, headerY)
 	WindowSetDimensions(summaryReady, HEADER_SUMMARY_COUNT_WIDTH, 20)
 	WindowClearAnchors(summaryReady)
-	WindowAddAnchor(summaryReady, "topright", summarySep1, "topleft", 0, 0)
+	WindowAddAnchor(summaryReady, "topright", window, "topright", rdyRight, headerY)
 
 	local listName = window .. "List"
 	local _, windowHeight = WindowGetDimensions(window)

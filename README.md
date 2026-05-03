@@ -87,58 +87,21 @@ Examples:
 - This release includes a full rename from RetWBComms to WarbandComms.
 - Existing saved settings from previous naming are not auto-migrated.
 
-## Phase 5 Stabilization Checklist
+## Acknowledgements
 
-Run this checklist before release tagging:
+WarbandComms was inspired by earlier community work that was passed along through multiple hands.
 
-1. Load and startup
+Thank you to the original creator and maintainers of that prior work. If you are the original author (or can provide canonical attribution details), please open an issue or pull request so proper credit can be recorded here.
 
-- Addon loads without XML/Lua errors.
-- `/wbc` opens config and toggles display correctly.
+## Provenance
 
-2. Tracker visibility and LayoutEditor
+Parts of this project may trace back to earlier community-shared addon code received without complete authorship or license history.
 
-- Verify global enable toggle and per-tracker toggles remain in sync.
-- Verify hidden trackers stay hidden in LayoutEditor and no phantom entries appear.
+If you can provide authoritative source, authorship, or licensing information for predecessor code, please open an issue so attribution and licensing records can be updated.
 
-3. UI sizing and readability
+## Release Checklist
 
-- Verify `Uniform` and `Relative` resize modes both behave as expected.
-- Verify row text scaling also scales career icons and does not overflow timer column.
-- Verify header spacing and readability at multiple text sizes.
-- Verify header tone/style cycle: Bright/Gold/Red/Green/Blue + Clean/Caps.
-
-4. Tracker content behavior
-
-- Validate ordering and row updates for LTC, Challenge, Channels, Interrupt, and Immaculate Defense.
-- Confirm `LTC` header displays as `Leading the Charge`.
-- Validate long names are truncated and remain within box bounds.
-
-5. Protocol and compatibility
-
-- Verify outbound messages use legacy realm key during transition (`[RET]` on Order, `[DEVA]` on Destro).
-- Verify inbound behavior accepts `[WBC]`, `[RET]`, and `[DEVA]`.
-
-6. Persistence
-
-- Reload UI and relog to verify settings persist:
-  - tracker visibility
-  - width/height
-  - resize mode
-  - background opacity
-  - header/row text scales
-  - header tone/style
-
-7. Optional release gate
-
-- Generate a test build and run `/wbc test` in a controlled environment to confirm expected rows update.
-- Smoke-test in an active warband with at least one other player using the current build.
-
-8. Package output
-
-- Run `python scripts/package_release.py --build release --clean`.
-- Optionally run `python scripts/package_release.py --build test --clean` for an in-client validation package.
-- Confirm the generated zip contains one top-level `WarbandComms/` folder and only the intended runtime files for that build type.
+See [RELEASING.md](RELEASING.md) for the full pre-release verification checklist.
 
 ## Development Notes
 
@@ -150,34 +113,13 @@ Run this checklist before release tagging:
 
 ### UI Control Compatibility
 
-- XML schema references use `EASystem.xsd` to match working addon patterns for default WAR controls.
-- Existing and future controls can safely use templates such as:
-  - `EA_Button_Default`, `EA_Button_DefaultResizeable`, `EA_Button_DefaultCheckBox`, `EA_Button_DefaultMinus`
-  - `EA_EditBox_DefaultFrame`
-  - `EA_ComboBox_DefaultResizable`, `EA_ComboBox_DefaultResizableSmall`
-  - `ScrollWindow` + `VerticalScrollbar` (`EA_ScrollBar_DefaultVerticalChain`)
-- `config.lua` includes reusable helpers for robust control behavior across template quirks:
-  - `WarbandComms.UIEnsureCheckboxState`
-  - `WarbandComms.UIResolveCheckboxToggle`
-  - `WarbandComms.UISetEditBoxTextIfExists`
-  - `WarbandComms.UIPopulateComboBox`
-- Copy-ready XML control examples for future expansion are in `ui-controls-reference.xml` (intentionally not loaded by `WarbandComms.mod`).
-- Reference handlers are fully wired in `config.lua` for copied controls:
-  - `WarbandComms.OnReferenceToggle`
-  - `WarbandComms.OnReferenceNumericChanged`
-  - `WarbandComms.OnReferenceComboChanged`
-  - `WarbandComms.OnReferenceAdd`
-  - `WarbandComms.OnReferenceDelete`
+See [`.github/prompts/ui-controls.prompt.md`](.github/prompts/ui-controls.prompt.md) for available control templates, reusable Lua helpers, and copy-ready XML reference blocks.
 
 ## License
 
-License is intentionally not finalized yet. Choose one before publishing a public release branch/tag:
+This project is licensed under the MIT License.
 
-- MIT
-- GPL-3.0
-- Apache-2.0
-
-See `CONTRIBUTING.md` for contribution workflow while licensing is pending.
+See [LICENSE](LICENSE) for full terms.
 
 ## Contributing
 

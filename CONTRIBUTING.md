@@ -10,6 +10,10 @@ Thanks for contributing.
 4. Update `changelog.md` for user-visible changes.
 5. If a change affects shipped files or release flow, update the packaging notes in `README.md` and this document.
 
+## License
+
+By submitting a contribution, you agree your contribution is provided under the repository's MIT License.
+
 ## Coding Guidelines
 
 - Keep naming consistent with `WarbandComms`.

@@ -15,6 +15,21 @@ local COLORS = {
 	disabledText = { 108, 108, 108 },
 	softSetting = { 198, 198, 198 },
 	valueGold = { 244, 214, 96 },
+	valueWhite = { 255, 255, 255 },
+}
+
+local CONFIG_LABEL_TOOLTIPS = {
+	TrackerTitle = L"TODO: Explain what Toggle All does to tracker visibility.",
+	HeaderTextSizeLabel = L"TODO: Explain how header text size affects tracker headers.",
+	RowTextSizeLabel = L"TODO: Explain how row text size affects player rows.",
+	TrackerWidthLabel = L"TODO: Explain how box width changes tracker readability.",
+	TrackerHeightLabel = L"TODO: Explain how box height changes visible row space.",
+	SizeApplyModeLabel = L"TODO: Explain the difference between Uniform and Relative resize modes.",
+	BackgroundOpacityLabel = L"TODO: Explain how background opacity affects tracker contrast.",
+	HeaderToneLabel = L"TODO: Explain what Header Tone changes.",
+	HeaderStyleLabel = L"TODO: Explain what Header Style changes.",
+	TrackerGroupTitle = L"TODO: Explain tracker toggles in this section.",
+	NotificationGroupTitle = L"TODO: Explain center-screen notification toggles in this section.",
 }
 
 local HEADER_TONE_ORDER = { "bright", "gold", "red", "green", "blue" }
@@ -206,6 +221,59 @@ local function GetActiveWindowNameSafe()
 	return SystemData.ActiveWindow and SystemData.ActiveWindow.name or nil
 end
 
+local function ResolveConfigLabelTooltip(windowName)
+	if not windowName then return nil end
+
+	local suffix = string.match(windowName, "^" .. WarbandComms.AddonName .. "Config(.*)$")
+	if not suffix then return nil end
+
+	if CONFIG_LABEL_TOOLTIPS[suffix] then
+		return CONFIG_LABEL_TOOLTIPS[suffix]
+	end
+
+	if string.match(suffix, "NOTIFYLabel$") then
+		return L"TODO: Explain what this notification toggle controls."
+	end
+
+	if string.match(suffix, "Label$") then
+		return L"TODO: Explain what this tracker toggle controls."
+	end
+
+	return nil
+end
+
+function WarbandComms.ShowConfigLabelTooltip()
+	local activeWindowName = GetActiveWindowNameSafe()
+	local tooltipText = ResolveConfigLabelTooltip(activeWindowName)
+	if not activeWindowName or not tooltipText or not Tooltips then return end
+
+	if Tooltips.CreateTextOnlyTooltip then
+		Tooltips.CreateTextOnlyTooltip(activeWindowName, tooltipText)
+	elseif Tooltips.CreateTextTooltip then
+		Tooltips.CreateTextTooltip(activeWindowName, tooltipText)
+	else
+		return
+	end
+
+	if Tooltips.AnchorTooltip then
+		if Tooltips.ANCHOR_WINDOW_TOP then
+			Tooltips.AnchorTooltip(Tooltips.ANCHOR_WINDOW_TOP)
+		elseif Tooltips.ANCHOR_WINDOW_RIGHT then
+			Tooltips.AnchorTooltip(Tooltips.ANCHOR_WINDOW_RIGHT)
+		end
+	end
+
+	if Tooltips.Finalize then
+		Tooltips.Finalize()
+	end
+end
+
+function WarbandComms.HideConfigLabelTooltip()
+	local activeWindowName = GetActiveWindowNameSafe()
+	if not activeWindowName or not Tooltips or not Tooltips.ClearTooltip then return end
+	Tooltips.ClearTooltip(activeWindowName)
+end
+
 function WarbandComms.OnReferenceToggle()
 	local state = GetReferenceState()
 	local buttonName = GetActiveWindowNameSafe()
@@ -282,7 +350,7 @@ local function ApplyControlLabelStyling()
 		"HeaderStyleButtonValue",
 	}
 	for _, suffix in ipairs(valueLabels) do
-		LabelSetTextColor(configWindow .. suffix, COLORS.valueGold[1], COLORS.valueGold[2], COLORS.valueGold[3])
+		LabelSetTextColor(configWindow .. suffix, COLORS.valueWhite[1], COLORS.valueWhite[2], COLORS.valueWhite[3])
 	end
 
 	local plusMinusLabels = {

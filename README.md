@@ -9,6 +9,9 @@ Warband Comms is a Return of Reckoning addon that tracks key warband ability coo
 - Tracks selected warband abilities across five compact boxes that can each be turned on or off: `LTC`, `Immaculate Defense`, `Challenge`, `Channels`, and `Interrupt`
 - Displays active timers by warband member
 - Optional center-screen notification support per tracker
+- Improved compact-mode legibility by enforcing a safer minimum tracker width
+- Cleaner tracker header summaries with slash separators removed
+- Config setting labels now support tooltip placeholders for inline guidance
 - Slash-command driven config access, with optional in-client test helpers for development builds
 
 ## Installation (Return of Reckoning)
@@ -53,6 +56,8 @@ Test build notes:
 - This release includes a full rename from RetWBComms to WarbandComms while keeping transition-mode protocol compatibility.
 - Legacy inbound compatibility remains enabled for `[WBC]`, `[RET]`, and `[DEVA]`; outbound still uses the single realm-specific legacy key during transition.
 - Immaculate Defense now has its own dedicated `ID` tracker box instead of sharing the LTC box.
+- Current branch UX updates: minimum tracker width clamp raised to 120, header slashes removed from summary counts, and config value labels between `[-]`/`[+]` set to white.
+- Current branch UX updates: label-only tooltip placeholders added for config setting labels and dynamic tracker/notification row labels.
 - `4.0.0` is reserved for the future protocol cutover that removes the old `[RET]` / `[DEVA]` behavior.
 - Existing saved settings from previous naming are not auto-migrated.
 

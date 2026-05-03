@@ -22,6 +22,10 @@
                             <AbsPoint x="28" y="2"/>
                         </Anchor>
                     </Anchors>
+                    <EventHandlers>
+                        <EventHandler event="OnMouseOver" function="WarbandComms.ShowConfigLabelTooltip" />
+                        <EventHandler event="OnMouseOverEnd" function="WarbandComms.HideConfigLabelTooltip" />
+                    </EventHandlers>
                 </Label>
             </Windows>
         </Window>

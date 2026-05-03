@@ -62,13 +62,13 @@
 				<Label name="$parentSummaryReady" font="font_clear_tiny" textalign="right">
 					<Size><AbsPoint x="18" y="20" /></Size>
 				</Label>
-				<Label name="$parentSummarySep1" font="font_clear_tiny" textalign="center" text="/">
+				<Label name="$parentSummarySep1" font="font_clear_tiny" textalign="center" text="">
 					<Size><AbsPoint x="6" y="20" /></Size>
 				</Label>
 				<Label name="$parentSummaryActive" font="font_clear_tiny" textalign="right">
 					<Size><AbsPoint x="18" y="20" /></Size>
 				</Label>
-				<Label name="$parentSummarySep2" font="font_clear_tiny" textalign="center" text="/">
+				<Label name="$parentSummarySep2" font="font_clear_tiny" textalign="center" text="">
 					<Size><AbsPoint x="6" y="20" /></Size>
 				</Label>
 				<Label name="$parentSummaryCooldown" font="font_clear_tiny" textalign="right">

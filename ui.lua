@@ -52,7 +52,7 @@ local ACTIVE_COLOR = { 255, 255, 255 }
 local COOLDOWN_COLOR = { 230, 90, 90 }
 local HEADER_SEPARATOR_COLOR = { 175, 175, 175 }
 local HEADER_SUMMARY_COUNT_WIDTH = 18
-local HEADER_SUMMARY_SEPARATOR_WIDTH = 6
+local HEADER_SUMMARY_SEPARATOR_WIDTH = 2
 local HEADER_SUMMARY_RIGHT_PAD = 4
 local HEADER_SUMMARY_TOTAL_WIDTH = (HEADER_SUMMARY_COUNT_WIDTH * 3) + (HEADER_SUMMARY_SEPARATOR_WIDTH * 2) + HEADER_SUMMARY_RIGHT_PAD + 4
 
@@ -168,8 +168,8 @@ local function UpdateTrackerHeaderSummary(tracker, ready, active, cooldown)
 	LabelSetText(window .. "SummaryReady", towstring(tostring(ready or 0)))
 	LabelSetText(window .. "SummaryActive", towstring(tostring(active or 0)))
 	LabelSetText(window .. "SummaryCooldown", towstring(tostring(cooldown or 0)))
-	LabelSetText(window .. "SummarySep1", L"/")
-	LabelSetText(window .. "SummarySep2", L"/")
+	LabelSetText(window .. "SummarySep1", L"")
+	LabelSetText(window .. "SummarySep2", L"")
 end
 
 local function GetTrackerRowMetrics(rowScale)

@@ -1,4 +1,11 @@
-3.6.0 (Mainline)
+Unreleased
+
+- improved small-size tracker readability by enforcing a higher minimum box width clamp (120)
+- removed header summary slash separators and tightened spacing for cleaner count alignment
+- updated config center value labels (between [-] and [+]) to render white for better consistency
+- added label-only config tooltip placeholders (static labels and dynamic tracker/notification labels)
+
+3.6.0 (Andrew Karstaedt)
 
 - note: `4.0.0` is reserved for the future WBC-only protocol cutover that removes legacy `[RET]` / `[DEVA]` behavior
 

@@ -46,6 +46,13 @@ These helpers normalize control behavior across template quirks:
 | `WarbandComms.UISetEditBoxTextIfExists(name, text)` | Safe edit box text setter; no-ops if the control doesn't exist yet |
 | `WarbandComms.UIPopulateComboBox(name, items, selectedValue)` | Populate a combobox with an item list and pre-select by value |
 
+Tooltip helpers used by config labels:
+
+| Helper | Purpose |
+|---|---|
+| `WarbandComms.ShowConfigLabelTooltip()` | Shows label tooltip text based on active config label control |
+| `WarbandComms.HideConfigLabelTooltip()` | Clears tooltip for the active config label control |
+
 ---
 
 ### Reference Handlers (wired in `config.lua`)
@@ -85,3 +92,31 @@ To add a new control: copy the relevant block from `ui-controls-reference.xml` i
 | Row spacing | Dynamic | Computed from `baseY` + row index × row height |
 
 Tracker section and notification section each compute their own max row count; window height is set to whichever is taller.
+
+---
+
+### Current UX Conventions
+
+Use these as the default conventions unless a task explicitly asks to change them.
+
+1. Tooltip scope is label-only.
+- Add tooltip event handlers to labels, not to value buttons, minus/plus buttons, or checkbox toggles.
+- Standard XML wiring on labels:
+```xml
+<EventHandlers>
+	<EventHandler event="OnMouseOver" function="WarbandComms.ShowConfigLabelTooltip" />
+	<EventHandler event="OnMouseOverEnd" function="WarbandComms.HideConfigLabelTooltip" />
+</EventHandlers>
+```
+
+2. Dynamic row labels inherit tooltip behavior from the config template.
+- Tracker and notification rows are created from `WarbandCommsConfigTemplate` in `config-template.xml`.
+- Keep tooltip handlers on `$parentLabel` in the template so dynamic rows remain consistent.
+
+3. Tooltip text source is centralized in `config.lua`.
+- Static settings use `CONFIG_LABEL_TOOLTIPS` keyed by config label suffix.
+- Dynamic row labels use fallback placeholder text resolved by suffix matching (`...Label`, `...NOTIFYLabel`).
+
+4. Value text color between `[-]` and `[+]` is white.
+- In `ApplyControlLabelStyling()`, value labels use `COLORS.valueWhite`.
+- Plus/minus labels are still styled separately.

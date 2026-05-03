@@ -255,7 +255,7 @@ end
 
 function WarbandComms.ClampTrackerWidth(value)
 	local numeric = tonumber(value) or WarbandComms.DefaultTrackerWidth
-	return min(360, max(90, math.floor(numeric + 0.5)))
+	return min(360, max(120, math.floor(numeric + 0.5)))
 end
 
 function WarbandComms.ClampTrackerHeight(value)

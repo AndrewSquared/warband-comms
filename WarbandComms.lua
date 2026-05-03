@@ -414,6 +414,9 @@ function WarbandComms.OnInitialize()
 	WarbandComms.MapWarbandMembers({})
 
 	EA_ChatWindow.Print(towstring("<LINK data=\"0\" text=\"[".. WarbandComms.AddonName .. "]\" color=\"50,255,10\"> Loaded OK. Type /wbc for options."))
+	if WarbandComms.StartTest then
+		EA_ChatWindow.Print(towstring("[WarbandComms] TEST BUILD ACTIVE: /wbc testboxes, /wbc testcenter, /wbc selftest"))
+	end
 end
 
 function WarbandComms.OnBattleGroupUpdated()

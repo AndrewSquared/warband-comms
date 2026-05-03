@@ -53,6 +53,7 @@ Reload UI and relog to verify settings persist:
 
 - [ ] Run `python scripts/package_release.py --build release --clean`.
 - [ ] Optionally run `python scripts/package_release.py --build test --clean` for an in-client validation package.
+- [ ] On Windows, if `python` is not recognized or routes to Microsoft Store, use `py -3` (or full interpreter path) instead.
 - [ ] Confirm the generated zip contains one top-level `WarbandComms/` folder, `README.md`, `LICENSE`, and only the intended runtime files for that build type.
 
 ## 9. Tag and publish

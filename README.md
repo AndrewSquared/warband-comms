@@ -89,6 +89,24 @@ py -3 scripts/package_release.py --build release --clean
 python3 scripts/package_release.py --build test --clean
 ```
 
+Windows note:
+
+- Prefer `py -3` on Windows if available (Python Launcher).
+- If `python` opens the Microsoft Store or says Python was not found, install Python from python.org or winget and enable PATH during install.
+- If the Store alias still intercepts `python`, disable the `python.exe` / `python3.exe` App execution aliases in Windows Settings.
+- You can always run with the full interpreter path, for example:
+
+```powershell
+& "$env:LocalAppData\Programs\Python\Python312\python.exe" scripts/package_release.py --build release --clean
+```
+
+Quick verify:
+
+```powershell
+py -3 --version
+python --version
+```
+
 This produces zip files in `dist/`:
 
 - `WarbandComms-v3.6.0.zip` for the release build

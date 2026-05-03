@@ -31,6 +31,19 @@ function WarbandComms.Slash(msg)
 		command = tostring(msg)
 		command = string.match(command, "^%s*(.-)%s*$") or ""
 		command = string.lower(command)
+		command = string.gsub(command, "^/", "")
+
+		-- Some LibSlash environments pass the invoked slash alias in msg.
+		if command == "wbc" or command == "wb-comms" or command == "warbandcomms" then
+			command = ""
+		else
+			local remainder = string.match(command, "^wbc%s+(.+)$")
+				or string.match(command, "^wb%-comms%s+(.+)$")
+				or string.match(command, "^warbandcomms%s+(.+)$")
+			if remainder then
+				command = string.match(remainder, "^%s*(.-)%s*$") or ""
+			end
+		end
 	end
 
 	if command == "" then
@@ -58,6 +71,9 @@ function WarbandComms.Slash(msg)
 			WarbandComms.PrintSelfCheck()
         elseif command == "help" then
 			WarbandComms.PrintSlashHelp()
+		else
+			EA_ChatWindow.Print(towstring("[WarbandComms] Unknown command: " .. command))
+			EA_ChatWindow.Print(towstring("[WarbandComms] Type /wbc help for available commands."))
         end
 	end
 end

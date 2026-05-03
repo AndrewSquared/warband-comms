@@ -218,11 +218,6 @@ function WarbandComms.ApplyTextScale(tracker)
 	local window = WarbandComms.AddonName .. tracker:upper()
 	local rowScale = WarbandComms.GetRowTextScale()
 	WarbandComms.ApplyTrackerHeaderAppearance(tracker)
-	WindowSetScale(window .. "SummaryReady", rowScale)
-	WindowSetScale(window .. "SummaryActive", rowScale)
-	WindowSetScale(window .. "SummaryCooldown", rowScale)
-	WindowSetScale(window .. "SummarySep1", rowScale)
-	WindowSetScale(window .. "SummarySep2", rowScale)
 
 	local listWindow = window .. "ListRow"
 	for i = 1, 12 do
@@ -235,6 +230,13 @@ end
 function WarbandComms.ApplyTrackerInternalLayout(tracker)
 	local window = WarbandComms.AddonName .. tracker:upper()
 	local width = GetTrackerWindowWidth(window)
+	local rowScale = WarbandComms.GetRowTextScale()
+
+	WindowSetScale(window .. "SummaryReady", rowScale)
+	WindowSetScale(window .. "SummaryActive", rowScale)
+	WindowSetScale(window .. "SummaryCooldown", rowScale)
+	WindowSetScale(window .. "SummarySep1", rowScale)
+	WindowSetScale(window .. "SummarySep2", rowScale)
 
 	local titleName = window .. "Title"
 	WindowSetDimensions(titleName, math.max(40, width - 12 - HEADER_SUMMARY_TOTAL_WIDTH), 20)
@@ -268,7 +270,6 @@ function WarbandComms.ApplyTrackerInternalLayout(tracker)
 	end
 
 	local rowBase = window .. "ListRow"
-	local rowScale = WarbandComms.GetRowTextScale()
 	local iconWidth, timerWidth, nameOffset = GetTrackerRowMetrics(rowScale)
 	local rowHeight = GetTrackerRowHeight(rowScale, iconWidth)
 	local iconYOffset = math.max(0, math.floor((rowHeight - iconWidth) / 2))

@@ -1,6 +1,6 @@
 <?xml version="1.0" encoding="UTF-8"?>
 <ModuleFile xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance">
-	<UiMod name="WarbandComms" version="4.0.0" date="05/02/2026" >
+	<UiMod name="WarbandComms" version="3.6.0" date="05/02/2026" >
 		<VersionSettings gameVersion="1.4.8" windowsVersion="1.0" savedVariablesVersion="1.0" />
 		<Author name="Mainline + Enlil"/>
 		<Description text="Warband ability cooldown communication and tracker UI" />

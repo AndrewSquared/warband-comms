@@ -1,4 +1,6 @@
-4.0.0 (Mainline)
+3.6.0 (Mainline)
+
+- note: `4.0.0` is reserved for the future WBC-only protocol cutover that removes legacy `[RET]` / `[DEVA]` behavior
 
 - full internal/external rebrand from RetWBComms to WarbandComms
 - renamed core addon files to WarbandComms.lua, WarbandComms.xml, and WarbandComms.mod
@@ -32,7 +34,7 @@
 - added release checklist in RELEASING.md
 - fixed row name vertical overlap by making row height scale-aware with centered row icons
 - fixed local self-cast updates: outgoing tracked casts now mirror into local tracker rows even when own /wb chat does not echo back
-- BREAKING: removed legacy [RET]/[DEVA] protocol compatibility; addon now accepts and emits [WBC] only
+- planned 4.0.0: remove legacy [RET]/[DEVA] protocol compatibility so the addon accepts and emits [WBC] only
 - cleaned up config settings grouping: tracker appearance controls are now clearly separated from notification toggles
 - improved config control ergonomics: value fields are now clickable reset controls (header/row text, width/height, background opacity)
 - refactored config layout logic with shared constants, consistent dynamic row spacing, and max-column window height sizing

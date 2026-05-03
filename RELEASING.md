@@ -29,6 +29,7 @@ Run through this before tagging a release.
 
 - [ ] Verify outbound messages use legacy realm key during transition (`[RET]` on Order, `[DEVA]` on Destro).
 - [ ] Verify inbound behavior accepts `[WBC]`, `[RET]`, and `[DEVA]`.
+- [ ] For `3.6.x` transition releases, keep the above legacy compatibility intact; reserve `4.0.0` for the future WBC-only cutover.
 
 ## 6. Persistence
 
@@ -55,6 +56,7 @@ Reload UI and relog to verify settings persist:
 ## 9. Tag and publish
 
 - [ ] Bump version in `WarbandComms.mod` and `WarbandComms.lua` if not already done.
+- [ ] Keep versioning aligned with protocol state: use a minor release while `[RET]` / `[DEVA]` compatibility remains, and save `4.0.0` for the compatibility removal release.
 - [ ] Commit final changelog entry and any last fixes.
 - [ ] Confirm `LICENSE` exists at repo root and `README.md` references MIT licensing.
 - [ ] `git tag v<version>` and push.

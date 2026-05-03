@@ -41,8 +41,8 @@ python3 scripts/package_release.py --build test --clean
 
 This produces zip files in `dist/`:
 
-- `WarbandComms-v4.0.0.zip` for the release build
-- `WarbandComms-v4.0.0-test.zip` for the test build
+- `WarbandComms-v3.6.0.zip` for the release build
+- `WarbandComms-v3.6.0-test.zip` for the test build
 
 Packaging behavior:
 
@@ -83,8 +83,10 @@ Examples:
 
 ## Current Release
 
-- Addon version: `4.0.0`
-- This release includes a full rename from RetWBComms to WarbandComms.
+- Addon version: `3.6.0`
+- This release includes a full rename from RetWBComms to WarbandComms while keeping transition-mode protocol compatibility.
+- Legacy inbound compatibility remains enabled for `[WBC]`, `[RET]`, and `[DEVA]`; outbound still uses the single realm-specific legacy key during transition.
+- `4.0.0` is reserved for the future protocol cutover that removes the old `[RET]` / `[DEVA]` behavior.
 - Existing saved settings from previous naming are not auto-migrated.
 
 ## Acknowledgements

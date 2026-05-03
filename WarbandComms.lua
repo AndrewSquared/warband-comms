@@ -1,4 +1,4 @@
-local version = "4.0.0"
+local version = "3.6.0"
 
 if not WarbandComms then WarbandComms = {} end
 

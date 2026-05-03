@@ -49,6 +49,7 @@ Full internal rename will be done first (as requested), then the checkbox/UI vis
 - Milestone 4E implementation: added configurable header emphasis presets with live-applied tone options and style presets for cleaner or stronger title treatment.
 - Milestone 4E refinements: switched title alignment to left with extra header spacing, expanded tone choices (removed soft; added red/green/blue), and simplified style choices to Clean/Caps (legacy Strong maps to Caps).
 - Milestone 4E refinements: updated LTC display label to "Leading the Charge" for improved readability.
+- Milestone 4E follow-up: split Immaculate Defense into its own dedicated `ID` tracker box instead of grouping it under `LTC`.
 - After each milestone, run in-client verification before moving to next milestone.
 
 6. Phase 5 - Stabilization and release prep (depends on 4)
@@ -79,6 +80,7 @@ Decision change (2026-05-03): superseded prior WBC-only hard-break plan; adopted
 - Decision updated: backwards compatibility restored for transition period; no dual-send fallback.
 - Pending: implement single-key outbound transition behavior (legacy realm key) and multi-key inbound acceptance.
 - Completed: 5C settings UI medium refactor (grouping cleanup, layout constants, clickable value controls).
+- Completed: refreshed test-build validation helpers with `/wbc testboxes` (full tracker-box population) and `/wbc testcenter` (LTC/ID alert preview).
 - Pending: run in-client mixed-version verification matrix for 5A/5C and perform any follow-up tuning.
 
 **Relevant files**

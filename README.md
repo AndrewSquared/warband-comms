@@ -6,7 +6,7 @@ Warband Comms is a Return of Reckoning addon that tracks key warband ability coo
 
 ## Features
 
-- Tracks selected warband abilities (challenge, channels, interrupts, Leading the Charge `LTC`, and Immaculate Defense)
+- Tracks selected warband abilities across five compact boxes that can each be turned on or off: `LTC`, `Immaculate Defense`, `Challenge`, `Channels`, and `Interrupt`
 - Displays active timers by warband member
 - Optional center-screen notification support per tracker
 - Slash-command driven config access, with optional in-client test helpers for development builds
@@ -42,11 +42,17 @@ Examples:
 - `/wbc testboxes` in a test build
 - `/wbc testcenter` in a test build
 
+Test build notes:
+
+- `testboxes` populates all five tracker boxes, including a dedicated Immaculate Defense box.
+- Test harness warband names are generated per run so rows look more like live data while still covering all 24 careers.
+
 ## Current Release
 
 - Addon version: `3.6.0`
 - This release includes a full rename from RetWBComms to WarbandComms while keeping transition-mode protocol compatibility.
 - Legacy inbound compatibility remains enabled for `[WBC]`, `[RET]`, and `[DEVA]`; outbound still uses the single realm-specific legacy key during transition.
+- Immaculate Defense now has its own dedicated `ID` tracker box instead of sharing the LTC box.
 - `4.0.0` is reserved for the future protocol cutover that removes the old `[RET]` / `[DEVA]` behavior.
 - Existing saved settings from previous naming are not auto-migrated.
 
@@ -95,7 +101,7 @@ Packaging behavior:
 - Repo-only files such as `.git/`, `.github/`, `CONTRIBUTING.md`, `CODE_OF_CONDUCT.md`, `changelog.md`, and `ui-controls-reference.xml` are not included.
 - `README.md` is included by default; use `--no-readme` to omit it.
 - License files matching `LICENSE*` are included in packaged zips.
-- The `test` build keeps `tests.lua` and test-only slash command paths for in-client addon testing.
+- The `test` build keeps `tests.lua` and test-only slash command paths for in-client addon testing (`/wbc testboxes`, `/wbc testcenter`, `/wbc selftest`, plus `/wbc test` compatibility alias).
 - The `release` build removes `tests.lua` from the packaged `WarbandComms.mod` and strips the test-only slash command paths from the packaged `slash.lua`.
 
 Lua addon testing note:
@@ -103,6 +109,7 @@ Lua addon testing note:
 - For pure Lua projects, testing is often done with standalone tools such as `busted` or `luaunit`.
 - For game addons like this one, a large part of testing is usually done inside the client because game APIs, UI state, and event flow do not exist outside the game.
 - `tests.lua` is the in-client test harness for this addon.
+- The in-client harness covers all tracker boxes, uses generated sample names, and includes a dedicated center-screen notification test for LTC and Immaculate Defense.
 
 ## Acknowledgements
 

@@ -55,11 +55,11 @@ Five active trackers, each with a key in `WarbandComms.trackedAbilities`:
 
 | Tracker key | Display name | Notes |
 |---|---|---|
-| `LTC` | Leading the Charge | Tank morale/challenge abilities |
-| `CHALLENGE` | Challenge | |
-| `CHANNEL` | Channels | DPS channel abilities |
-| `INTERRUPT` | Interrupts | SM, WL, Mara |
-| `LTC` (center) | Immaculate Defense (ID 613) | M4 morale, `fixedCooldown=true`, cd=180, duration=10 |
+| `LTC` | Leading the Charge | Tank mobility/morale support abilities such as LTC and Into the Fray |
+| `ID` | Immaculate Defense | Dedicated M4 morale box, `fixedCooldown=true`, cd=180, duration=10 |
+| `challenge` | Challenge | Tank challenge abilities |
+| `channels` | Channels | DPS channel abilities |
+| `interrupt` | Interrupts | SM, WL, Mara |
 
 `fixedCooldown=true` means the addon does not read the action bar for this ability — it uses the hardcoded `cooldown` value when the chat message arrives.
 
@@ -94,7 +94,9 @@ Canonical commands: `/warbandcomms`, `/wb-comms`, `/wbc`
 | `clear` | Clear all tracker UI data |
 | `help` | Print command list in chat |
 | `selfcheck` | Print outbound key, inbound keys, tracker states, self-test flag |
-| `test` | Run test data flow — test builds only |
+| `testboxes` | Populate all tracker boxes with generated sample warband data — test builds only |
+| `testcenter` | Show LTC/ID center-screen notification samples — test builds only |
+| `test` | Compatibility alias for `testboxes` — test builds only |
 | `selftest` | Toggle `/say` echo mode — test builds only |
 
 ---
@@ -114,10 +116,11 @@ Styling: all `[-]` and `[+]` labels are colored gold via `ApplyControlLabelStyli
 
 ## Build and Release
 
-- **Test build**: retains `tests.lua`, `/wbc test`, `/wbc selftest`
+- **Test build**: retains `tests.lua`, `/wbc testboxes`, `/wbc testcenter`, `/wbc selftest`, and `/wbc test` compatibility alias
 - **Release build**: strips `tests.lua` from `.mod` and removes test-only slash paths from `slash.lua`
 - Run `python scripts/package_release.py --build release --clean` to produce `dist/WarbandComms-v<version>.zip`
-- Before tagging, complete [RELEASING.md](RELEASING.md)
+- Packaged zips include `README.md` by default and ship license files matching `LICENSE*`
+- Before tagging, complete [RELEASING.md](../RELEASING.md)
 
 ---
 
@@ -125,5 +128,5 @@ Styling: all `[-]` and `[+]` labels are colored gold via `ApplyControlLabelStyli
 
 These files in `.github/prompts/` provide deeper reference context — read them at the start of relevant sessions:
 
-- [`ui-controls.prompt.md`](.github/prompts/ui-controls.prompt.md) — XML control templates, Lua UI helpers, copy-ready reference patterns
-- [`plan-warbandComms.prompt.md`](.github/prompts/plan-warbandComms.prompt.md) — Full phase roadmap, architecture decisions, verification steps
+- [`ui-controls.prompt.md`](prompts/ui-controls.prompt.md) — XML control templates, Lua UI helpers, copy-ready reference patterns
+- [`plan-warbandComms.prompt.md`](prompts/plan-warbandComms.prompt.md) — Full phase roadmap, architecture decisions, verification steps

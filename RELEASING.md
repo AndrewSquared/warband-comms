@@ -21,8 +21,9 @@ Run through this before tagging a release.
 
 ## 4. Tracker content behavior
 
-- [ ] Validate ordering and row updates for LTC, Challenge, Channels, Interrupt, and Immaculate Defense.
+- [ ] Validate ordering and row updates for LTC, ID, Challenge, Channels, and Interrupt.
 - [ ] Confirm `LTC` header displays as `Leading the Charge`.
+- [ ] Confirm `ID` header displays as `Immaculate Defense`.
 - [ ] Validate long names are truncated and remain within box bounds.
 
 ## 5. Protocol and compatibility
@@ -44,14 +45,15 @@ Reload UI and relog to verify settings persist:
 
 ## 7. Optional release gate
 
-- [ ] Generate a test build and run `/wbc test` in a controlled environment to confirm expected rows update.
+- [ ] Generate a test build and run `/wbc testboxes` in a controlled environment to confirm all tracker boxes populate as expected.
+- [ ] Run `/wbc testcenter` in a test build and confirm LTC and Immaculate Defense center-screen labels resolve correctly.
 - [ ] Smoke-test in an active warband with at least one other player using the current build.
 
 ## 8. Package output
 
 - [ ] Run `python scripts/package_release.py --build release --clean`.
 - [ ] Optionally run `python scripts/package_release.py --build test --clean` for an in-client validation package.
-- [ ] Confirm the generated zip contains one top-level `WarbandComms/` folder and only the intended runtime files for that build type.
+- [ ] Confirm the generated zip contains one top-level `WarbandComms/` folder, `README.md`, `LICENSE`, and only the intended runtime files for that build type.
 
 ## 9. Tag and publish
 

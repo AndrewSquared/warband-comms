@@ -47,6 +47,14 @@ local HEADER_STYLE_SCALE = {
 }
 
 local HEADER_TEXT_PAD = "  "
+local READY_COLOR = { 92, 195, 0 }
+local ACTIVE_COLOR = { 255, 255, 255 }
+local COOLDOWN_COLOR = { 230, 90, 90 }
+local HEADER_SEPARATOR_COLOR = { 175, 175, 175 }
+local HEADER_SUMMARY_COUNT_WIDTH = 18
+local HEADER_SUMMARY_SEPARATOR_WIDTH = 6
+local HEADER_SUMMARY_RIGHT_PAD = 4
+local HEADER_SUMMARY_TOTAL_WIDTH = (HEADER_SUMMARY_COUNT_WIDTH * 3) + (HEADER_SUMMARY_SEPARATOR_WIDTH * 2) + HEADER_SUMMARY_RIGHT_PAD + 4
 
 local function GetTrackerWindowWidth(window)
 	local width = WarbandComms.GetTrackerWidth()
@@ -63,7 +71,7 @@ local function FitHeaderTextToTracker(tracker, title, requestedScale)
 	local window = WarbandComms.AddonName .. tracker:upper()
 	local width = GetTrackerWindowWidth(window)
 	local clampedScale = math.max(0.7, math.min(1.8, requestedScale or 1.0))
-	local usablePixels = math.max(24, width - 12)
+	local usablePixels = math.max(24, width - 12 - HEADER_SUMMARY_TOTAL_WIDTH)
 	local avgCharPixels = math.max(1, 6 * clampedScale)
 	local maxChars = math.max(4, math.floor(usablePixels / avgCharPixels))
 	local paddedTitle = HEADER_TEXT_PAD .. title .. HEADER_TEXT_PAD
@@ -104,6 +112,11 @@ end
 function WarbandComms.ApplyTrackerHeaderAppearance(tracker)
 	local window = WarbandComms.AddonName .. tracker:upper()
 	local windowTitle = window .. "Title"
+	local summaryReady = window .. "SummaryReady"
+	local summaryActive = window .. "SummaryActive"
+	local summaryCooldown = window .. "SummaryCooldown"
+	local summarySep1 = window .. "SummarySep1"
+	local summarySep2 = window .. "SummarySep2"
 	local tone = HEADER_TONES[WarbandComms.GetHeaderTone()] or HEADER_TONES.bright
 	local style = WarbandComms.GetHeaderStyle()
 	local headerScale = WarbandComms.GetHeaderTextScale() * (HEADER_STYLE_SCALE[style] or 1.0)
@@ -112,7 +125,42 @@ function WarbandComms.ApplyTrackerHeaderAppearance(tracker)
 
 	LabelSetText(windowTitle, towstring(paddedTitle))
 	LabelSetTextColor(windowTitle, tone[1], tone[2], tone[3])
+	LabelSetTextColor(summaryReady, READY_COLOR[1], READY_COLOR[2], READY_COLOR[3])
+	LabelSetTextColor(summaryActive, ACTIVE_COLOR[1], ACTIVE_COLOR[2], ACTIVE_COLOR[3])
+	LabelSetTextColor(summaryCooldown, COOLDOWN_COLOR[1], COOLDOWN_COLOR[2], COOLDOWN_COLOR[3])
+	LabelSetTextColor(summarySep1, HEADER_SEPARATOR_COLOR[1], HEADER_SEPARATOR_COLOR[2], HEADER_SEPARATOR_COLOR[3])
+	LabelSetTextColor(summarySep2, HEADER_SEPARATOR_COLOR[1], HEADER_SEPARATOR_COLOR[2], HEADER_SEPARATOR_COLOR[3])
 	WindowSetScale(windowTitle, fittedScale)
+end
+
+local function GetTrackerStateCounts(abilityList)
+	local ready = 0
+	local active = 0
+	local cooldown = 0
+
+	for _, member in pairs(WarbandComms.WarbandMap) do
+		local trackedMember = abilityList[member.name]
+		if trackedMember then
+			if trackedMember.timer <= 0 then
+				ready = ready + 1
+			elseif trackedMember.timer >= (trackedMember.cooldown - trackedMember.duration) then
+				active = active + 1
+			else
+				cooldown = cooldown + 1
+			end
+		end
+	end
+
+	return ready, active, cooldown
+end
+
+local function UpdateTrackerHeaderSummary(tracker, ready, active, cooldown)
+	local window = WarbandComms.AddonName .. tracker:upper()
+	LabelSetText(window .. "SummaryReady", towstring(tostring(ready or 0)))
+	LabelSetText(window .. "SummaryActive", towstring(tostring(active or 0)))
+	LabelSetText(window .. "SummaryCooldown", towstring(tostring(cooldown or 0)))
+	LabelSetText(window .. "SummarySep1", L"/")
+	LabelSetText(window .. "SummarySep2", L"/")
 end
 
 local function GetTrackerRowMetrics(rowScale)
@@ -170,6 +218,11 @@ function WarbandComms.ApplyTextScale(tracker)
 	local window = WarbandComms.AddonName .. tracker:upper()
 	local rowScale = WarbandComms.GetRowTextScale()
 	WarbandComms.ApplyTrackerHeaderAppearance(tracker)
+	WindowSetScale(window .. "SummaryReady", rowScale)
+	WindowSetScale(window .. "SummaryActive", rowScale)
+	WindowSetScale(window .. "SummaryCooldown", rowScale)
+	WindowSetScale(window .. "SummarySep1", rowScale)
+	WindowSetScale(window .. "SummarySep2", rowScale)
 
 	local listWindow = window .. "ListRow"
 	for i = 1, 12 do
@@ -184,7 +237,29 @@ function WarbandComms.ApplyTrackerInternalLayout(tracker)
 	local width = GetTrackerWindowWidth(window)
 
 	local titleName = window .. "Title"
-	WindowSetDimensions(titleName, math.max(40, width - 12), 20)
+	WindowSetDimensions(titleName, math.max(40, width - 12 - HEADER_SUMMARY_TOTAL_WIDTH), 20)
+
+	local summaryReady = window .. "SummaryReady"
+	local summaryActive = window .. "SummaryActive"
+	local summaryCooldown = window .. "SummaryCooldown"
+	local summarySep1 = window .. "SummarySep1"
+	local summarySep2 = window .. "SummarySep2"
+	local headerY = 3
+	WindowSetDimensions(summaryCooldown, HEADER_SUMMARY_COUNT_WIDTH, 20)
+	WindowClearAnchors(summaryCooldown)
+	WindowAddAnchor(summaryCooldown, "topright", window, "topright", -HEADER_SUMMARY_RIGHT_PAD, headerY)
+	WindowSetDimensions(summarySep2, HEADER_SUMMARY_SEPARATOR_WIDTH, 20)
+	WindowClearAnchors(summarySep2)
+	WindowAddAnchor(summarySep2, "topright", summaryCooldown, "topleft", 0, 0)
+	WindowSetDimensions(summaryActive, HEADER_SUMMARY_COUNT_WIDTH, 20)
+	WindowClearAnchors(summaryActive)
+	WindowAddAnchor(summaryActive, "topright", summarySep2, "topleft", 0, 0)
+	WindowSetDimensions(summarySep1, HEADER_SUMMARY_SEPARATOR_WIDTH, 20)
+	WindowClearAnchors(summarySep1)
+	WindowAddAnchor(summarySep1, "topright", summaryActive, "topleft", 0, 0)
+	WindowSetDimensions(summaryReady, HEADER_SUMMARY_COUNT_WIDTH, 20)
+	WindowClearAnchors(summaryReady)
+	WindowAddAnchor(summaryReady, "topright", summarySep1, "topleft", 0, 0)
 
 	local listName = window .. "List"
 	local _, windowHeight = WindowGetDimensions(window)
@@ -276,6 +351,7 @@ function WarbandComms.CreateUI(tracker)
 	WindowSetScale(window, 1.0)
 	WarbandComms.ApplyTrackerDimensions(tracker)
 	WarbandComms.ApplyTextScale(tracker)
+	UpdateTrackerHeaderSummary(tracker, 0, 0, 0)
 end
 
 function WarbandComms.UpdateUI(tracker, abilityList, nearlyReadyTime)
@@ -283,6 +359,8 @@ function WarbandComms.UpdateUI(tracker, abilityList, nearlyReadyTime)
     if not WindowGetShowing(window) then return end
 	WarbandComms.ApplyTrackerInternalLayout(tracker)
 	WarbandComms.ApplyTextScale(tracker)
+	local readyCount, activeCount, cooldownCount = GetTrackerStateCounts(abilityList)
+	UpdateTrackerHeaderSummary(tracker, readyCount, activeCount, cooldownCount)
 
 	local listWindow = window .. "ListRow"
 	local listIndex = 1

@@ -54,6 +54,10 @@
 - added `/wbc selfcheck` to print outbound key, accepted inbound keys, tracker enable state, and self-test status
 - added `/wbc help` to print in-chat command help
 - added tracked morale ability `Immaculate Defense` (ID `613`) with fixed-cooldown handling
+- split `Immaculate Defense` into its own dedicated `ID` tracker box instead of sharing `LTC`
+- fixed center-screen LTC-family notifications to resolve and display the specific ability name (for example, `Immaculate Defense`)
+- refreshed in-client test harness: `/wbc testboxes` now fills all tracker boxes, uses generated names, and covers all 24 careers; added `/wbc testcenter` for LTC/ID alert previews
+- updated packaging/docs so release and test zips include `README.md` by default and ship license files matching `LICENSE*`
 - added +/- bidirectional controls for Resize Mode, Header Tone, and Header Style in config
 - finalized repository licensing under MIT and added root LICENSE file/reference updates
 

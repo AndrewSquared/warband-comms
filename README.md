@@ -113,15 +113,13 @@ Lua addon testing note:
 
 ## Acknowledgements
 
-WarbandComms was inspired by earlier community work that was passed along through multiple hands.
+WarbandComms builds on earlier community work originally authored by Mainline and Enlil.
 
-Thank you to the original creator and maintainers of that prior work. If you are the original author (or can provide canonical attribution details), please open an issue or pull request so proper credit can be recorded here.
+Thank you to Mainline and Enlil for the original addon foundation this project evolved from.
 
 ## Provenance
 
-Parts of this project may trace back to earlier community-shared addon code received without complete authorship or license history.
-
-If you can provide authoritative source, authorship, or licensing information for predecessor code, please open an issue so attribution and licensing records can be updated.
+Maintained by Andrew Karstaedt as a continuation of community addon work originally authored by Mainline and Enlil.
 
 ## Release Checklist
 

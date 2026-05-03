@@ -20,3 +20,8 @@ test-output/
 
 # Release packaging output
 dist/
+
+# Local process artifacts (screenshots, mockups, notes)
+.dev-artifacts/
+screenshots/
+scratch/

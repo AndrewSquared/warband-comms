@@ -31,6 +31,25 @@ Recommended checks:
 3. Tracker visibility matches checkbox state and global enable state.
 4. Timers update correctly in warband and test mode.
 
+## Repository Hygiene
+
+- Standard: process/development images are blocked from source control by policy checks (local hook + CI).
+- Development/process screenshots are not stored in source control.
+- Use local folders such as `.dev-artifacts/` or `screenshots/` for temporary images.
+- Enable repo hooks once per clone:
+
+```bash
+python scripts/setup_hooks.py
+```
+
+- To verify manually before committing:
+
+```bash
+python scripts/check_no_images.py --staged
+```
+
+- If your system uses a different launcher, use the equivalent command (`py -3` or `python3`).
+
 ## Release Packaging
 
 Use the manifest-driven packaging script from the repo root.

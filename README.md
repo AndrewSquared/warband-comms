@@ -112,6 +112,21 @@ py -3 --version
 python --version
 ```
 
+### Repository Hygiene Standard
+
+This repository enforces a no-process-images policy in source control:
+
+- Development screenshots/mockups belong in local ignored folders such as `.dev-artifacts/` or `screenshots/`.
+- A local pre-commit hook and CI check both block tracked image files.
+- Hook setup (once per clone): `python scripts/setup_hooks.py`
+- Manual check command:
+
+```bash
+python scripts/check_no_images.py --staged
+```
+
+- Alternate launchers are supported (`py -3` or `python3`).
+
 This produces zip files in `dist/`:
 
 - `WarbandComms-v3.6.0.zip` for the release build

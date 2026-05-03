@@ -1,0 +1,29 @@
+#!/bin/sh
+
+if command -v python >/dev/null 2>&1; then
+	python scripts/check_no_images.py --staged
+	exit $?
+fi
+
+if command -v py >/dev/null 2>&1; then
+	py -3 scripts/check_no_images.py --staged
+	exit $?
+fi
+
+if command -v python3 >/dev/null 2>&1; then
+	python3 scripts/check_no_images.py --staged
+	exit $?
+fi
+
+if command -v pwsh >/dev/null 2>&1; then
+	pwsh -NoProfile -File scripts/check_no_images.ps1 -Staged
+	exit $?
+fi
+
+if command -v powershell >/dev/null 2>&1; then
+	powershell -NoProfile -ExecutionPolicy Bypass -File scripts/check_no_images.ps1 -Staged
+	exit $?
+fi
+
+echo "No supported runtime found for image policy check (python/py/python3/pwsh/powershell)."
+exit 1

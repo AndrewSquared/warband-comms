@@ -83,6 +83,43 @@ Decision change (2026-05-03): superseded prior WBC-only hard-break plan; adopted
 - Completed: refreshed test-build validation helpers with `/wbc testboxes` (full tracker-box population) and `/wbc testcenter` (LTC/ID alert preview).
 - Pending: run in-client mixed-version verification matrix for 5A/5C and perform any follow-up tuning.
 
+**UI hotfix track (2026-05-03, in progress)**
+- Completed: readability baseline improvements for small tracker sizes (minimum width clamp, compact row behavior, cleaner header summary alignment).
+- Completed: config UX polish (label-only tooltips and white center value labels between [-]/[+]).
+- Completed: centralized resize sync path so width/height changes consistently re-run clamp + internal layout + header fit logic.
+- Completed: external LayoutEditor dimension drift detection with cache-based re-sync in the UI update loop.
+- Completed: Relative mode switch now normalizes each tracker's live LayoutEditor dimensions before applying +/- deltas.
+- Completed: ready-state timers now render a green `0` instead of blank text.
+- Completed: Resize Mode value control widened so full "Uniform"/"Relative" labels are visible (no clipped "Unifor"/"Relati" states).
+- Completed: header visibility hardening for the repro path (LayoutEditor resize -> switch Uniform to Relative -> apply +/-), with compact thresholds tuned so short titles remain stable while shrinking toward compact widths.
+- Completed: short-height overflow mitigation by capping rendered rows to available tracker height when windows are vertically compressed.
+- Planned enhancement: add optional direct numeric input controls for Box Width/Height (with clamp + Apply) so verification and tuning are not limited to +/-10 step increments.
+- Pending: in-client verification pass specifically for downward width transitions across all five trackers (focus: Challenge and ID) at 120-170px range.
+
+UI hotfix verification matrix (pending in-client):
+1. Baseline reset
+- Use `/wbc testboxes` to populate all trackers.
+- Set Resize Mode to Uniform and click the Box Width value to reset to default baseline (125).
+2. Repro path validation
+- In LayoutEditor, resize Challenge and ID to different sizes using corner handles (WAR LayoutEditor does uniform corner scaling; edge-only drag is not available).
+- Switch Resize Mode from Uniform to Relative.
+- Press Box Width [-] in repeated steps down to the smallest clamped width.
+- Expected: header title remains visible as a short title until compact hide threshold; no premature disappearance while shrinking.
+3. Cross-tracker transition sweep
+- Repeat step 2 while watching LTC, Channels, Interrupt, Challenge, and ID.
+- Expected at 120-170px range: short-title fallback is stable, summary counters remain aligned, row mode changes only at compact row threshold.
+4. Ready-state timer validation
+- Wait for at least one row to reach ready state.
+- Expected: timer text shows green `0` (not blank).
+5. Persistence check
+- Reload UI or restart client.
+- Expected: per-tracker Relative differences persist and header behavior remains stable after reload.
+
+Latest in-client verification notes (2026-05-03):
+- Steps 2 and 3: pass for title behavior; compact abbreviations are showing appropriately during the tested transitions.
+- Step 4: pass; ready-state timer displays green `0` as expected.
+- Additional finding from testing: very short heights could cause overflow; mitigation has now been implemented and needs re-check during the next sweep.
+
 **Relevant files**
 - c:/Warhammer Online - Return of Reckoning/Interface/AddOns/WarbandComms/WarbandComms.lua - Main namespace, init flow, saved settings root, chat protocol handling.
 - c:/Warhammer Online - Return of Reckoning/Interface/AddOns/WarbandComms/WarbandComms.mod - Addon metadata, module load identity, version alignment.

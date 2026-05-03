@@ -661,6 +661,12 @@ end
 function WarbandComms.ToggleSizeApplyMode()
 	if WarbandComms.GetSizeApplyMode() == "uniform" then
 		WarbandComms.Settings.sizeApplyMode = "relative"
+		-- Normalise each tracker's live (possibly LayoutEditor-set) dimensions
+		-- through the clamp pipeline so the dimension cache is up-to-date before
+		-- any relative +/- adjustments are applied.
+		for trackerName, _ in pairs(WarbandComms.Trackers) do
+			WarbandComms.NormalizeTrackerToLiveDimensions(trackerName)
+		end
 		EA_ChatWindow.Print(L"[WarbandComms] Resize Mode: Relative (preserve per-tracker size differences)")
 	else
 		WarbandComms.Settings.sizeApplyMode = "uniform"

@@ -54,7 +54,23 @@ local HEADER_SEPARATOR_COLOR = { 175, 175, 175 }
 local HEADER_SUMMARY_COUNT_WIDTH = 18
 local HEADER_SUMMARY_SEPARATOR_WIDTH = 2
 local HEADER_SUMMARY_RIGHT_PAD = 4
-local HEADER_SUMMARY_TOTAL_WIDTH = (HEADER_SUMMARY_COUNT_WIDTH * 3) + (HEADER_SUMMARY_SEPARATOR_WIDTH * 2) + HEADER_SUMMARY_RIGHT_PAD + 4
+local HEADER_COMPACT_SHORT_TITLE_PIXELS = 88
+-- Keep short titles visible across the clamped small-width range so headers
+-- do not disappear prematurely during downward resize transitions.
+local HEADER_COMPACT_HIDE_TITLE_PIXELS = 24
+local ROW_ICON_TIMER_ONLY_WIDTH = 140
+local TRACKER_DIMENSION_CACHE = {}
+
+local function GetTrackerCacheKey(tracker)
+	return WarbandComms.ResolveTrackerName(tracker) or tracker
+end
+
+local function UpdateTrackerDimensionCache(tracker, width, height)
+	TRACKER_DIMENSION_CACHE[GetTrackerCacheKey(tracker)] = {
+		width = width,
+		height = height,
+	}
+end
 
 local function GetTrackerWindowWidth(window)
 	local width = WarbandComms.GetTrackerWidth()
@@ -68,19 +84,28 @@ local function GetTrackerWindowWidth(window)
 end
 
 local function FitHeaderTextToTracker(tracker, title, requestedScale)
-	local window = WarbandComms.AddonName .. tracker:upper()
+	local resolvedTracker = WarbandComms.ResolveTrackerName(tracker) or tracker
+	local window = WarbandComms.AddonName .. tostring(resolvedTracker):upper()
 	local width = GetTrackerWindowWidth(window)
 	local clampedScale = math.max(0.7, math.min(1.8, requestedScale or 1.0))
-	local usablePixels = nil
-	if WindowGetDimensions then
-		local titleWidth = WindowGetDimensions(window .. "Title")
-		if titleWidth and titleWidth > 0 then
-			usablePixels = math.max(24, titleWidth - 4)
-		end
+	-- Always derive usable pixels from box width and summary block math.
+	-- WindowGetDimensions on a label returns content/text width, not the
+	-- constrained window width, so it cannot be trusted for space estimation.
+	local summaryScale = math.min(clampedScale, 1.0)
+	local summaryCountWidth = math.max(1, math.floor((HEADER_SUMMARY_COUNT_WIDTH * summaryScale) + 0.5))
+	local summarySepWidth = math.max(1, math.floor((HEADER_SUMMARY_SEPARATOR_WIDTH * summaryScale) + 0.5))
+	local summaryTotalWidth = (summaryCountWidth * 3) + (summarySepWidth * 2) + HEADER_SUMMARY_RIGHT_PAD + 4
+	local usablePixels = math.max(24, width - 12 - summaryTotalWidth)
+	local shortTitles = TRACKER_SHORT_TITLES[resolvedTracker] or TRACKER_SHORT_TITLES[string.lower(tostring(resolvedTracker))] or {}
+
+	if usablePixels <= HEADER_COMPACT_HIDE_TITLE_PIXELS then
+		return "", clampedScale
 	end
-	if not usablePixels then
-		usablePixels = math.max(24, width - 12 - HEADER_SUMMARY_TOTAL_WIDTH)
+
+	if usablePixels <= HEADER_COMPACT_SHORT_TITLE_PIXELS and #shortTitles > 0 then
+		return shortTitles[1], clampedScale
 	end
+
 	local avgCharPixels = math.max(1, 6 * clampedScale)
 	local maxChars = math.max(4, math.floor(usablePixels / avgCharPixels))
 	local paddedTitle = HEADER_TEXT_PAD .. title .. HEADER_TEXT_PAD
@@ -88,7 +113,6 @@ local function FitHeaderTextToTracker(tracker, title, requestedScale)
 		return title, clampedScale
 	end
 
-	local shortTitles = TRACKER_SHORT_TITLES[tracker] or {}
 	for _, shortTitle in ipairs(shortTitles) do
 		local paddedShortTitle = HEADER_TEXT_PAD .. shortTitle .. HEADER_TEXT_PAD
 		if string.len(paddedShortTitle) <= maxChars then
@@ -100,11 +124,12 @@ local function FitHeaderTextToTracker(tracker, title, requestedScale)
 end
 
 local function FormatTrackerTitle(tracker)
-	if TRACKER_TITLES[tracker] then
-		return TRACKER_TITLES[tracker]
+	local resolvedTracker = WarbandComms.ResolveTrackerName(tracker) or tracker
+	if TRACKER_TITLES[resolvedTracker] then
+		return TRACKER_TITLES[resolvedTracker]
 	end
 
-	local title = tracker or ""
+	local title = resolvedTracker or ""
 	title = string.gsub(title, "(%l)(%u)", "%1 %2")
 	return string.gsub(title, "^%l", string.upper)
 end
@@ -180,39 +205,94 @@ local function GetTrackerRowMetrics(rowScale)
 	return iconWidth, timerWidth, nameOffset
 end
 
+local function GetTrackerRowDisplayMode(windowWidth)
+	if (windowWidth or 0) <= ROW_ICON_TIMER_ONLY_WIDTH then
+		return "icon_timer_only"
+	end
+
+	return "normal"
+end
+
 local function GetTrackerRowHeight(rowScale, iconWidth)
 	local textHeight = math.floor((12 * rowScale) + 0.5)
 	return math.max(12, iconWidth, textHeight)
 end
 
-local function FitNameToTrackerRow(tracker, name)
-	local width = WarbandComms.GetTrackerWidth()
-	local scale = WarbandComms.GetRowTextScale()
-
+local function GetVisibleTrackerRowCount(tracker)
 	local window = WarbandComms.AddonName .. tracker:upper()
-	if WindowGetDimensions then
-		local currentWidth = WindowGetDimensions(window)
-		if currentWidth and currentWidth > 0 then
-			width = currentWidth
-		end
+	local _, windowHeight = WindowGetDimensions(window)
+	local rowScale = WarbandComms.GetRowTextScale()
+	local iconWidth = select(1, GetTrackerRowMetrics(rowScale))
+	local rowHeight = math.max(1, GetTrackerRowHeight(rowScale, iconWidth))
+	local usableListHeight = rowHeight
+
+	if windowHeight and windowHeight > 15 then
+		usableListHeight = math.max(rowHeight, windowHeight - 15)
 	end
+
+	local visibleRows = math.floor(usableListHeight / rowHeight)
+	return math.max(1, math.min(12, visibleRows))
+end
+
+local function SyncTrackerDimensionsAndLayout(tracker, requestedWidth, requestedHeight)
+	local window = WarbandComms.AddonName .. tracker:upper()
+	local currentWidth, currentHeight = WindowGetDimensions(window)
+
+	if not currentWidth or currentWidth <= 0 then
+		currentWidth = WarbandComms.GetTrackerWidth()
+	end
+	if not currentHeight or currentHeight <= 0 then
+		currentHeight = WarbandComms.GetTrackerHeight()
+	end
+
+	local targetWidth = WarbandComms.ClampTrackerWidth(requestedWidth or currentWidth)
+	local targetHeight = WarbandComms.ClampTrackerHeight(requestedHeight or currentHeight)
+
+	if currentWidth ~= targetWidth or currentHeight ~= targetHeight then
+		WindowSetDimensions(window, targetWidth, targetHeight)
+	end
+
+	WarbandComms.ApplyTrackerInternalLayout(tracker)
+	WarbandComms.ApplyTrackerHeaderAppearance(tracker)
+	UpdateTrackerDimensionCache(tracker, targetWidth, targetHeight)
+
+	return targetWidth, targetHeight
+end
+
+local function SyncTrackerLayoutIfDimensionsChangedExternally(tracker)
+	local window = WarbandComms.AddonName .. tracker:upper()
+	local currentWidth, currentHeight = WindowGetDimensions(window)
+	if not currentWidth or currentWidth <= 0 or not currentHeight or currentHeight <= 0 then
+		return false
+	end
+
+	local cached = TRACKER_DIMENSION_CACHE[GetTrackerCacheKey(tracker)]
+	if not cached then
+		UpdateTrackerDimensionCache(tracker, currentWidth, currentHeight)
+		return false
+	end
+
+	if cached.width == currentWidth and cached.height == currentHeight then
+		return false
+	end
+
+	SyncTrackerDimensionsAndLayout(tracker, currentWidth, currentHeight)
+	return true
+end
+
+local function FitNameToTrackerRow(tracker, name)
+	local window = WarbandComms.AddonName .. tracker:upper()
+	local width = GetTrackerWindowWidth(window)
+	local scale = WarbandComms.GetRowTextScale()
 
 	if not name or name == "" then return "" end
 
-	-- Prefer the live first-row name label width; this tracks runtime box resizing.
-	local usablePixels = nil
-	if WindowGetDimensions then
-		local nameLabelWidth = WindowGetDimensions(window .. "ListRow1Name")
-		if nameLabelWidth and nameLabelWidth > 0 then
-			usablePixels = math.max(12, nameLabelWidth - 2)
-		end
+	if GetTrackerRowDisplayMode(width) == "icon_timer_only" then
+		return ""
 	end
 
-	if not usablePixels then
-		-- Fallback to row layout math when row controls are not yet initialized.
-		local _, timerWidth, nameOffset = GetTrackerRowMetrics(scale)
-		usablePixels = math.max(12, width - (nameOffset + timerWidth + 8))
-	end
+	local _, timerWidth, nameOffset = GetTrackerRowMetrics(scale)
+	local usablePixels = math.max(12, width - (nameOffset + timerWidth + 8))
 
 	local avgCharPixels = math.max(1, 6 * scale)
 	local maxChars = math.max(4, math.floor(usablePixels / avgCharPixels))
@@ -232,6 +312,7 @@ function WarbandComms.ApplyTextScale(tracker)
 	local window = WarbandComms.AddonName .. tracker:upper()
 	local rowScale = WarbandComms.GetRowTextScale()
 	WarbandComms.ApplyTrackerHeaderAppearance(tracker)
+	WarbandComms.ApplyTrackerInternalLayout(tracker)
 
 	local listWindow = window .. "ListRow"
 	for i = 1, 12 do
@@ -245,15 +326,20 @@ function WarbandComms.ApplyTrackerInternalLayout(tracker)
 	local window = WarbandComms.AddonName .. tracker:upper()
 	local width = GetTrackerWindowWidth(window)
 	local rowScale = WarbandComms.GetRowTextScale()
-	local summaryCountWidth = math.max(1, math.floor((HEADER_SUMMARY_COUNT_WIDTH * rowScale) + 0.5))
-	local summarySepWidth = math.max(1, math.floor((HEADER_SUMMARY_SEPARATOR_WIDTH * rowScale) + 0.5))
+	local rowMode = GetTrackerRowDisplayMode(width)
+	-- Summary counters are tied to header scale, capped at 1.0 so they never
+	-- grow beyond their base size regardless of header text scale setting.
+	local headerScale = WarbandComms.GetHeaderTextScale()
+	local summaryScale = math.min(headerScale, 1.0)
+	local summaryCountWidth = math.max(1, math.floor((HEADER_SUMMARY_COUNT_WIDTH * summaryScale) + 0.5))
+	local summarySepWidth = math.max(1, math.floor((HEADER_SUMMARY_SEPARATOR_WIDTH * summaryScale) + 0.5))
 	local summaryTotalWidth = (summaryCountWidth * 3) + (summarySepWidth * 2) + HEADER_SUMMARY_RIGHT_PAD + 4
 
-	WindowSetScale(window .. "SummaryReady", rowScale)
-	WindowSetScale(window .. "SummaryActive", rowScale)
-	WindowSetScale(window .. "SummaryCooldown", rowScale)
-	WindowSetScale(window .. "SummarySep1", rowScale)
-	WindowSetScale(window .. "SummarySep2", rowScale)
+	WindowSetScale(window .. "SummaryReady", 1.0)
+	WindowSetScale(window .. "SummaryActive", 1.0)
+	WindowSetScale(window .. "SummaryCooldown", 1.0)
+	WindowSetScale(window .. "SummarySep1", 1.0)
+	WindowSetScale(window .. "SummarySep2", 1.0)
 
 	local titleName = window .. "Title"
 	WindowSetDimensions(titleName, math.max(40, width - 12 - summaryTotalWidth), 20)
@@ -298,6 +384,9 @@ function WarbandComms.ApplyTrackerInternalLayout(tracker)
 	local rowHeight = GetTrackerRowHeight(rowScale, iconWidth)
 	local iconYOffset = math.max(0, math.floor((rowHeight - iconWidth) / 2))
 	local nameWidth = math.max(12, width - (nameOffset + timerWidth + 8))
+	if rowMode == "icon_timer_only" then
+		nameWidth = 1
+	end
 	for i = 1, 12 do
 		local rowName = rowBase .. i
 		WindowSetDimensions(rowName, width, rowHeight)
@@ -309,20 +398,39 @@ function WarbandComms.ApplyTrackerInternalLayout(tracker)
 		WindowAddAnchor(rowName .. "Name", "topleft", rowName, "topleft", nameOffset, 0)
 		WindowSetDimensions(rowName .. "Timer", timerWidth, rowHeight)
 		WindowClearAnchors(rowName .. "Timer")
-		WindowAddAnchor(rowName .. "Timer", "topright", rowName, "topright", -2, 0)
+		if rowMode == "icon_timer_only" then
+			WindowAddAnchor(rowName .. "Timer", "topleft", rowName, "topleft", nameOffset + 1, 0)
+		else
+			WindowAddAnchor(rowName .. "Timer", "topright", rowName, "topright", -2, 0)
+		end
 	end
 end
 
 function WarbandComms.ApplyTrackerDimensions(tracker)
-	local window = WarbandComms.AddonName .. tracker:upper()
-	WindowSetDimensions(window, WarbandComms.GetTrackerWidth(), WarbandComms.GetTrackerHeight())
-	WarbandComms.ApplyTrackerInternalLayout(tracker)
+	SyncTrackerDimensionsAndLayout(tracker, WarbandComms.GetTrackerWidth(), WarbandComms.GetTrackerHeight())
 end
 
 function WarbandComms.ApplyTrackerDimensionsUniform(tracker)
 	local window = WarbandComms.AddonName .. tracker:upper()
 	WindowSetScale(window, 1.0)
 	WarbandComms.ApplyTrackerDimensions(tracker)
+end
+
+-- Reads the tracker's live window dimensions and normalises them through
+-- the clamp + layout pipeline, then updates the dimension cache.
+-- Call this when an external source (e.g. LayoutEditor) may have changed
+-- a window's size and the internal state needs to be brought in sync before
+-- any subsequent relative adjustments are made.
+function WarbandComms.NormalizeTrackerToLiveDimensions(tracker)
+	local window = WarbandComms.AddonName .. tracker:upper()
+	local liveWidth, liveHeight = WindowGetDimensions(window)
+	if not liveWidth or liveWidth <= 0 then
+		liveWidth = WarbandComms.GetTrackerWidth()
+	end
+	if not liveHeight or liveHeight <= 0 then
+		liveHeight = WarbandComms.GetTrackerHeight()
+	end
+	SyncTrackerDimensionsAndLayout(tracker, liveWidth, liveHeight)
 end
 
 function WarbandComms.AdjustTrackerDimensionsRelative(tracker, deltaWidth, deltaHeight)
@@ -337,8 +445,7 @@ function WarbandComms.AdjustTrackerDimensionsRelative(tracker, deltaWidth, delta
 
 	local nextWidth = WarbandComms.ClampTrackerWidth(currentWidth + (deltaWidth or 0))
 	local nextHeight = WarbandComms.ClampTrackerHeight(currentHeight + (deltaHeight or 0))
-	WindowSetDimensions(window, nextWidth, nextHeight)
-	WarbandComms.ApplyTrackerInternalLayout(tracker)
+	SyncTrackerDimensionsAndLayout(tracker, nextWidth, nextHeight)
 end
 
 function WarbandComms.ApplyTrackerBackgroundAlpha(tracker)
@@ -382,16 +489,21 @@ end
 function WarbandComms.UpdateUI(tracker, abilityList, nearlyReadyTime)
 	local window = WarbandComms.AddonName .. tracker:upper()
     if not WindowGetShowing(window) then return end
-	WarbandComms.ApplyTrackerInternalLayout(tracker)
+	SyncTrackerLayoutIfDimensionsChangedExternally(tracker)
 	WarbandComms.ApplyTextScale(tracker)
 	local readyCount, activeCount, cooldownCount = GetTrackerStateCounts(abilityList)
 	UpdateTrackerHeaderSummary(tracker, readyCount, activeCount, cooldownCount)
 
 	local listWindow = window .. "ListRow"
 	local listIndex = 1
+	local maxVisibleRows = GetVisibleTrackerRowCount(tracker)
 	for i, member in pairs(WarbandComms.WarbandMap) do
 		local trackedMember = abilityList[member.name]
 		if trackedMember then
+			if listIndex > maxVisibleRows then
+				break
+			end
+
 			local listName = listWindow .. listIndex .. "Name"
 			local listTimer = listWindow .. listIndex .. "Timer"
 			local name = trackedMember.name
@@ -406,7 +518,7 @@ function WarbandComms.UpdateUI(tracker, abilityList, nearlyReadyTime)
 			LabelSetText(listWindow .. listIndex .. "Icon", towstring(careerIcon))
 
 			if timer <= 0 then
-				LabelSetText(listTimer, towstring(""))
+				LabelSetText(listTimer, towstring("0"))
 				LabelSetTextColor(listName, 92, 195, 0)
 				LabelSetTextColor(listTimer, 92, 195, 0)
 			else

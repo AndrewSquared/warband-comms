@@ -4,6 +4,19 @@ Unreleased
 - removed header summary slash separators and tightened spacing for cleaner count alignment
 - updated config center value labels (between [-] and [+]) to render white for better consistency
 - added label-only config tooltip placeholders (static labels and dynamic tracker/notification labels)
+- fixed header summary counters scaling with row text size; counters now follow header text scale, capped at default size
+- fixed counter positions not updating when text scale changes (ApplyTextScale now re-runs layout)
+- fixed header title text not abbreviating at small box sizes; space estimation now derived from box width instead of label content dimensions
+- fixed header title text not re-fitting when box width changes; resize paths now re-evaluate title fit after layout
+- fixed tracker key normalization in header title fitting so Challenge consistently resolves to short title behavior (`CHAL`) in compact widths
+- added compact header thresholds: force short title at small widths and hide title text at extreme small form factors
+- added deterministic compact row mode at narrow widths (<=140): row names are hidden and rows render as class icon + colored timer for legibility
+- added external tracker-dimension change detection and cache-based re-sync so LayoutEditor-resized windows are normalized through the same layout/header pass
+- fixed Relative resize mode now normalizes LayoutEditor-set window sizes through the clamp pipeline on mode switch, preventing stale baselines from causing mismatched widths when +/- buttons are pressed
+- fixed ready-state timer now shows green "0" instead of blank so at-a-glance status is unambiguous
+- hardened compact header title visibility thresholds so short tracker titles remain visible across the small-width clamp range during downward resize transitions
+- widened Resize Mode value control so "Uniform" and "Relative" labels render fully (no "Unifor"/"Relati" clipping confusion)
+- fixed short-height tracker overflow by capping rendered rows to available tracker height, preventing text/icon spill when boxes are vertically compressed
 
 3.6.0 (Andrew Karstaedt)
 

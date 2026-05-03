@@ -41,6 +41,7 @@ WarbandComms.SendChatQueue = {}
 WarbandComms.SendChatQueuedByAction = {}
 WarbandComms.TrackerKeyByLower = {}
 WarbandComms.suppressTrackerWindowSync = false
+WarbandComms.startupTrackerSelfHealPasses = 0
 WarbandComms.DefaultTrackerWidth = 125
 WarbandComms.DefaultTrackerHeight = 113
 
@@ -56,8 +57,8 @@ local LEGACY_ORDER_COMMS_KEY = "[RET]"
 local LEGACY_DESTRO_COMMS_KEY = "[DEVA]"
 
 WarbandComms.trackedAbilities = {
-	[28301] = {name = "LTC", cooldown = 120, duration = 10, tracker= "LTC", nofify=true},
-	[27044] = {name = "Into The Fray", cooldown = 120, duration = 4, tracker= "LTC", notify=true},
+	[28301] = {name = "Leading the Charge", cooldown = 120, duration = 10, tracker= "LTC", notify=true},
+	[27044] = {name = "Leading the Charge", cooldown = 120, duration = 4, tracker= "LTC", notify=true},
 	[613] = {name = "Immaculate Defense", cooldown = 180, duration = 10, tracker= "ID", notify=true, fixedCooldown=true},
 	-- Challenges for tanks
 	[8021] = {name = "Challenge", cooldown = 30, duration=7, tracker= "challenge"}, --KOTBS
@@ -191,6 +192,15 @@ function WarbandComms.IsTrackerVisible(trackerName)
 		and WarbandComms.Settings[trackerName] == true
 end
 
+function WarbandComms.GetTrackerWindowName(trackerName)
+	trackerName = WarbandComms.ResolveTrackerName(trackerName)
+	if not trackerName then return nil end
+
+	-- Use a dedicated prefix so stale per-window client settings from older
+	-- versions cannot keep forcing trackers into broken phantom states.
+	return WarbandComms.AddonName .. "Tracker" .. trackerName:upper()
+end
+
 function WarbandComms.NormalizeTrackerSettingsKeys()
 	for lowerName, trackerName in pairs(WarbandComms.TrackerKeyByLower) do
 		if lowerName ~= trackerName and WarbandComms.Settings[lowerName] ~= nil then
@@ -211,7 +221,7 @@ function WarbandComms.SetTrackerWindowVisibility(trackerName)
 	trackerName = WarbandComms.ResolveTrackerName(trackerName)
 	if not trackerName then return end
 
-	local uiName = WarbandComms.AddonName .. trackerName:upper()
+	local uiName = WarbandComms.GetTrackerWindowName(trackerName)
 	local isVisible = WarbandComms.IsTrackerVisible(trackerName)
 	WarbandComms.suppressTrackerWindowSync = true
 	WindowSetShowing(uiName, isVisible)
@@ -235,6 +245,10 @@ end
 function WarbandComms.CleanupLegacyLayoutWindows()
 	if not LayoutEditor or not LayoutEditor.UnregisterWindow then return end
 
+	for trackerName, _ in pairs(WarbandComms.Trackers) do
+		LayoutEditor.UnregisterWindow(WarbandComms.AddonName .. trackerName:upper())
+	end
+
 	-- Remove legacy typo registrations that can show as phantom white boxes.
 	LayoutEditor.UnregisterWindow(WarbandComms.AddonName .. "INTERUPT")
 	LayoutEditor.UnregisterWindow(WarbandComms.AddonName .. "interupt")
@@ -255,7 +269,7 @@ end
 
 function WarbandComms.ClampTrackerWidth(value)
 	local numeric = tonumber(value) or WarbandComms.DefaultTrackerWidth
-	return min(360, max(120, math.floor(numeric + 0.5)))
+	return min(360, max(100, math.floor(numeric + 0.5)))
 end
 
 function WarbandComms.ClampTrackerHeight(value)
@@ -406,6 +420,7 @@ function WarbandComms.OnInitialize()
 	for trackerName, data in pairs(WarbandComms.Trackers) do
 		WarbandComms.CreateUI(trackerName)
 	end
+	WarbandComms.startupTrackerSelfHealPasses = 4
 
 	local careerId = GameData.Player.career.id
     local PlayerCareerLine = WarbandComms.CareerIdToLine[careerId]
@@ -540,6 +555,16 @@ function WarbandComms.OnUpdate(elapsed)
     -- Check and update UI/timers every throttle1 (1.0s)
     if WarbandComms.elapsed - (WarbandComms.lastUIUpdate or 0) >= throttle1 then
         WarbandComms.lastUIUpdate = WarbandComms.elapsed
+
+		if WarbandComms.startupTrackerSelfHealPasses and WarbandComms.startupTrackerSelfHealPasses > 0 then
+			for trackerName, _ in pairs(WarbandComms.Trackers) do
+				WarbandComms.NormalizeTrackerToLiveDimensions(trackerName)
+				WarbandComms.ApplyTextScale(trackerName)
+				WarbandComms.ApplyTrackerBackgroundAlpha(trackerName)
+				WarbandComms.SetTrackerWindowVisibility(trackerName)
+			end
+			WarbandComms.startupTrackerSelfHealPasses = WarbandComms.startupTrackerSelfHealPasses - 1
+		end
 
 		if WarbandComms.EnqueueBattleGroupUpdate then
 			WarbandComms.MapWarbandMembers()

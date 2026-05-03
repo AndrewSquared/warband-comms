@@ -8,7 +8,7 @@
 					<Size><AbsPoint x="15" y="15" /></Size>
 					<Anchors>
 						<Anchor point="topleft" relativePoint="topleft" relativeTo="$parent">
-							<AbsPoint x="1" y="0" />
+							<AbsPoint x="4" y="0" />
 						</Anchor>
 					</Anchors>
 				</Label>
@@ -16,7 +16,7 @@
 					<Size><AbsPoint x="80" y="15" /></Size>
 					<Anchors>
 						<Anchor point="topleft" relativePoint="topleft" relativeTo="$parent">
-							<AbsPoint x="17" y="0" />
+							<AbsPoint x="21" y="0" />
 						</Anchor>
 					</Anchors>
 				</Label>
@@ -40,7 +40,9 @@
                         <AbsPoint x="0" y="0" />
                 </Anchor>
 			</Anchors>
-			<Size><!--dynamically set --></Size>
+			<Size>
+				<AbsPoint x="125" y="113" />
+			</Size>
 			<Windows>
                 <FullResizeImage name="$parentBackground" inherits="EA_FullResizeImage_TintableSolidBackground">
                     <Anchors>

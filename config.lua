@@ -56,6 +56,29 @@ local TRACKER_LABELS = {
 	interrupt = L"Interrupt",
 }
 
+local TRACKER_HEIGHT_STEP = 10
+
+local function SnapTrackerHeightToStep(value)
+	local minBound = WarbandComms.ClampTrackerHeight(-100000)
+	local maxBound = WarbandComms.ClampTrackerHeight(100000)
+	local minStepIndex = math.ceil((minBound - WarbandComms.DefaultTrackerHeight) / TRACKER_HEIGHT_STEP)
+	local maxStepIndex = math.floor((maxBound - WarbandComms.DefaultTrackerHeight) / TRACKER_HEIGHT_STEP)
+	local rawStepIndex = (value - WarbandComms.DefaultTrackerHeight) / TRACKER_HEIGHT_STEP
+	local stepIndex = math.floor(rawStepIndex + 0.5)
+
+	if stepIndex < minStepIndex then
+		stepIndex = minStepIndex
+	elseif stepIndex > maxStepIndex then
+		stepIndex = maxStepIndex
+	end
+
+	return WarbandComms.DefaultTrackerHeight + (stepIndex * TRACKER_HEIGHT_STEP)
+end
+
+local function NormalizeSteppedTrackerSizeSettings()
+	WarbandComms.Settings.trackerHeight = SnapTrackerHeightToStep(WarbandComms.GetTrackerHeight())
+end
+
 local function IsTrackerVisible(trackerName)
 	return WarbandComms.IsTrackerVisible(trackerName)
 end
@@ -430,6 +453,7 @@ end
 function WarbandComms.InitConfig(version)
     local configWindow = WarbandComms.AddonName .. "Config"
     WarbandComms.configWindow = configWindow -- so OnClose has the exact name
+	NormalizeSteppedTrackerSizeSettings()
 
     -- Config Window
 	CreateWindow(configWindow, true)
@@ -601,22 +625,28 @@ function WarbandComms.IncreaseHeaderStyle()
 end
 
 function WarbandComms.ChangeTrackerWidth(delta)
-	WarbandComms.Settings.trackerWidth = WarbandComms.ClampTrackerWidth(WarbandComms.GetTrackerWidth() + delta)
+	local currentWidth = WarbandComms.GetTrackerWidth()
+	local nextWidth = WarbandComms.ClampTrackerWidth(currentWidth + delta)
+	local appliedDelta = nextWidth - currentWidth
+	WarbandComms.Settings.trackerWidth = nextWidth
 	RefreshSizeLabels()
 	if WarbandComms.GetSizeApplyMode() == "uniform" then
 		ApplyTrackerSizeToAllTrackers()
 	else
-		ApplyTrackerSizeDeltaToAllTrackers(delta, 0)
+		ApplyTrackerSizeDeltaToAllTrackers(appliedDelta, 0)
 	end
 end
 
 function WarbandComms.ChangeTrackerHeight(delta)
-	WarbandComms.Settings.trackerHeight = WarbandComms.ClampTrackerHeight(WarbandComms.GetTrackerHeight() + delta)
+	local currentHeight = WarbandComms.GetTrackerHeight()
+	local nextHeight = SnapTrackerHeightToStep(currentHeight + delta)
+	local appliedDelta = nextHeight - currentHeight
+	WarbandComms.Settings.trackerHeight = nextHeight
 	RefreshSizeLabels()
 	if WarbandComms.GetSizeApplyMode() == "uniform" then
 		ApplyTrackerSizeToAllTrackers()
 	else
-		ApplyTrackerSizeDeltaToAllTrackers(0, delta)
+		ApplyTrackerSizeDeltaToAllTrackers(0, appliedDelta)
 	end
 end
 
@@ -667,6 +697,7 @@ function WarbandComms.ToggleSizeApplyMode()
 		for trackerName, _ in pairs(WarbandComms.Trackers) do
 			WarbandComms.NormalizeTrackerToLiveDimensions(trackerName)
 		end
+		NormalizeSteppedTrackerSizeSettings()
 		EA_ChatWindow.Print(L"[WarbandComms] Resize Mode: Relative (preserve per-tracker size differences)")
 	else
 		WarbandComms.Settings.sizeApplyMode = "uniform"
@@ -746,7 +777,9 @@ function WarbandComms.ToggleTracker()
 		trackerName = WarbandComms.ResolveTrackerName(string.gsub(trackerName, "NOTIFY", ""))
 		if not trackerName then return end
 		WarbandComms.Settings.notifications[trackerName] = not WarbandComms.Settings.notifications[trackerName]
-		ButtonSetPressedFlag(activeWindowName, WarbandComms.Settings.notifications[trackerName])
+		local enabled = WarbandComms.Settings.notifications[trackerName] == true
+		ButtonSetPressedFlag(activeWindowName, enabled)
+		SetEnabledLabelColor(WarbandComms.AddonName .. "Config" .. trackerName:upper() .. "NOTIFYLabel", enabled)
 		return
 	end
 

@@ -83,10 +83,10 @@ local FULL_TRACKER_TEST_TEMPLATE = {
 }
 
 local CENTER_NOTIFICATION_TEST_TEMPLATE = {
-    {careerLine = GameData.CareerLine.KNIGHT, label = "LTC"},
-    {careerLine = GameData.CareerLine.CHOSEN, label = "LTC"},
-    {careerLine = GameData.CareerLine.BLACKGUARD, label = "Immaculate Defense"},
-    {careerLine = GameData.CareerLine.BLACK_ORC, label = "Immaculate Defense"},
+    {careerLine = GameData.CareerLine.KNIGHT, tracker = "LTC", duration = 10, cooldown = 120},
+    {careerLine = GameData.CareerLine.CHOSEN, tracker = "LTC", duration = 4, cooldown = 120},
+    {careerLine = GameData.CareerLine.BLACKGUARD, tracker = "ID", duration = 10, cooldown = 180},
+    {careerLine = GameData.CareerLine.BLACK_ORC, tracker = "ID", duration = 10, cooldown = 180},
 }
 
 local NAME_PREFIXES = {
@@ -181,7 +181,17 @@ local function BuildCenterNotificationTestData(generatedNamesByCareer)
     local notifications = {}
 
     for _, entry in ipairs(CENTER_NOTIFICATION_TEST_TEMPLATE) do
-        notifications[#notifications + 1] = generatedNamesByCareer[entry.careerLine] .. " " .. entry.label
+        local trackerName = WarbandComms.ResolveTrackerName(entry.tracker)
+        if trackerName
+            and WarbandComms.Settings
+            and WarbandComms.Settings.notifications
+            and WarbandComms.Settings.notifications[trackerName] == true then
+            local playerName = generatedNamesByCareer[entry.careerLine]
+            if playerName then
+                local abilityLabel = WarbandComms.GetAbilityNameFromTrackerPayload(trackerName, entry.duration, entry.cooldown)
+                notifications[#notifications + 1] = playerName .. " " .. abilityLabel
+            end
+        end
     end
 
     return notifications
@@ -251,11 +261,16 @@ function WarbandComms.StartCenterNotificationTest()
     local _, generatedNamesByCareer = BuildGeneratedTestData()
     local centerNotificationTestData = BuildCenterNotificationTestData(generatedNamesByCareer)
 
+    if #centerNotificationTestData == 0 then
+        EA_ChatWindow.Print(towstring("[WarbandComms] Center-screen notification test skipped (no notification trackers enabled)."))
+        return
+    end
+
     for _, textLine in ipairs(centerNotificationTestData) do
         AlertTextWindow.AddLine(SystemData.AlertText.Types.RVR, towstring(textLine))
     end
 
-    EA_ChatWindow.Print(towstring("[WarbandComms] Center-screen notification test fired (LTC + ID)."))
+    EA_ChatWindow.Print(towstring("[WarbandComms] Center-screen notification test fired for enabled trackers."))
 end
 
 function WarbandComms.AddTestAbility(name, ability, timer, duration, careerIcon, cooldown)

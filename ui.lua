@@ -71,7 +71,16 @@ local function FitHeaderTextToTracker(tracker, title, requestedScale)
 	local window = WarbandComms.AddonName .. tracker:upper()
 	local width = GetTrackerWindowWidth(window)
 	local clampedScale = math.max(0.7, math.min(1.8, requestedScale or 1.0))
-	local usablePixels = math.max(24, width - 12 - HEADER_SUMMARY_TOTAL_WIDTH)
+	local usablePixels = nil
+	if WindowGetDimensions then
+		local titleWidth = WindowGetDimensions(window .. "Title")
+		if titleWidth and titleWidth > 0 then
+			usablePixels = math.max(24, titleWidth - 4)
+		end
+	end
+	if not usablePixels then
+		usablePixels = math.max(24, width - 12 - HEADER_SUMMARY_TOTAL_WIDTH)
+	end
 	local avgCharPixels = math.max(1, 6 * clampedScale)
 	local maxChars = math.max(4, math.floor(usablePixels / avgCharPixels))
 	local paddedTitle = HEADER_TEXT_PAD .. title .. HEADER_TEXT_PAD
@@ -179,7 +188,6 @@ end
 local function FitNameToTrackerRow(tracker, name)
 	local width = WarbandComms.GetTrackerWidth()
 	local scale = WarbandComms.GetRowTextScale()
-	local windowScale = 1.0
 
 	local window = WarbandComms.AddonName .. tracker:upper()
 	if WindowGetDimensions then
@@ -188,19 +196,25 @@ local function FitNameToTrackerRow(tracker, name)
 			width = currentWidth
 		end
 	end
-	if WindowGetScale then
-		local currentScale = WindowGetScale(window)
-		if currentScale and currentScale > 0 then
-			windowScale = currentScale
-		end
-	end
 
 	if not name or name == "" then return "" end
 
-	-- Match row layout math so text fitting stays consistent with live anchors/sizes.
-	local _, timerWidth, nameOffset = GetTrackerRowMetrics(scale)
-	local usablePixels = math.max(12, width - (nameOffset + timerWidth + 8))
-	local avgCharPixels = math.max(1, 6 * scale * windowScale)
+	-- Prefer the live first-row name label width; this tracks runtime box resizing.
+	local usablePixels = nil
+	if WindowGetDimensions then
+		local nameLabelWidth = WindowGetDimensions(window .. "ListRow1Name")
+		if nameLabelWidth and nameLabelWidth > 0 then
+			usablePixels = math.max(12, nameLabelWidth - 2)
+		end
+	end
+
+	if not usablePixels then
+		-- Fallback to row layout math when row controls are not yet initialized.
+		local _, timerWidth, nameOffset = GetTrackerRowMetrics(scale)
+		usablePixels = math.max(12, width - (nameOffset + timerWidth + 8))
+	end
+
+	local avgCharPixels = math.max(1, 6 * scale)
 	local maxChars = math.max(4, math.floor(usablePixels / avgCharPixels))
 
 	if string.len(name) <= maxChars then
@@ -231,6 +245,9 @@ function WarbandComms.ApplyTrackerInternalLayout(tracker)
 	local window = WarbandComms.AddonName .. tracker:upper()
 	local width = GetTrackerWindowWidth(window)
 	local rowScale = WarbandComms.GetRowTextScale()
+	local summaryCountWidth = math.max(1, math.floor((HEADER_SUMMARY_COUNT_WIDTH * rowScale) + 0.5))
+	local summarySepWidth = math.max(1, math.floor((HEADER_SUMMARY_SEPARATOR_WIDTH * rowScale) + 0.5))
+	local summaryTotalWidth = (summaryCountWidth * 3) + (summarySepWidth * 2) + HEADER_SUMMARY_RIGHT_PAD + 4
 
 	WindowSetScale(window .. "SummaryReady", rowScale)
 	WindowSetScale(window .. "SummaryActive", rowScale)
@@ -239,7 +256,7 @@ function WarbandComms.ApplyTrackerInternalLayout(tracker)
 	WindowSetScale(window .. "SummarySep2", rowScale)
 
 	local titleName = window .. "Title"
-	WindowSetDimensions(titleName, math.max(40, width - 12 - HEADER_SUMMARY_TOTAL_WIDTH), 20)
+	WindowSetDimensions(titleName, math.max(40, width - 12 - summaryTotalWidth), 20)
 
 	local summaryReady = window .. "SummaryReady"
 	local summaryActive = window .. "SummaryActive"
@@ -250,23 +267,23 @@ function WarbandComms.ApplyTrackerInternalLayout(tracker)
 	-- Offsets from window topright, computed left-to-right from the right edge.
 	-- Layout (right to left): [pad][cooldown][sep2][active][sep1][ready]
 	local cdRight   = -HEADER_SUMMARY_RIGHT_PAD
-	local sep2Right = cdRight   - HEADER_SUMMARY_COUNT_WIDTH
-	local actRight  = sep2Right - HEADER_SUMMARY_SEPARATOR_WIDTH
-	local sep1Right = actRight  - HEADER_SUMMARY_COUNT_WIDTH
-	local rdyRight  = sep1Right - HEADER_SUMMARY_SEPARATOR_WIDTH
-	WindowSetDimensions(summaryCooldown, HEADER_SUMMARY_COUNT_WIDTH, 20)
+	local sep2Right = cdRight   - summaryCountWidth
+	local actRight  = sep2Right - summarySepWidth
+	local sep1Right = actRight  - summaryCountWidth
+	local rdyRight  = sep1Right - summarySepWidth
+	WindowSetDimensions(summaryCooldown, summaryCountWidth, 20)
 	WindowClearAnchors(summaryCooldown)
 	WindowAddAnchor(summaryCooldown, "topright", window, "topright", cdRight, headerY)
-	WindowSetDimensions(summarySep2, HEADER_SUMMARY_SEPARATOR_WIDTH, 20)
+	WindowSetDimensions(summarySep2, summarySepWidth, 20)
 	WindowClearAnchors(summarySep2)
 	WindowAddAnchor(summarySep2, "topright", window, "topright", sep2Right, headerY)
-	WindowSetDimensions(summaryActive, HEADER_SUMMARY_COUNT_WIDTH, 20)
+	WindowSetDimensions(summaryActive, summaryCountWidth, 20)
 	WindowClearAnchors(summaryActive)
 	WindowAddAnchor(summaryActive, "topright", window, "topright", actRight, headerY)
-	WindowSetDimensions(summarySep1, HEADER_SUMMARY_SEPARATOR_WIDTH, 20)
+	WindowSetDimensions(summarySep1, summarySepWidth, 20)
 	WindowClearAnchors(summarySep1)
 	WindowAddAnchor(summarySep1, "topright", window, "topright", sep1Right, headerY)
-	WindowSetDimensions(summaryReady, HEADER_SUMMARY_COUNT_WIDTH, 20)
+	WindowSetDimensions(summaryReady, summaryCountWidth, 20)
 	WindowClearAnchors(summaryReady)
 	WindowAddAnchor(summaryReady, "topright", window, "topright", rdyRight, headerY)
 

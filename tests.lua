@@ -3,84 +3,189 @@ WarbandComms.testing = false
 
 local testStep = 0
 local TEST_RUNTIME_SECONDS = 45
+local testNameRun = 0
 
-local TEST_WARBAND = {
+local TEST_WARBAND_TEMPLATE = {
     [1] = {
         players = {
-            {name = "Knight", careerLine = GameData.CareerLine.KNIGHT},
-            {name = "Swordmaster", careerLine = GameData.CareerLine.SWORDMASTER},
-            {name = "Ironbreaker", careerLine = GameData.CareerLine.IRON_BREAKER},
-            {name = "Blackguard", careerLine = GameData.CareerLine.BLACKGUARD},
-            {name = "Black Orc", careerLine = GameData.CareerLine.BLACK_ORC},
-            {name = "Chosen", careerLine = GameData.CareerLine.CHOSEN},
+            {careerLine = GameData.CareerLine.KNIGHT},
+            {careerLine = GameData.CareerLine.SWORDMASTER},
+            {careerLine = GameData.CareerLine.IRON_BREAKER},
+            {careerLine = GameData.CareerLine.BLACKGUARD},
+            {careerLine = GameData.CareerLine.BLACK_ORC},
+            {careerLine = GameData.CareerLine.CHOSEN},
         },
     },
     [2] = {
         players = {
-            {name = "White Lion", careerLine = GameData.CareerLine.WHITE_LION},
-            {name = "Slayer", careerLine = GameData.CareerLine.SLAYER},
-            {name = "Witch Hunter", careerLine = GameData.CareerLine.WITCH_HUNTER},
-            {name = "Marauder", careerLine = GameData.CareerLine.MARAUDER},
-            {name = "Choppa", careerLine = GameData.CareerLine.CHOPPA},
-            {name = "Witch Elf", careerLine = GameData.CareerLine.WITCH_ELF},
+            {careerLine = GameData.CareerLine.WHITE_LION},
+            {careerLine = GameData.CareerLine.SLAYER},
+            {careerLine = GameData.CareerLine.WITCH_HUNTER},
+            {careerLine = GameData.CareerLine.MARAUDER},
+            {careerLine = GameData.CareerLine.CHOPPA},
+            {careerLine = GameData.CareerLine.WITCH_ELF},
 
         },
     },
     [3] = {
         players = {
-            {name = "Bright Wizard", careerLine = GameData.CareerLine.BRIGHT_WIZARD},
-            {name = "Shadow Warrior", careerLine = GameData.CareerLine.SHADOW_WARRIOR},
-            {name = "Engineer", careerLine = GameData.CareerLine.ENGINEER},
-            {name = "Sorcerer", careerLine = GameData.CareerLine.SORCERER},
-            {name = "Squig Herder", careerLine = GameData.CareerLine.SQUIG_HERDER},
-            {name = "Magus", careerLine = GameData.CareerLine.MAGUS},
+            {careerLine = GameData.CareerLine.BRIGHT_WIZARD},
+            {careerLine = GameData.CareerLine.SHADOW_WARRIOR},
+            {careerLine = GameData.CareerLine.ENGINEER},
+            {careerLine = GameData.CareerLine.SORCERER},
+            {careerLine = GameData.CareerLine.SQUIG_HERDER},
+            {careerLine = GameData.CareerLine.MAGUS},
         },
     },
     [4] = {
         players = {
-            {name = "Warrior Priest", careerLine = GameData.CareerLine.WARRIOR_PRIEST},
-            {name = "Rune Priest", careerLine = GameData.CareerLine.RUNE_PRIEST},
-            {name = "Archmage", careerLine = GameData.CareerLine.ARCHMAGE},
-            {name = "Shaman", careerLine = GameData.CareerLine.SHAMAN},
-            {name = "Disciple", careerLine = GameData.CareerLine.DISCIPLE},
-            {name = "Zealot", careerLine = GameData.CareerLine.ZEALOT},
+            {careerLine = GameData.CareerLine.WARRIOR_PRIEST},
+            {careerLine = GameData.CareerLine.RUNE_PRIEST},
+            {careerLine = GameData.CareerLine.ARCHMAGE},
+            {careerLine = GameData.CareerLine.SHAMAN},
+            {careerLine = GameData.CareerLine.DISCIPLE},
+            {careerLine = GameData.CareerLine.ZEALOT},
         },
     },
 }
 
-local FULL_TRACKER_TEST_DATA = {
+local FULL_TRACKER_TEST_TEMPLATE = {
     challenge = {
-        {name = "Knight", timer = 30, cooldown = 30, duration = 7, careerLine = GameData.CareerLine.KNIGHT},
-        {name = "Swordmaster", timer = 22, cooldown = 30, duration = 7, careerLine = GameData.CareerLine.SWORDMASTER},
-        {name = "Ironbreaker", timer = 11, cooldown = 30, duration = 7, careerLine = GameData.CareerLine.IRON_BREAKER},
-        {name = "Blackguard", timer = 0, cooldown = 30, duration = 7, careerLine = GameData.CareerLine.BLACKGUARD},
+        {careerLine = GameData.CareerLine.KNIGHT, timer = 30, cooldown = 30, duration = 7},
+        {careerLine = GameData.CareerLine.SWORDMASTER, timer = 22, cooldown = 30, duration = 7},
+        {careerLine = GameData.CareerLine.IRON_BREAKER, timer = 11, cooldown = 30, duration = 7},
+        {careerLine = GameData.CareerLine.BLACKGUARD, timer = 0, cooldown = 30, duration = 7},
     },
     channels = {
-        {name = "Bright Wizard", timer = 8, cooldown = 8, duration = 3, careerLine = GameData.CareerLine.BRIGHT_WIZARD},
-        {name = "White Lion", timer = 13, cooldown = 13, duration = 3, careerLine = GameData.CareerLine.WHITE_LION},
-        {name = "Marauder", timer = 5, cooldown = 13, duration = 3, careerLine = GameData.CareerLine.MARAUDER},
-        {name = "Slayer", timer = 0, cooldown = 25, duration = 5, careerLine = GameData.CareerLine.SLAYER},
+        {careerLine = GameData.CareerLine.BRIGHT_WIZARD, timer = 8, cooldown = 8, duration = 3},
+        {careerLine = GameData.CareerLine.WHITE_LION, timer = 13, cooldown = 13, duration = 3},
+        {careerLine = GameData.CareerLine.MARAUDER, timer = 5, cooldown = 13, duration = 3},
+        {careerLine = GameData.CareerLine.SLAYER, timer = 0, cooldown = 25, duration = 5},
     },
     interrupt = {
-        {name = "Marauder", timer = 15, cooldown = 15, duration = 2, careerLine = GameData.CareerLine.MARAUDER},
-        {name = "White Lion", timer = 12, cooldown = 15, duration = 2, careerLine = GameData.CareerLine.WHITE_LION},
-        {name = "Swordmaster", timer = 7, cooldown = 15, duration = 2, careerLine = GameData.CareerLine.SWORDMASTER},
-        {name = "Blackguard", timer = 0, cooldown = 15, duration = 2, careerLine = GameData.CareerLine.BLACKGUARD},
+        {careerLine = GameData.CareerLine.MARAUDER, timer = 15, cooldown = 15, duration = 2},
+        {careerLine = GameData.CareerLine.WHITE_LION, timer = 12, cooldown = 15, duration = 2},
+        {careerLine = GameData.CareerLine.SWORDMASTER, timer = 7, cooldown = 15, duration = 2},
+        {careerLine = GameData.CareerLine.BLACKGUARD, timer = 0, cooldown = 15, duration = 2},
     },
     LTC = {
-        {name = "Knight", timer = 120, cooldown = 120, duration = 10, careerLine = GameData.CareerLine.KNIGHT},
-        {name = "Chosen", timer = 95, cooldown = 120, duration = 10, careerLine = GameData.CareerLine.CHOSEN},
-        {name = "Black Orc", timer = 0, cooldown = 120, duration = 10, careerLine = GameData.CareerLine.BLACK_ORC},
-        {name = "Blackguard", timer = 180, cooldown = 180, duration = 10, careerLine = GameData.CareerLine.BLACKGUARD},
+        {careerLine = GameData.CareerLine.KNIGHT, timer = 120, cooldown = 120, duration = 10},
+        {careerLine = GameData.CareerLine.CHOSEN, timer = 95, cooldown = 120, duration = 10},
+		{careerLine = GameData.CareerLine.SWORDMASTER, timer = 40, cooldown = 120, duration = 4},
+        {careerLine = GameData.CareerLine.BLACK_ORC, timer = 0, cooldown = 120, duration = 10},
+        },
+	ID = {
+		{careerLine = GameData.CareerLine.BLACKGUARD, timer = 180, cooldown = 180, duration = 10},
+		{careerLine = GameData.CareerLine.KNIGHT, timer = 140, cooldown = 180, duration = 10},
+		{careerLine = GameData.CareerLine.CHOSEN, timer = 70, cooldown = 180, duration = 10},
+		{careerLine = GameData.CareerLine.IRON_BREAKER, timer = 0, cooldown = 180, duration = 10},
     },
 }
 
-local CENTER_NOTIFICATION_TEST_DATA = {
-    "Knight LTC",
-    "Chosen LTC",
-    "Blackguard Immaculate Defense",
-    "Black Orc Immaculate Defense",
+local CENTER_NOTIFICATION_TEST_TEMPLATE = {
+    {careerLine = GameData.CareerLine.KNIGHT, label = "LTC"},
+    {careerLine = GameData.CareerLine.CHOSEN, label = "LTC"},
+    {careerLine = GameData.CareerLine.BLACKGUARD, label = "Immaculate Defense"},
+    {careerLine = GameData.CareerLine.BLACK_ORC, label = "Immaculate Defense"},
 }
+
+local NAME_PREFIXES = {
+    "Al", "Bar", "Cor", "Da", "El", "Fen", "Gar", "Hal", "Is", "Jar",
+    "Kel", "Lor", "Mor", "Nor", "Or", "Prae", "Qua", "Ryn", "Sar", "Tor",
+    "Ul", "Var", "Wyn", "Xan", "Yor", "Zel",
+}
+
+local NAME_MIDDLES = {
+    "a", "e", "i", "o", "u", "ae", "ia", "or", "ar", "en", "un", "yr",
+}
+
+local NAME_SUFFIXES = {
+    "dor", "grim", "ion", "or", "ar", "eth", "ric", "mir", "drin", "vex",
+    "thas", "mund", "rak", "len", "wyn", "dred", "gorn", "ros", "dain", "vek",
+}
+
+local function HashString(value)
+    local hash = 0
+    for index = 1, string.len(value) do
+        hash = (hash * 33 + string.byte(value, index)) % 2147483647
+    end
+    return hash
+end
+
+local function PickNamePart(parts, seed, salt)
+    local index = ((seed + salt) % #parts) + 1
+    return parts[index]
+end
+
+local function BuildGeneratedName(careerLine, ordinal)
+    local playerName = tostring(WarbandComms.FixString(GameData.Player.name) or "Player")
+    local seed = HashString(playerName) + (careerLine or 0) * 17 + testNameRun * 101 + (ordinal or 0) * 53
+
+    local prefix = PickNamePart(NAME_PREFIXES, seed, 3)
+    local middle = PickNamePart(NAME_MIDDLES, seed, 11)
+    local suffix = PickNamePart(NAME_SUFFIXES, seed, 23)
+
+    return prefix .. middle .. suffix
+end
+
+local function BuildGeneratedTestData()
+    local generatedWarband = {}
+    local generatedNamesByCareer = {}
+    local usedNames = {}
+    local ordinal = 0
+
+    for partyIndex, party in ipairs(TEST_WARBAND_TEMPLATE) do
+        generatedWarband[partyIndex] = { players = {} }
+        for playerIndex, player in ipairs(party.players) do
+            ordinal = ordinal + 1
+            local generatedName = BuildGeneratedName(player.careerLine, ordinal)
+            local duplicateIndex = 1
+
+            while usedNames[generatedName] do
+                duplicateIndex = duplicateIndex + 1
+                generatedName = BuildGeneratedName(player.careerLine, ordinal + (duplicateIndex * 29))
+            end
+
+            usedNames[generatedName] = true
+            generatedNamesByCareer[player.careerLine] = generatedName
+            generatedWarband[partyIndex].players[playerIndex] = {
+                name = generatedName,
+                careerLine = player.careerLine,
+            }
+        end
+    end
+
+    return generatedWarband, generatedNamesByCareer
+end
+
+local function BuildTrackerTestData(generatedNamesByCareer)
+    local trackerData = {}
+
+    for trackerName, trackerEntries in pairs(FULL_TRACKER_TEST_TEMPLATE) do
+        trackerData[trackerName] = {}
+        for _, entry in ipairs(trackerEntries) do
+            trackerData[trackerName][#trackerData[trackerName] + 1] = {
+                name = generatedNamesByCareer[entry.careerLine],
+                timer = entry.timer,
+                cooldown = entry.cooldown,
+                duration = entry.duration,
+                careerLine = entry.careerLine,
+            }
+        end
+    end
+
+    return trackerData
+end
+
+local function BuildCenterNotificationTestData(generatedNamesByCareer)
+    local notifications = {}
+
+    for _, entry in ipairs(CENTER_NOTIFICATION_TEST_TEMPLATE) do
+        notifications[#notifications + 1] = generatedNamesByCareer[entry.careerLine] .. " " .. entry.label
+    end
+
+    return notifications
+end
 
 local function ResetAllTrackerData()
     for _, tracker in pairs(WarbandComms.Trackers) do
@@ -116,12 +221,16 @@ end
 function WarbandComms.StartTest()
     WarbandComms.testing = true
     testStep = 0
+    testNameRun = testNameRun + 1
 
     WarbandComms.ClearUI()
     ResetAllTrackerData()
-    WarbandComms.MapWarbandMembers(TEST_WARBAND)
+    local generatedWarband, generatedNamesByCareer = BuildGeneratedTestData()
+    local trackerTestData = BuildTrackerTestData(generatedNamesByCareer)
 
-    for trackerName, trackerEntries in pairs(FULL_TRACKER_TEST_DATA) do
+    WarbandComms.MapWarbandMembers(generatedWarband)
+
+    for trackerName, trackerEntries in pairs(trackerTestData) do
         for _, entry in ipairs(trackerEntries) do
             WarbandComms.AddTestAbility(
                 entry.name,
@@ -138,7 +247,11 @@ function WarbandComms.StartTest()
 end
 
 function WarbandComms.StartCenterNotificationTest()
-    for _, textLine in ipairs(CENTER_NOTIFICATION_TEST_DATA) do
+    testNameRun = testNameRun + 1
+    local _, generatedNamesByCareer = BuildGeneratedTestData()
+    local centerNotificationTestData = BuildCenterNotificationTestData(generatedNamesByCareer)
+
+    for _, textLine in ipairs(centerNotificationTestData) do
         AlertTextWindow.AddLine(SystemData.AlertText.Types.RVR, towstring(textLine))
     end
 

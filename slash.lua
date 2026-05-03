@@ -11,10 +11,10 @@ end
 function WarbandComms.PrintSlashHelp()
 	local lines = {
 		"[WarbandComms] Commands:",
-		"/wbc - toggle config window",
+		"/wbc help - show this help",
+		"/wbc, /wb-comms, /warbandcomms - toggle config window",
 		"/wbc clear - clear tracker UI data",
 		"/wbc selfcheck - print protocol and runtime diagnostics",
-		"/wbc help - show this help",
 		"/wbc testboxes - run tracker-box test harness (test builds)",
 		"/wbc testcenter - show LTC/ID center-screen notification samples (test builds)",
 		"/wbc selftest - toggle /say self-test mode (test builds)",

@@ -19,6 +19,7 @@ end
 
 local TRACKER_TITLES = {
 	LTC = "Leading the Charge",
+	ID = "Immaculate Defense",
 	challenge = "Challenge",
 	channels = "Channels",
 	interrupt = "Interrupt",
@@ -26,6 +27,7 @@ local TRACKER_TITLES = {
 
 local TRACKER_SHORT_TITLES = {
 	LTC = { "LTC" },
+	ID = { "ID" },
 	challenge = { "CHAL" },
 	channels = { "CHNL" },
 	interrupt = { "INT" },

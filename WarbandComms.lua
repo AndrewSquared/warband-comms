@@ -58,7 +58,7 @@ local LEGACY_DESTRO_COMMS_KEY = "[DEVA]"
 WarbandComms.trackedAbilities = {
 	[28301] = {name = "LTC", cooldown = 120, duration = 10, tracker= "LTC", nofify=true},
 	[27044] = {name = "Into The Fray", cooldown = 120, duration = 4, tracker= "LTC", notify=true},
-	[613] = {name = "Immaculate Defense", cooldown = 180, duration = 10, tracker= "LTC", notify=true, fixedCooldown=true},
+	[613] = {name = "Immaculate Defense", cooldown = 180, duration = 10, tracker= "ID", notify=true, fixedCooldown=true},
 	-- Challenges for tanks
 	[8021] = {name = "Challenge", cooldown = 30, duration=7, tracker= "challenge"}, --KOTBS
 	[9013] = {name = "Challenge", cooldown = 30, duration=7, tracker= "challenge"}, --SM
@@ -120,6 +120,25 @@ function WarbandComms.GetAcceptedCommsKeys()
 		LEGACY_ORDER_COMMS_KEY,
 		LEGACY_DESTRO_COMMS_KEY,
 	}
+end
+
+function WarbandComms.GetAbilityNameFromTrackerPayload(tracker, duration, cooldown)
+	local resolvedTracker = WarbandComms.ResolveTrackerName(tracker)
+	local numericDuration = tonumber(duration)
+	local numericCooldown = tonumber(cooldown)
+	if not resolvedTracker or not numericDuration or not numericCooldown then
+		return resolvedTracker or tracker
+	end
+
+	for _, ability in pairs(WarbandComms.trackedAbilities) do
+		if ability.tracker == resolvedTracker
+			and ability.duration == numericDuration
+			and ability.cooldown == numericCooldown then
+			return ability.name
+		end
+	end
+
+	return resolvedTracker
 end
 
 function WarbandComms.PrintSelfCheck()
@@ -298,6 +317,7 @@ function WarbandComms.OnInitialize()
 	local defaultSettings = {
 		enabled = true,
 		LTC = true,
+		ID = true,
 		challenge = true,
 		channels = true,
 		interrupt = true,
@@ -314,6 +334,7 @@ function WarbandComms.OnInitialize()
 		showOnStartup = true,
 		notifications = {
 			LTC = true,
+			ID = true,
 			bellow = true,
 		}
 	}
@@ -359,6 +380,19 @@ function WarbandComms.OnInitialize()
 		WarbandComms.Trackers[v.tracker] = {}
 		if v.notify then
 			WarbandComms.Notifications[v.tracker] = {}
+		end
+	end
+	if not WarbandComms.Settings.notifications then
+		WarbandComms.Settings.notifications = defaultSettings.notifications
+	end
+	for trackerName, _ in pairs(WarbandComms.Trackers) do
+		if WarbandComms.Settings[trackerName] == nil then
+			WarbandComms.Settings[trackerName] = defaultSettings[trackerName] ~= false
+		end
+	end
+	for trackerName, _ in pairs(WarbandComms.Notifications) do
+		if WarbandComms.Settings.notifications[trackerName] == nil then
+			WarbandComms.Settings.notifications[trackerName] = defaultSettings.notifications[trackerName] == true
 		end
 	end
 	WarbandComms.RefreshTrackerKeyIndex()
@@ -551,7 +585,7 @@ function WarbandComms.OnCast(actionId, isChannel, desiredCastTime, averageLatenc
 		end
 
 		local duration = ability.duration
-		local message = chatChannel .. WarbandComms.commsKey .. ":" .. tracker .. ":" .. duration
+		local message = chatChannel .. WarbandComms.commsKey .. ":" .. tracker .. ":" .. tostring(duration)
 
 		local mininimum_allowed_cooldown = max(MIN_CD, default_cooldown - MAX_CDR)
 
@@ -580,23 +614,30 @@ function WarbandComms.TextArrived()
 		local accepted = WarbandComms.IsAcceptedCommsKey(key)
 		if not accepted then return end
 		careerIcon = careerIcon or ""
+		local resolvedTracker = WarbandComms.ResolveTrackerName(tracker)
+		if not resolvedTracker then return end
+		duration = tonumber(duration)
+		cooldown = tonumber(cooldown)
+		if not duration or not cooldown then return end
+		local abilityName = WarbandComms.GetAbilityNameFromTrackerPayload(resolvedTracker, duration, cooldown)
+		if not resolvedTracker or not duration or not cooldown then return end
 
 		local sender = tostring(chatData.name)
 
-		if WarbandComms.Settings.notifications[tracker] then
-  			AlertTextWindow.AddLine(SystemData.AlertText.Types.RVR, towstring(sender .. " " .. tracker))
+		if WarbandComms.Settings.notifications[resolvedTracker] then
+	 		AlertTextWindow.AddLine(SystemData.AlertText.Types.RVR, towstring(sender .. " " .. abilityName))
 		end
 
-		local enabled = WarbandComms.Settings[tracker]
+		local enabled = WarbandComms.Settings[resolvedTracker]
 		if not enabled then return end
 
 		local abilityData = {
 			name = sender,
-			timer = tonumber(cooldown),
-			cooldown = tonumber(cooldown),
-			duration = tonumber(duration),
+			timer = cooldown,
+			cooldown = cooldown,
+			duration = duration,
 			careerIcon = careerIcon
 		}
-		WarbandComms.Trackers[tracker][sender] = abilityData
+		WarbandComms.Trackers[resolvedTracker][sender] = abilityData
     end
 end

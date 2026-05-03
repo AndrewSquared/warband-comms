@@ -32,6 +32,15 @@ local HEADER_STYLE_LABELS = {
 	caps = L"Caps",
 }
 
+local TRACKER_ROW_ORDER = { "LTC", "ID", "challenge", "channels", "interrupt" }
+local TRACKER_LABELS = {
+	LTC = L"Leading the Charge",
+	ID = L"Immaculate Defense",
+	challenge = L"Challenge",
+	channels = L"Channels",
+	interrupt = L"Interrupt",
+}
+
 local function IsTrackerVisible(trackerName)
 	return WarbandComms.IsTrackerVisible(trackerName)
 end
@@ -42,6 +51,52 @@ end
 
 local function FormatPercentLabel(scale)
 	return towstring(tostring(math.floor((scale * 100) + 0.5)) .. "%")
+end
+
+local function GetTrackerLabel(trackerName)
+	return TRACKER_LABELS[trackerName] or towstring(trackerName:sub(1,1):upper() .. trackerName:sub(2))
+end
+
+local function GetOrderedTrackerNames(sourceTable)
+	local names = {}
+	local seen = {}
+
+	for _, trackerName in ipairs(TRACKER_ROW_ORDER) do
+		if sourceTable[trackerName] ~= nil then
+			names[#names + 1] = trackerName
+			seen[trackerName] = true
+		end
+	end
+
+	for trackerName, _ in pairs(sourceTable) do
+		if not seen[trackerName] then
+			names[#names + 1] = trackerName
+		end
+	end
+
+	table.sort(names, function(left, right)
+		local leftKnown = TRACKER_LABELS[left] ~= nil
+		local rightKnown = TRACKER_LABELS[right] ~= nil
+		if leftKnown ~= rightKnown then
+			return leftKnown
+		end
+		return string.lower(left) < string.lower(right)
+	end)
+
+	for index = #TRACKER_ROW_ORDER, 1, -1 do
+		local trackerName = TRACKER_ROW_ORDER[index]
+		if sourceTable[trackerName] ~= nil then
+			for nameIndex = #names, 1, -1 do
+				if names[nameIndex] == trackerName then
+					table.remove(names, nameIndex)
+					break
+				end
+			end
+			table.insert(names, index, trackerName)
+		end
+	end
+
+	return names
 end
 
 local function RefreshTextScaleLabels()
@@ -356,7 +411,7 @@ function WarbandComms.InitConfig(version)
 
 	-- Dynamically add trackers
 	local tracker_index = 0
-	for trackerName, _ in pairs(WarbandComms.Trackers) do
+	for _, trackerName in ipairs(GetOrderedTrackerNames(WarbandComms.Trackers)) do
 		local window = configWindow .. trackerName:upper()
 
 		CreateWindowFromTemplate(window, "WarbandCommsConfigTemplate", configWindow)
@@ -371,7 +426,7 @@ function WarbandComms.InitConfig(version)
 		local buttonName = window .. "Button"
 		local labelName  = window .. "Label"
 
-		LabelSetText(labelName, towstring(trackerName:sub(1,1):upper() .. trackerName:sub(2)))
+		LabelSetText(labelName, GetTrackerLabel(trackerName))
 		ButtonSetPressedFlag(buttonName, WarbandComms.Settings[trackerName] == true)
 
 		SetEnabledLabelColor(labelName, WarbandComms.Settings[trackerName] == true)
@@ -379,7 +434,7 @@ function WarbandComms.InitConfig(version)
 
 	-- dynamically add notifications
 	local notification_index = 0
-	for trackerName, _ in pairs(WarbandComms.Notifications) do
+	for _, trackerName in ipairs(GetOrderedTrackerNames(WarbandComms.Notifications)) do
 		local window = configWindow .. trackerName:upper() .. "NOTIFY"
 
 		CreateWindowFromTemplate(window, "WarbandCommsConfigTemplate", configWindow)
@@ -394,7 +449,7 @@ function WarbandComms.InitConfig(version)
 		local buttonName = window .. "Button"
 		local labelName  = window .. "Label"
 
-		LabelSetText(labelName, towstring(trackerName:sub(1,1):upper() .. trackerName:sub(2)))
+		LabelSetText(labelName, GetTrackerLabel(trackerName))
 		ButtonSetPressedFlag(buttonName, WarbandComms.Settings.notifications[trackerName] == true)
 
 		local enabled = WarbandComms.Settings.notifications[trackerName] == true

@@ -2,6 +2,32 @@
 
 Run through this before tagging a release.
 
+## What changes repo content vs what does not
+
+- Steps 1 through 8 are validation/testing/packaging checks and should not require code changes when the release branch is already ready.
+- Step 9 is where intentional release content updates are finalized (version alignment, changelog finalization, last release fixes if needed), then tagged/published.
+- If any check in steps 1 through 8 fails, fix the underlying issue, commit, and re-run the failed checks before tagging.
+
+## Repeatable release flow (recommended)
+
+1. Ensure local branch is up to date and clean.
+2. Complete checklist steps 1 through 8.
+3. Finalize release content (step 9), commit, and push.
+4. Create and push tag.
+5. Confirm GitHub Release workflow artifacts.
+
+Suggested command sequence:
+
+- git status --short --branch
+- python3 scripts/validate_release_state.py --build release
+- python3 scripts/package_release.py --build release --clean
+- python3 scripts/validate_release_state.py --build release --zip dist/WarbandComms-v<version>.zip
+- git add -A
+- git commit -m "chore: finalize v<version> release notes and metadata"
+- git push origin <release-branch>
+- git tag v<version>
+- git push origin v<version>
+
 ## 1. Load and startup
 
 - [ ] Addon loads without XML/Lua errors.
@@ -51,20 +77,14 @@ Reload UI and relog to verify settings persist:
 
 ## 8. Package output
 
-<<<<<<< HEAD
-- [ ] Run `python scripts/package_release.py --build release --clean`.
-- [ ] Optionally run `python scripts/package_release.py --build test --clean` for an in-client validation package.
-- [ ] On Windows, if `python` is not recognized or routes to Microsoft Store, use `py -3` (or full interpreter path) instead.
-- [ ] Confirm the generated zip contains one top-level `WarbandComms/` folder, `README.md`, `LICENSE`, and only the intended runtime files for that build type.
-=======
 - [ ] Ensure PR checks passed (`PR Validation` GitHub Actions workflow).
 - [ ] Optional local preflight: run `python3 scripts/validate_release_state.py`.
 - [ ] Optional local package smoke test: run `python3 scripts/package_release.py --build release --clean`.
->>>>>>> c910be1 (test: first swag at release automation)
 
 ## 9. Tag and publish
 
 - [ ] Bump version in `WarbandComms.mod` and `WarbandComms.lua` if not already done.
+- [ ] Ensure `changelog.md` top heading is the release heading in format `<version> (YYYY-MM-DD)` (not `Unreleased`).
 - [ ] Keep versioning aligned with protocol state: use a minor release while `[RET]` / `[DEVA]` compatibility remains, and save `4.0.0` for the compatibility removal release.
 - [ ] Commit final changelog entry and any last fixes.
 - [ ] Confirm `LICENSE` exists at repo root and `README.md` references MIT licensing.

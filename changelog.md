@@ -1,4 +1,4 @@
-Unreleased
+3.6.0 (2026-05-03)
 
 - improved small-size tracker readability by enforcing a higher minimum box width clamp (120)
 - removed header summary slash separators and tightened spacing for cleaner count alignment
@@ -17,8 +17,8 @@ Unreleased
 - hardened compact header title visibility thresholds so short tracker titles remain visible across the small-width clamp range during downward resize transitions
 - widened Resize Mode value control so "Uniform" and "Relative" labels render fully (no "Unifor"/"Relati" clipping confusion)
 - fixed short-height tracker overflow by capping rendered rows to available tracker height, preventing text/icon spill when boxes are vertically compressed
-
-3.6.0 (Andrew Karstaedt)
+- added repository no-image policy enforcement (pre-commit helper plus CI workflow checks) to prevent binary image drift
+- expanded release automation docs/workflows and added scripted changelog validation tooling for release readiness
 
 - note: `4.0.0` is reserved for the future WBC-only protocol cutover that removes legacy `[RET]` / `[DEVA]` behavior
 
@@ -80,6 +80,8 @@ Unreleased
 - updated packaging/docs so release and test zips include `README.md` by default and ship license files matching `LICENSE*`
 - added +/- bidirectional controls for Resize Mode, Header Tone, and Header Style in config
 - finalized repository licensing under MIT and added root LICENSE file/reference updates
+
+3.5.3 (Historical Archive)
 
   1.0 LTC Window(Mainline)
   2.0 Challenge Window (Enlil)

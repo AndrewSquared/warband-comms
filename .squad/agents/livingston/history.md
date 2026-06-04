@@ -11,6 +11,25 @@
 - Livingston owns runtime Lua logic, settings flow, and addon comms behavior.
 - This project depends on stable timing and data-sharing behavior inside the WAR client.
 
+### 2026-06-04T23:32:48Z: Decision Inbox Merged
+
+Team decisions consolidated:
+- User directive to reprioritize toward multi-channel support
+- Scope review: warband/group/scenario transport implementability confirmed
+- Routing decision: derive outbound from live grouping state with precedence `warband → scenario → group → self-test`
+- Roster decision: treat transport expansion as roster-surface change with shared normalization
+- Review cycle: initial rejection (gaps in roster/UI/test) → revision approval (Rusty added roster normalization and test coverage)
+- Tooling: release help surface fixed by Yen
+
+Livingston's initial implementation pass locked out pending roster normalization. Rusty's revision pass now approved.
+
+### 2026-06-04T19:11:35.238-04:00: Battle-Group Channel Routing
+
+- Updated `WarbandComms.lua` outbound routing so tracked casts derive the active chat lane at send time with explicit precedence: warband (`/wb`) > scenario (`/sc`) > group (`/g`) > `/say` self-test.
+- Expanded inbound listening to `BATTLEGROUP`, `SCENARIO`, and `GROUP` chat filters while preserving existing protocol-key compatibility in `TextArrived()`.
+- Reusable pattern: when protocol transport depends on live party/scenario state, keep a single helper (`GetOutboundChatRoute()`) as the source of truth for both runtime sends and diagnostics.
+- Key file paths: `WarbandComms.lua`, `slash.lua`, `README.md`, `changelog.md`, `.squad/decisions/inbox/livingston-battle-group-channel-routing.md`.
+
 ### 2026-06-03T23:29:11.914-04:00: Outbound Key Derived-State Fix
 
 - Updated `WarbandComms.lua` so outbound protocol reads call `WarbandComms.GetOutboundCommsKey()` directly in both `PrintSelfCheck()` and `OnCast()`.

@@ -150,7 +150,7 @@ function WarbandComms.PrintSelfCheck()
 		realmName = "Destruction"
 	end
 
-	local outbound = WarbandComms.commsKey or WarbandComms.GetOutboundCommsKey()
+	local outbound = WarbandComms.GetOutboundCommsKey()
 	local accepted = table.concat(WarbandComms.GetAcceptedCommsKeys(), ", ")
 	local activeTrackers = 0
 	local totalTrackers = 0
@@ -325,8 +325,6 @@ function WarbandComms.OnInitialize()
 	RegisterEventHandler(SystemData.Events.PLAYER_BEGIN_CAST, "WarbandComms.OnCast")
 	RegisterEventHandler(SystemData.Events.BATTLEGROUP_UPDATED, "WarbandComms.OnBattleGroupUpdated")
 	RegisterEventHandler( SystemData.Events.GROUP_LEAVE, "WarbandComms.OnBattleGroupUpdated")
-
-	WarbandComms.commsKey = WarbandComms.GetOutboundCommsKey()
 
 	local defaultSettings = {
 		enabled = true,
@@ -613,7 +611,7 @@ function WarbandComms.OnCast(actionId, isChannel, desiredCastTime, averageLatenc
 		end
 
 		local duration = ability.duration
-		local message = chatChannel .. WarbandComms.commsKey .. ":" .. tracker .. ":" .. tostring(duration)
+		local message = chatChannel .. WarbandComms.GetOutboundCommsKey() .. ":" .. tracker .. ":" .. tostring(duration)
 
 		local mininimum_allowed_cooldown = max(MIN_CD, default_cooldown - MAX_CDR)
 

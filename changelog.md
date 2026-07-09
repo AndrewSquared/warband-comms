@@ -1,6 +1,8 @@
 3.6.0 (2026-05-03)
 
 - improved small-size tracker readability by enforcing a higher minimum box width clamp (120)
+- added outbound chat routing across warband (`/wb`), scenario (`/sc`), and group (`/g`) channels with WBC-only protocol handling
+- added non-warband in-client harness paths (`/wbc testgroup`, `/wbc testscenario`) plus self-check roster diagnostics for repeatable verification
 - removed header summary slash separators and tightened spacing for cleaner count alignment
 - updated config center value labels (between [-] and [+]) to render white for better consistency
 - added label-only config tooltip placeholders (static labels and dynamic tracker/notification labels)
@@ -20,16 +22,13 @@
 - added repository no-image policy enforcement (pre-commit helper plus CI workflow checks) to prevent binary image drift
 - expanded release automation docs/workflows and added scripted changelog validation tooling for release readiness
 
-- note: `4.0.0` is reserved for the future WBC-only protocol cutover that removes legacy `[RET]` / `[DEVA]` behavior
+- addon comms are now WBC-only for both outbound sends and inbound parsing
 
-- full internal/external rebrand from RetWBComms to WarbandComms
 - renamed core addon files to WarbandComms.lua, WarbandComms.xml, and WarbandComms.mod
 - updated module metadata and saved variable root to WarbandComms.Settings
 - fixed tracker visibility sync logic so per-tracker toggles always respect global enabled state
 - fixed notification checkbox initialization to read from settings.notifications
 - added slash aliases: /warbandcomms, /wb-comms, /wbc
-- deprecated /ret slash command with in-chat guidance to /wbc
-- deprecated /retwbcomms and /rwc slash commands with in-chat guidance to /wbc
 - added independent text size controls for tracker headers and row text in config
 - finalized text scaling behavior: +/- controls set addon text scale; LayoutEditor resize remains intuitive (box and text scale together)
 - synced LayoutEditor hidden state with tracker visibility toggles
@@ -41,8 +40,7 @@
 - added resize mode switch for box controls: Uniform (normalize all tracker sizes) or Relative (preserve per-tracker layout deltas)
 - added background opacity controls in config with live apply and persisted setting
 - cleaned up realm-specific protocol tags by using a single comms key: [WBC]
-- temporary compatibility: still accepts incoming legacy tags [RET]/[DEVA] while emitting [WBC]
-- deprecation notice: legacy [RET]/[DEVA] parser path is deprecated and scheduled for removal in a future release
+- addon comms now use `[WBC]` as the only supported protocol key
 - fixed tracker row text overflow by constraining name/timer layout and truncating long names inside box bounds
 - row text size control now also scales career icons and keeps icon/name spacing aligned
 - adjusted background opacity clamp to full 0%-100% range
@@ -54,7 +52,7 @@
 - added release checklist in RELEASING.md
 - fixed row name vertical overlap by making row height scale-aware with centered row icons
 - fixed local self-cast updates: outgoing tracked casts now mirror into local tracker rows even when own /wb chat does not echo back
-- planned 4.0.0: remove legacy [RET]/[DEVA] protocol compatibility so the addon accepts and emits [WBC] only
+- kept protocol messaging on a single `[WBC]` key for simpler diagnostics and interoperability expectations
 - cleaned up config settings grouping: tracker appearance controls are now clearly separated from notification toggles
 - improved config control ergonomics: value fields are now clickable reset controls (header/row text, width/height, background opacity)
 - refactored config layout logic with shared constants, consistent dynamic row spacing, and max-column window height sizing
@@ -70,7 +68,7 @@
 - fixed tracker toggling flow: enabling an individual tracker now re-syncs master toggle state
 - refined Toggle All semantics: set-all action; master checkbox reflects "all trackers enabled"
 - added cross-platform packaging workflow via `scripts/package_release.py` with separate `test` and `release` build modes
-- transition compatibility: restored inbound parsing for [RET]/[DEVA] while retaining [WBC]; outbound uses single legacy realm key ([RET] Order / [DEVA] Destro)
+- protocol behavior is now strict `[WBC]` for both outbound sends and inbound parsing
 - added `/wbc selfcheck` to print outbound key, accepted inbound keys, tracker enable state, and self-test status
 - added `/wbc help` to print in-chat command help
 - added tracked morale ability `Immaculate Defense` (ID `613`) with fixed-cooldown handling
@@ -90,9 +88,9 @@
   2.2.1 (Mainline) - fixes chat message name type - aka sender. Chat not read correctly. Added test for reading from /chat.
   3.0.0 (Enlil) - fixed adding players to the list when using challenges and LTC while in wb - Add Channeling window for dps channeling abilities - Add cd tracker for Whirling Axe (white lion ability) only
   3.1.0 (Mainline) - update test to incorporate adding players fix from 3.0.0 - add test for Annihilate - add Whilring Axe, Retribution and Annihilate + Wrecking Ball as DPS Channels Tracker
-  3.1.1 (Mainline) - moved ui functions to new file ui.lua - condition chat_key on player's realm (["RET"] or ["DEVA"]) - removed obsolete .Test() function
+  3.1.1 (Mainline) - moved ui functions to new file ui.lua - conditioned chat_key on the player's realm-specific legacy key - removed obsolete .Test() function
   3.2.3 (Mainline) - refactor: CreateUI(tracker) to loop over Trackers array - fixed CreateUI() always using ltc settings - removed rezzes - normalised commsKey (aka chat_key) (instead of healer_key and tank_key) - refactor OnUpdate(), OnCast() and TextArrived() to DRY functions based off super trackedAbilities list - prevented double chat messages on casting channels ("not averageLatency") - gets cooldown data from action bar for tracked/enabled abilities :star: - dynamically create UI windows from ui-template.xml - adds "Into The Fray" to LTC tracker (Tank/Onslaught)
-  3.3.0 (Mainline) - added /ret to slash commands - ensure 8 names fit in windows (reduce row height, increase and hardode window height, smaller windows+++) - fixed test to work with change to ability:duration:cooldown format from per 3.2.3 - added more test abilities to ensure at least 8 names appear - added Destro Tank Challenges (Enlil) - added career Icons to UI
+  3.3.0 (Mainline) - ensure 8 names fit in windows (reduce row height, increase and hardode window height, smaller windows+++) - fixed test to work with change to ability:duration:cooldown format from per 3.2.3 - added more test abilities to ensure at least 8 names appear - added Destro Tank Challenges (Enlil) - added career Icons to UI
   3.3.1 (Mainline) - Fix if new cooldown has not triggered and logged cooldown is only 1.5-2s - Move solo WarbandMap to MapWarbandMembers() - add Sorc's channel Disastrous Cascade (needs testing) - add sort ordering warbandmap - use case it put Longest DPS channels top of list
   3.4.1 (Mainline) - try fix cooldowns put in chat with value of 0 or 2 - moved /slash stuff to new flie: slash.lua and added some test slash commands - only use /say if selfTest is true - some local table performance updates (use local tinsert, tsort) - some more perfomance optimisations (via ChatGPT) - refactored config window to create tracker settings dynamically - added global "enabled" settings - added Interrupts Tracker (SM, WL, Mara)
   3.5.3 (Mainline) - fixed Marauder Interrupt Mouth of Tzeentch ability id - refactored "Notifications" to be dynamical created (DRY), so extendable - debounce OnBattleGroupUpdated client hook (performance optimisation) - added code for fixedCooldowns (for abilities not on proper action bars, e.g. morale)

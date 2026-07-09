@@ -19,7 +19,6 @@ Full internal rename will be done first (as requested), then the checkbox/UI vis
 
 3. Phase 2 - Full rebrand to Warband Comms (depends on 1 baseline)
 
-- Rename visible branding in metadata and UI labels from RetWBComms naming to Warband Comms.
 - Perform full internal rename scope:
   - Lua global namespace and AddonName value
   - XML window/template names
@@ -60,15 +59,13 @@ Full internal rename will be done first (as requested), then the checkbox/UI vis
 
 6. Phase 5 - Stabilization and release prep (depends on 4)
 
-- 5A Protocol transition-compat implementation:
-  - restore legacy incoming compatibility for [RET]/[DEVA] while keeping [WBC] accepted inbound
-  - use single outbound legacy realm key during transition ([RET] on Order, [DEVA] on Destro) to preserve one-message UX
-  - keep message payload format unchanged ([key]:tracker:duration:cooldown[:careerIcon])
-  - do not dual-send; do not use composite hybrid key formats
-- 5B Transition communication:
-  - document that mixed-version warbands are supported during transition mode
-  - note that outbound key is temporarily legacy for interoperability and that sunset back to WBC-only is planned
-  - add clear release note text for future cutover criteria/timeline
+- 5A Protocol alignment:
+  - accept `[WBC]` inbound and emit `[WBC]` outbound on every supported chat route
+  - keep message payload format unchanged (`[key]:tracker:duration:cooldown[:careerIcon]`)
+  - keep one-message UX; do not dual-send or add alternate key fallbacks
+- 5B Protocol communication:
+  - document the WBC-only behavior in player and maintainer docs
+  - keep self-check output and release notes aligned with the live protocol state
 - 5C Settings UI medium refactor:
   - introduce layout constants in config.lua to reduce hardcoded coordinates
   - normalize control alignment/spacing and dynamic section placement
@@ -76,7 +73,7 @@ Full internal rename will be done first (as requested), then the checkbox/UI vis
   - consolidate repeated label/color init logic for maintainability
 - 5D Stabilization and release prep:
   - validate all trackers across classes and realms
-  - validate inter-player communication behavior for mixed-version and WBC-only clients
+  - validate inter-player communication behavior for WBC-only clients
   - tag release candidate and gather user feedback loop
 
 7. Phase 6 - CI/CD release automation (depends on 5)
@@ -87,17 +84,17 @@ Full internal rename will be done first (as requested), then the checkbox/UI vis
 - Add PR template with explicit maintainer in-client validation gate before tagging.
 - Update README/CONTRIBUTING/RELEASING docs so the developer path is: PR -> approval + in-client validation -> tag -> automated GitHub release asset upload.
 
-Decision change (2026-05-03): superseded prior WBC-only hard-break plan; adopted silent transition compatibility to minimize chat noise and preserve mixed-version warband interoperability.
+Decision change (2026-07-08T21:46:59.901-04:00): completed the protocol cleanup so addon comms are WBC-only again across outbound and inbound paths.
 
 **Phase 5 kickoff (in progress)**
 
 - Added a dedicated stabilization and release checklist in README to run through in-client before tagging.
 - Completed static editor validation on touched Lua/XML files (no parser errors reported).
-- Decision updated: backwards compatibility restored for transition period; no dual-send fallback.
-- Completed: protocol transition behavior is implemented (single outbound legacy realm key by realm; inbound accepts [WBC]/[RET]/[DEVA]).
+- Decision updated: compatibility fallback removed; no dual-send fallback.
+- Completed: protocol behavior is WBC-only for both outbound and inbound parsing.
 - Completed: 5C settings UI medium refactor (grouping cleanup, layout constants, clickable value controls).
 - Completed: refreshed test-build validation helpers with `/wbc testboxes` (full tracker-box population) and `/wbc testcenter` (LTC/ID alert preview).
-- Completed (2026-05-09): in-client mixed-version verification matrix for 5A/5C.
+- Completed (2026-05-09): in-client verification matrix for 5A/5C.
 - Follow-up: keep monitoring during next stabilization sweep; no immediate tuning blockers recorded.
 
 **UI hotfix track (2026-05-03, in progress)**
@@ -187,11 +184,10 @@ Latest in-client verification notes:
 4. Confirm LayoutEditor reflects real visibility state after each toggle action.
 5. After each UI milestone, verify readability in active combat and idle states on common resolutions.
 6. Validate persistence by reload/restart: settings, visibility states, and layout positions remain as expected.
-7. Confirm protocol transition behavior:
+7. Confirm protocol behavior:
 
-- new clients ingest [WBC], [RET], and [DEVA] correctly
-- outbound from current addon uses one legacy realm key message per cast (no duplicates)
-- mixed-version warbands (old/new) interoperate on both realms
+- clients ingest `[WBC]` messages correctly
+- outbound from current addon uses one `[WBC]` message per cast (no duplicates)
 - malformed or unknown protocol keys are ignored
 
 8. Confirm settings UI refactor behavior:
@@ -207,16 +203,16 @@ Latest in-client verification notes:
 - Include: first functional milestone is checkbox/UI visibility sync fix.
 - Include: remaining UI improvements shipped one-by-one with local client testing.
 - Include: canonical slash command set only (/warbandcomms, /wb-comms, /wbc).
-- Include: temporary transition compatibility mode (single outbound legacy realm key + broad inbound key acceptance).
+- Include: WBC-only protocol behavior across outbound and inbound handling.
 - Include: preserve one-message UX; exclude dual-send.
 - Include: medium settings UI refactor (layout consistency + maintainability), not a full redesign.
-- Exclude: composite key-in-one-message formats (e.g., [RET][WBC]) due parser incompatibility.
-- Exclude for now: immediate strict WBC-only hard-break until migration completion criteria are met.
+- Exclude: composite key-in-one-message formats due parser incompatibility.
+- Exclude for now: broad protocol format changes beyond the current WBC-only key.
 - Exclude for now: broad feature additions unrelated to current UX/rename goals.
 
 **Further Considerations**
 
 1. License selection resolved: MIT (see LICENSE and README).
-2. Protocol policy is transition-first: maintain mixed-version interoperability now, then reintroduce strict WBC-only after defined adoption threshold.
-3. Release-note visibility: highlight transition compatibility behavior now and pre-announce eventual WBC-only cutover.
+2. Protocol policy is WBC-only across outbound and inbound addon traffic.
+3. Release-note visibility: keep player-facing notes aligned with the current live key and supported parsing behavior.
 4. Name migration risk: if file/folder/module identity changes, loader behavior must be revalidated in client immediately after Phase 2.

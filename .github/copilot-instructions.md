@@ -40,12 +40,11 @@ This is a game addon — there is no Node.js, no browser, no Python runtime targ
 
 ---
 
-## Protocol — Current State (Transition Mode)
+## Protocol — Current State
 
-- **Outbound**: single legacy realm key — `[RET]` on Order, `[DEVA]` on Destro.
-- **Inbound**: accepts `[WBC]`, `[RET]`, and `[DEVA]`.
+- **Outbound**: always uses `[WBC]`.
+- **Inbound**: accepts `[WBC]` only.
 - **Do not dual-send.** One message per cast.
-- Planned future cutover: outbound switches back to `[WBC]` only after adoption threshold is met.
 
 ---
 

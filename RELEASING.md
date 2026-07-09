@@ -54,9 +54,9 @@ Suggested command sequence:
 
 ## 5. Protocol and compatibility
 
-- [ ] Verify outbound messages use legacy realm key during transition (`[RET]` on Order, `[DEVA]` on Destro).
-- [ ] Verify inbound behavior accepts `[WBC]`, `[RET]`, and `[DEVA]`.
-- [ ] For `3.6.x` transition releases, keep the above legacy compatibility intact; reserve `4.0.0` for the future WBC-only cutover.
+- [ ] Verify outbound messages use the `[WBC]` key on every route.
+- [ ] Verify inbound behavior accepts `[WBC]` messages only.
+- [ ] Verify malformed or non-WBC protocol messages are ignored.
 
 ## 6. Persistence
 
@@ -85,7 +85,7 @@ Reload UI and relog to verify settings persist:
 
 - [ ] Bump version in `WarbandComms.mod` and `WarbandComms.lua` if not already done.
 - [ ] Ensure `changelog.md` top heading is the release heading in format `<version> (YYYY-MM-DD)` (not `Unreleased`).
-- [ ] Keep versioning aligned with protocol state: use a minor release while `[RET]` / `[DEVA]` compatibility remains, and save `4.0.0` for the compatibility removal release.
+- [ ] Keep versioning and changelog notes aligned with the current WBC-only protocol behavior.
 - [ ] Commit final changelog entry and any last fixes.
 - [ ] Confirm `LICENSE` exists at repo root and `README.md` references MIT licensing.
 - [ ] Complete maintainer in-client validation and PR approval before tagging.

@@ -1,0 +1,14 @@
+Scribe: Merge decision inbox and record orchestration
+
+Processed 7 decision inbox entries into decisions.md:
+- User directive: Reprioritize toward multi-channel support
+- Scope review: Battle-group channel expansion implementability
+- Channel routing: Derive outbound from live grouping state
+- Roster normalization: Treat as end-to-end surface change
+- Review cycle: Basher rejection + Rusty revision + approval
+- Release tooling: Help text surface consistency fix
+
+Wrote orchestration logs per agent and session log.
+Updated agent history files with team context.
+
+Co-authored-by: Copilot <223556219+Copilot@users.noreply.github.com>

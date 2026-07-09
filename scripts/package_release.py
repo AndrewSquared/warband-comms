@@ -105,6 +105,7 @@ def build_release_slash(source_text: str) -> str:
     while index < len(lines):
         line = lines[index]
 
+        # Strip test command handlers
         if contains(line, testboxes_head):
             stripped_any = True
             index += 1
@@ -124,6 +125,11 @@ def build_release_slash(source_text: str) -> str:
             index += 1
             while index < len(lines) and not contains(lines[index], selfcheck_head):
                 index += 1
+            continue
+
+        # Strip test command help text lines
+        if contains(line, "(test builds)"):
+            index += 1
             continue
 
         output.append(line)

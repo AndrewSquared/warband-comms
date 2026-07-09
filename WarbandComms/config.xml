@@ -1,0 +1,665 @@
+<Interface xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xsi:noNamespaceSchemaLocation="../../EASystem.xsd">
+    <Windows>
+        <Window name="WarbandCommsConfig" inherits="EA_Window_Default" movable="true">
+            <Size>
+                <AbsPoint x="400" y="250" />
+            </Size>
+            <Anchors>
+                <Anchor point="center" relativePoint="center">
+                    <AbsPoint x="0" y="0"/>
+                </Anchor>
+            </Anchors>
+            <Windows>
+                <!-- Config Background -->
+                <Window name="$parentBackground" inherits="EA_Window_DefaultBackgroundFrame" />
+
+                <!-- Title Bar -->
+                <Window name="$parentTitleBar" inherits="EA_TitleBar_Default" />
+
+                <!--Close Button-->
+                <Button name="$parentTopRightCloseButton" inherits="EA_Button_DefaultWindowClose">
+					<EventHandlers>
+						<EventHandler event="OnLButtonUp" function="WarbandComms.OnClose" />
+					</EventHandlers>
+				</Button>
+
+                <!--Info-->
+                <Label name="$parentInfoLabel" font="font_clear_medium_bold" textalign="center">
+                    <Size><AbsPoint x="700" y="20"/></Size>
+                    <Anchors>
+                        <Anchor point="bottomleft" relativePoint="bottomleft">
+                            <AbsPoint x="0" y="-25"/>
+                        </Anchor>
+                    </Anchors>
+                    <Text>info..</Text>
+                </Label>
+
+                <!-- Trackers Title -->
+                <Label name="$parentTrackerTitle" font="font_clear_medium_bold" textalign="left">
+                    <Size><AbsPoint x="350" y="20" /></Size>
+                    <Anchors>
+                        <Anchor point="topleft" relativePoint="topleft" relativeTo="$parent">
+                            <AbsPoint x="50" y="224" />
+                        </Anchor>
+                    </Anchors>
+                    <EventHandlers>
+                        <EventHandler event="OnMouseOver" function="WarbandComms.ShowConfigLabelTooltip" />
+                        <EventHandler event="OnMouseOverEnd" function="WarbandComms.HideConfigLabelTooltip" />
+                    </EventHandlers>
+                </Label>
+                <Button name="$parentEnableTrackersButton" inherits="EA_Button_DefaultCheckBox">
+                    <Size><AbsPoint x="20" y="20" /></Size>
+                    <Anchors>
+                        <Anchor point="topleft" relativePoint="topleft">
+                            <AbsPoint x="20" y="224"/>
+                        </Anchor>
+                    </Anchors>
+                    <EventHandlers>
+                        <EventHandler event="OnLButtonUp" function="WarbandComms.ToggleAllTrackers" />
+                    </EventHandlers>
+                </Button>
+
+                <Label name="$parentHeaderTextSizeLabel" font="font_clear_small" textalign="left">
+                    <Size><AbsPoint x="100" y="20" /></Size>
+                    <Anchors>
+                        <Anchor point="topleft" relativePoint="topleft" relativeTo="$parent">
+                            <AbsPoint x="20" y="76" />
+                        </Anchor>
+                    </Anchors>
+                    <EventHandlers>
+                        <EventHandler event="OnMouseOver" function="WarbandComms.ShowConfigLabelTooltip" />
+                        <EventHandler event="OnMouseOverEnd" function="WarbandComms.HideConfigLabelTooltip" />
+                    </EventHandlers>
+                </Label>
+                <Button name="$parentHeaderTextSizeDecreaseButton" inherits="EA_Button_Default">
+                    <Size><AbsPoint x="28" y="20" /></Size>
+                    <Anchors>
+                        <Anchor point="topleft" relativePoint="topleft" relativeTo="$parent">
+                            <AbsPoint x="140" y="76" />
+                        </Anchor>
+                    </Anchors>
+                    <EventHandlers>
+                        <EventHandler event="OnLButtonUp" function="WarbandComms.DecreaseHeaderTextSize" />
+                    </EventHandlers>
+                    <Windows>
+                        <Label name="$parentLabel" font="font_clear_medium_bold" textalign="center">
+                            <Size><AbsPoint x="28" y="20" /></Size>
+                            <Anchors>
+                                <Anchor point="center" relativePoint="center" relativeTo="$parent" />
+                            </Anchors>
+                        </Label>
+                    </Windows>
+                </Button>
+                <Button name="$parentHeaderTextSizeValue" inherits="EA_Button_Default">
+                    <Size><AbsPoint x="50" y="20" /></Size>
+                    <Anchors>
+                        <Anchor point="topleft" relativePoint="topleft" relativeTo="$parent">
+                            <AbsPoint x="170" y="76" />
+                        </Anchor>
+                    </Anchors>
+                    <EventHandlers>
+                        <EventHandler event="OnLButtonUp" function="WarbandComms.ResetHeaderTextSize" />
+                    </EventHandlers>
+                    <Windows>
+                        <Label name="$parentText" font="font_clear_small" textalign="center">
+                            <Size><AbsPoint x="50" y="20" /></Size>
+                            <Anchors>
+                                <Anchor point="center" relativePoint="center" relativeTo="$parent" />
+                            </Anchors>
+                        </Label>
+                    </Windows>
+                </Button>
+                <Button name="$parentHeaderTextSizeIncreaseButton" inherits="EA_Button_Default">
+                    <Size><AbsPoint x="28" y="20" /></Size>
+                    <Anchors>
+                        <Anchor point="topleft" relativePoint="topleft" relativeTo="$parent">
+                            <AbsPoint x="226" y="76" />
+                        </Anchor>
+                    </Anchors>
+                    <EventHandlers>
+                        <EventHandler event="OnLButtonUp" function="WarbandComms.IncreaseHeaderTextSize" />
+                    </EventHandlers>
+                    <Windows>
+                        <Label name="$parentLabel" font="font_clear_medium_bold" textalign="center">
+                            <Size><AbsPoint x="28" y="20" /></Size>
+                            <Anchors>
+                                <Anchor point="center" relativePoint="center" relativeTo="$parent" />
+                            </Anchors>
+                        </Label>
+                    </Windows>
+                </Button>
+
+                <Label name="$parentRowTextSizeLabel" font="font_clear_small" textalign="left">
+                    <Size><AbsPoint x="100" y="20" /></Size>
+                    <Anchors>
+                        <Anchor point="topleft" relativePoint="topleft" relativeTo="$parent">
+                            <AbsPoint x="350" y="76" />
+                        </Anchor>
+                    </Anchors>
+                    <EventHandlers>
+                        <EventHandler event="OnMouseOver" function="WarbandComms.ShowConfigLabelTooltip" />
+                        <EventHandler event="OnMouseOverEnd" function="WarbandComms.HideConfigLabelTooltip" />
+                    </EventHandlers>
+                </Label>
+                <Button name="$parentRowTextSizeDecreaseButton" inherits="EA_Button_Default">
+                    <Size><AbsPoint x="28" y="20" /></Size>
+                    <Anchors>
+                        <Anchor point="topleft" relativePoint="topleft" relativeTo="$parent">
+                            <AbsPoint x="447" y="76" />
+                        </Anchor>
+                    </Anchors>
+                    <EventHandlers>
+                        <EventHandler event="OnLButtonUp" function="WarbandComms.DecreaseRowTextSize" />
+                    </EventHandlers>
+                    <Windows>
+                        <Label name="$parentLabel" font="font_clear_medium_bold" textalign="center">
+                            <Size><AbsPoint x="28" y="20" /></Size>
+                            <Anchors>
+                                <Anchor point="center" relativePoint="center" relativeTo="$parent" />
+                            </Anchors>
+                        </Label>
+                    </Windows>
+                </Button>
+                <Button name="$parentRowTextSizeValue" inherits="EA_Button_Default">
+                    <Size><AbsPoint x="50" y="20" /></Size>
+                    <Anchors>
+                        <Anchor point="topleft" relativePoint="topleft" relativeTo="$parent">
+                            <AbsPoint x="477" y="76" />
+                        </Anchor>
+                    </Anchors>
+                    <EventHandlers>
+                        <EventHandler event="OnLButtonUp" function="WarbandComms.ResetRowTextSize" />
+                    </EventHandlers>
+                    <Windows>
+                        <Label name="$parentText" font="font_clear_small" textalign="center">
+                            <Size><AbsPoint x="50" y="20" /></Size>
+                            <Anchors>
+                                <Anchor point="center" relativePoint="center" relativeTo="$parent" />
+                            </Anchors>
+                        </Label>
+                    </Windows>
+                </Button>
+                <Button name="$parentRowTextSizeIncreaseButton" inherits="EA_Button_Default">
+                    <Size><AbsPoint x="28" y="20" /></Size>
+                    <Anchors>
+                        <Anchor point="topleft" relativePoint="topleft" relativeTo="$parent">
+                            <AbsPoint x="533" y="76" />
+                        </Anchor>
+                    </Anchors>
+                    <EventHandlers>
+                        <EventHandler event="OnLButtonUp" function="WarbandComms.IncreaseRowTextSize" />
+                    </EventHandlers>
+                    <Windows>
+                        <Label name="$parentLabel" font="font_clear_medium_bold" textalign="center">
+                            <Size><AbsPoint x="28" y="20" /></Size>
+                            <Anchors>
+                                <Anchor point="center" relativePoint="center" relativeTo="$parent" />
+                            </Anchors>
+                        </Label>
+                    </Windows>
+                </Button>
+
+                <Label name="$parentTrackerWidthLabel" font="font_clear_small" textalign="left">
+                    <Size><AbsPoint x="100" y="20" /></Size>
+                    <Anchors>
+                        <Anchor point="topleft" relativePoint="topleft" relativeTo="$parent">
+                            <AbsPoint x="20" y="102" />
+                        </Anchor>
+                    </Anchors>
+                    <EventHandlers>
+                        <EventHandler event="OnMouseOver" function="WarbandComms.ShowConfigLabelTooltip" />
+                        <EventHandler event="OnMouseOverEnd" function="WarbandComms.HideConfigLabelTooltip" />
+                    </EventHandlers>
+                </Label>
+                <Button name="$parentTrackerWidthDecreaseButton" inherits="EA_Button_Default">
+                    <Size><AbsPoint x="28" y="20" /></Size>
+                    <Anchors>
+                        <Anchor point="topleft" relativePoint="topleft" relativeTo="$parent">
+                            <AbsPoint x="140" y="102" />
+                        </Anchor>
+                    </Anchors>
+                    <EventHandlers>
+                        <EventHandler event="OnLButtonUp" function="WarbandComms.DecreaseTrackerWidth" />
+                    </EventHandlers>
+                    <Windows>
+                        <Label name="$parentLabel" font="font_clear_medium_bold" textalign="center">
+                            <Size><AbsPoint x="28" y="20" /></Size>
+                            <Anchors>
+                                <Anchor point="center" relativePoint="center" relativeTo="$parent" />
+                            </Anchors>
+                        </Label>
+                    </Windows>
+                </Button>
+                <Button name="$parentTrackerWidthValue" inherits="EA_Button_Default">
+                    <Size><AbsPoint x="50" y="20" /></Size>
+                    <Anchors>
+                        <Anchor point="topleft" relativePoint="topleft" relativeTo="$parent">
+                            <AbsPoint x="170" y="102" />
+                        </Anchor>
+                    </Anchors>
+                    <EventHandlers>
+                        <EventHandler event="OnLButtonUp" function="WarbandComms.ResetTrackerWidth" />
+                    </EventHandlers>
+                    <Windows>
+                        <Label name="$parentText" font="font_clear_small" textalign="center">
+                            <Size><AbsPoint x="50" y="20" /></Size>
+                            <Anchors>
+                                <Anchor point="center" relativePoint="center" relativeTo="$parent" />
+                            </Anchors>
+                        </Label>
+                    </Windows>
+                </Button>
+                <Button name="$parentTrackerWidthIncreaseButton" inherits="EA_Button_Default">
+                    <Size><AbsPoint x="28" y="20" /></Size>
+                    <Anchors>
+                        <Anchor point="topleft" relativePoint="topleft" relativeTo="$parent">
+                            <AbsPoint x="226" y="102" />
+                        </Anchor>
+                    </Anchors>
+                    <EventHandlers>
+                        <EventHandler event="OnLButtonUp" function="WarbandComms.IncreaseTrackerWidth" />
+                    </EventHandlers>
+                    <Windows>
+                        <Label name="$parentLabel" font="font_clear_medium_bold" textalign="center">
+                            <Size><AbsPoint x="28" y="20" /></Size>
+                            <Anchors>
+                                <Anchor point="center" relativePoint="center" relativeTo="$parent" />
+                            </Anchors>
+                        </Label>
+                    </Windows>
+                </Button>
+
+                <Label name="$parentTrackerHeightLabel" font="font_clear_small" textalign="left">
+                    <Size><AbsPoint x="100" y="20" /></Size>
+                    <Anchors>
+                        <Anchor point="topleft" relativePoint="topleft" relativeTo="$parent">
+                            <AbsPoint x="350" y="102" />
+                        </Anchor>
+                    </Anchors>
+                    <EventHandlers>
+                        <EventHandler event="OnMouseOver" function="WarbandComms.ShowConfigLabelTooltip" />
+                        <EventHandler event="OnMouseOverEnd" function="WarbandComms.HideConfigLabelTooltip" />
+                    </EventHandlers>
+                </Label>
+                <Button name="$parentTrackerHeightDecreaseButton" inherits="EA_Button_Default">
+                    <Size><AbsPoint x="28" y="20" /></Size>
+                    <Anchors>
+                        <Anchor point="topleft" relativePoint="topleft" relativeTo="$parent">
+                            <AbsPoint x="447" y="102" />
+                        </Anchor>
+                    </Anchors>
+                    <EventHandlers>
+                        <EventHandler event="OnLButtonUp" function="WarbandComms.DecreaseTrackerHeight" />
+                    </EventHandlers>
+                    <Windows>
+                        <Label name="$parentLabel" font="font_clear_medium_bold" textalign="center">
+                            <Size><AbsPoint x="28" y="20" /></Size>
+                            <Anchors>
+                                <Anchor point="center" relativePoint="center" relativeTo="$parent" />
+                            </Anchors>
+                        </Label>
+                    </Windows>
+                </Button>
+                <Button name="$parentTrackerHeightValue" inherits="EA_Button_Default">
+                    <Size><AbsPoint x="50" y="20" /></Size>
+                    <Anchors>
+                        <Anchor point="topleft" relativePoint="topleft" relativeTo="$parent">
+                            <AbsPoint x="477" y="102" />
+                        </Anchor>
+                    </Anchors>
+                    <EventHandlers>
+                        <EventHandler event="OnLButtonUp" function="WarbandComms.ResetTrackerHeight" />
+                    </EventHandlers>
+                    <Windows>
+                        <Label name="$parentText" font="font_clear_small" textalign="center">
+                            <Size><AbsPoint x="50" y="20" /></Size>
+                            <Anchors>
+                                <Anchor point="center" relativePoint="center" relativeTo="$parent" />
+                            </Anchors>
+                        </Label>
+                    </Windows>
+                </Button>
+                <Button name="$parentTrackerHeightIncreaseButton" inherits="EA_Button_Default">
+                    <Size><AbsPoint x="28" y="20" /></Size>
+                    <Anchors>
+                        <Anchor point="topleft" relativePoint="topleft" relativeTo="$parent">
+                            <AbsPoint x="533" y="102" />
+                        </Anchor>
+                    </Anchors>
+                    <EventHandlers>
+                        <EventHandler event="OnLButtonUp" function="WarbandComms.IncreaseTrackerHeight" />
+                    </EventHandlers>
+                    <Windows>
+                        <Label name="$parentLabel" font="font_clear_medium_bold" textalign="center">
+                            <Size><AbsPoint x="28" y="20" /></Size>
+                            <Anchors>
+                                <Anchor point="center" relativePoint="center" relativeTo="$parent" />
+                            </Anchors>
+                        </Label>
+                    </Windows>
+                </Button>
+
+                <Label name="$parentSizeApplyModeLabel" font="font_clear_small" textalign="left">
+                    <Size><AbsPoint x="100" y="20" /></Size>
+                    <Anchors>
+                        <Anchor point="topleft" relativePoint="topleft" relativeTo="$parent">
+                            <AbsPoint x="20" y="128" />
+                        </Anchor>
+                    </Anchors>
+                    <EventHandlers>
+                        <EventHandler event="OnMouseOver" function="WarbandComms.ShowConfigLabelTooltip" />
+                        <EventHandler event="OnMouseOverEnd" function="WarbandComms.HideConfigLabelTooltip" />
+                    </EventHandlers>
+                </Label>
+                <Button name="$parentSizeApplyModeDecreaseButton" inherits="EA_Button_Default">
+                    <Size><AbsPoint x="28" y="20" /></Size>
+                    <Anchors>
+                        <Anchor point="topleft" relativePoint="topleft" relativeTo="$parent">
+                            <AbsPoint x="140" y="128" />
+                        </Anchor>
+                    </Anchors>
+                    <EventHandlers>
+                        <EventHandler event="OnLButtonUp" function="WarbandComms.DecreaseSizeApplyMode" />
+                    </EventHandlers>
+                    <Windows>
+                        <Label name="$parentLabel" font="font_clear_medium_bold" textalign="center">
+                            <Size><AbsPoint x="28" y="20" /></Size>
+                            <Anchors>
+                                <Anchor point="center" relativePoint="center" relativeTo="$parent" />
+                            </Anchors>
+                        </Label>
+                    </Windows>
+                </Button>
+                <Button name="$parentSizeApplyModeButton" inherits="EA_Button_Default">
+                    <Size><AbsPoint x="64" y="20" /></Size>
+                    <Anchors>
+                        <Anchor point="topleft" relativePoint="topleft" relativeTo="$parent">
+                            <AbsPoint x="170" y="128" />
+                        </Anchor>
+                    </Anchors>
+                    <EventHandlers>
+                        <EventHandler event="OnLButtonUp" function="WarbandComms.ToggleSizeApplyMode" />
+                    </EventHandlers>
+                    <Windows>
+                        <Label name="$parentValue" font="font_clear_small" textalign="center">
+                            <Size><AbsPoint x="64" y="20" /></Size>
+                            <Anchors>
+                                <Anchor point="center" relativePoint="center" relativeTo="$parent" />
+                            </Anchors>
+                        </Label>
+                    </Windows>
+                </Button>
+                <Button name="$parentSizeApplyModeIncreaseButton" inherits="EA_Button_Default">
+                    <Size><AbsPoint x="28" y="20" /></Size>
+                    <Anchors>
+                        <Anchor point="topleft" relativePoint="topleft" relativeTo="$parent">
+                            <AbsPoint x="240" y="128" />
+                        </Anchor>
+                    </Anchors>
+                    <EventHandlers>
+                        <EventHandler event="OnLButtonUp" function="WarbandComms.IncreaseSizeApplyMode" />
+                    </EventHandlers>
+                    <Windows>
+                        <Label name="$parentLabel" font="font_clear_medium_bold" textalign="center">
+                            <Size><AbsPoint x="28" y="20" /></Size>
+                            <Anchors>
+                                <Anchor point="center" relativePoint="center" relativeTo="$parent" />
+                            </Anchors>
+                        </Label>
+                    </Windows>
+                </Button>
+
+                <Label name="$parentBackgroundOpacityLabel" font="font_clear_small" textalign="left">
+                    <Size><AbsPoint x="100" y="20" /></Size>
+                    <Anchors>
+                        <Anchor point="topleft" relativePoint="topleft" relativeTo="$parent">
+                            <AbsPoint x="350" y="128" />
+                        </Anchor>
+                    </Anchors>
+                    <EventHandlers>
+                        <EventHandler event="OnMouseOver" function="WarbandComms.ShowConfigLabelTooltip" />
+                        <EventHandler event="OnMouseOverEnd" function="WarbandComms.HideConfigLabelTooltip" />
+                    </EventHandlers>
+                </Label>
+                <Button name="$parentBackgroundOpacityDecreaseButton" inherits="EA_Button_Default">
+                    <Size><AbsPoint x="28" y="20" /></Size>
+                    <Anchors>
+                        <Anchor point="topleft" relativePoint="topleft" relativeTo="$parent">
+                            <AbsPoint x="447" y="128" />
+                        </Anchor>
+                    </Anchors>
+                    <EventHandlers>
+                        <EventHandler event="OnLButtonUp" function="WarbandComms.DecreaseBackgroundOpacity" />
+                    </EventHandlers>
+                    <Windows>
+                        <Label name="$parentLabel" font="font_clear_medium_bold" textalign="center">
+                            <Size><AbsPoint x="28" y="20" /></Size>
+                            <Anchors>
+                                <Anchor point="center" relativePoint="center" relativeTo="$parent" />
+                            </Anchors>
+                        </Label>
+                    </Windows>
+                </Button>
+                <Button name="$parentBackgroundOpacityValue" inherits="EA_Button_Default">
+                    <Size><AbsPoint x="50" y="20" /></Size>
+                    <Anchors>
+                        <Anchor point="topleft" relativePoint="topleft" relativeTo="$parent">
+                            <AbsPoint x="477" y="128" />
+                        </Anchor>
+                    </Anchors>
+                    <EventHandlers>
+                        <EventHandler event="OnLButtonUp" function="WarbandComms.ResetBackgroundOpacity" />
+                    </EventHandlers>
+                    <Windows>
+                        <Label name="$parentText" font="font_clear_small" textalign="center">
+                            <Size><AbsPoint x="50" y="20" /></Size>
+                            <Anchors>
+                                <Anchor point="center" relativePoint="center" relativeTo="$parent" />
+                            </Anchors>
+                        </Label>
+                    </Windows>
+                </Button>
+                <Button name="$parentBackgroundOpacityIncreaseButton" inherits="EA_Button_Default">
+                    <Size><AbsPoint x="28" y="20" /></Size>
+                    <Anchors>
+                        <Anchor point="topleft" relativePoint="topleft" relativeTo="$parent">
+                            <AbsPoint x="533" y="128" />
+                        </Anchor>
+                    </Anchors>
+                    <EventHandlers>
+                        <EventHandler event="OnLButtonUp" function="WarbandComms.IncreaseBackgroundOpacity" />
+                    </EventHandlers>
+                    <Windows>
+                        <Label name="$parentLabel" font="font_clear_medium_bold" textalign="center">
+                            <Size><AbsPoint x="28" y="20" /></Size>
+                            <Anchors>
+                                <Anchor point="center" relativePoint="center" relativeTo="$parent" />
+                            </Anchors>
+                        </Label>
+                    </Windows>
+                </Button>
+
+                <Label name="$parentHeaderToneLabel" font="font_clear_small" textalign="left">
+                    <Size><AbsPoint x="100" y="20" /></Size>
+                    <Anchors>
+                        <Anchor point="topleft" relativePoint="topleft" relativeTo="$parent">
+                            <AbsPoint x="20" y="154" />
+                        </Anchor>
+                    </Anchors>
+                    <EventHandlers>
+                        <EventHandler event="OnMouseOver" function="WarbandComms.ShowConfigLabelTooltip" />
+                        <EventHandler event="OnMouseOverEnd" function="WarbandComms.HideConfigLabelTooltip" />
+                    </EventHandlers>
+                </Label>
+                <Button name="$parentHeaderToneDecreaseButton" inherits="EA_Button_Default">
+                    <Size><AbsPoint x="28" y="20" /></Size>
+                    <Anchors>
+                        <Anchor point="topleft" relativePoint="topleft" relativeTo="$parent">
+                            <AbsPoint x="140" y="154" />
+                        </Anchor>
+                    </Anchors>
+                    <EventHandlers>
+                        <EventHandler event="OnLButtonUp" function="WarbandComms.DecreaseHeaderTone" />
+                    </EventHandlers>
+                    <Windows>
+                        <Label name="$parentLabel" font="font_clear_medium_bold" textalign="center">
+                            <Size><AbsPoint x="28" y="20" /></Size>
+                            <Anchors>
+                                <Anchor point="center" relativePoint="center" relativeTo="$parent" />
+                            </Anchors>
+                        </Label>
+                    </Windows>
+                </Button>
+                <Button name="$parentHeaderToneButton" inherits="EA_Button_Default">
+                    <Size><AbsPoint x="50" y="20" /></Size>
+                    <Anchors>
+                        <Anchor point="topleft" relativePoint="topleft" relativeTo="$parent">
+                            <AbsPoint x="170" y="154" />
+                        </Anchor>
+                    </Anchors>
+                    <EventHandlers>
+                        <EventHandler event="OnLButtonUp" function="WarbandComms.ToggleHeaderTone" />
+                    </EventHandlers>
+                    <Windows>
+                        <Label name="$parentValue" font="font_clear_small" textalign="center">
+                            <Size><AbsPoint x="50" y="20" /></Size>
+                            <Anchors>
+                                <Anchor point="center" relativePoint="center" relativeTo="$parent" />
+                            </Anchors>
+                        </Label>
+                    </Windows>
+                </Button>
+                <Button name="$parentHeaderToneIncreaseButton" inherits="EA_Button_Default">
+                    <Size><AbsPoint x="28" y="20" /></Size>
+                    <Anchors>
+                        <Anchor point="topleft" relativePoint="topleft" relativeTo="$parent">
+                            <AbsPoint x="226" y="154" />
+                        </Anchor>
+                    </Anchors>
+                    <EventHandlers>
+                        <EventHandler event="OnLButtonUp" function="WarbandComms.IncreaseHeaderTone" />
+                    </EventHandlers>
+                    <Windows>
+                        <Label name="$parentLabel" font="font_clear_medium_bold" textalign="center">
+                            <Size><AbsPoint x="28" y="20" /></Size>
+                            <Anchors>
+                                <Anchor point="center" relativePoint="center" relativeTo="$parent" />
+                            </Anchors>
+                        </Label>
+                    </Windows>
+                </Button>
+
+                <Label name="$parentHeaderStyleLabel" font="font_clear_small" textalign="left">
+                    <Size><AbsPoint x="100" y="20" /></Size>
+                    <Anchors>
+                        <Anchor point="topleft" relativePoint="topleft" relativeTo="$parent">
+                            <AbsPoint x="350" y="154" />
+                        </Anchor>
+                    </Anchors>
+                    <EventHandlers>
+                        <EventHandler event="OnMouseOver" function="WarbandComms.ShowConfigLabelTooltip" />
+                        <EventHandler event="OnMouseOverEnd" function="WarbandComms.HideConfigLabelTooltip" />
+                    </EventHandlers>
+                </Label>
+                <Button name="$parentHeaderStyleDecreaseButton" inherits="EA_Button_Default">
+                    <Size><AbsPoint x="28" y="20" /></Size>
+                    <Anchors>
+                        <Anchor point="topleft" relativePoint="topleft" relativeTo="$parent">
+                            <AbsPoint x="447" y="154" />
+                        </Anchor>
+                    </Anchors>
+                    <EventHandlers>
+                        <EventHandler event="OnLButtonUp" function="WarbandComms.DecreaseHeaderStyle" />
+                    </EventHandlers>
+                    <Windows>
+                        <Label name="$parentLabel" font="font_clear_medium_bold" textalign="center">
+                            <Size><AbsPoint x="28" y="20" /></Size>
+                            <Anchors>
+                                <Anchor point="center" relativePoint="center" relativeTo="$parent" />
+                            </Anchors>
+                        </Label>
+                    </Windows>
+                </Button>
+                <Button name="$parentHeaderStyleButton" inherits="EA_Button_Default">
+                    <Size><AbsPoint x="50" y="20" /></Size>
+                    <Anchors>
+                        <Anchor point="topleft" relativePoint="topleft" relativeTo="$parent">
+                            <AbsPoint x="477" y="154" />
+                        </Anchor>
+                    </Anchors>
+                    <EventHandlers>
+                        <EventHandler event="OnLButtonUp" function="WarbandComms.ToggleHeaderStyle" />
+                    </EventHandlers>
+                    <Windows>
+                        <Label name="$parentValue" font="font_clear_small" textalign="center">
+                            <Size><AbsPoint x="50" y="20" /></Size>
+                            <Anchors>
+                                <Anchor point="center" relativePoint="center" relativeTo="$parent" />
+                            </Anchors>
+                        </Label>
+                    </Windows>
+                </Button>
+                <Button name="$parentHeaderStyleIncreaseButton" inherits="EA_Button_Default">
+                    <Size><AbsPoint x="28" y="20" /></Size>
+                    <Anchors>
+                        <Anchor point="topleft" relativePoint="topleft" relativeTo="$parent">
+                            <AbsPoint x="533" y="154" />
+                        </Anchor>
+                    </Anchors>
+                    <EventHandlers>
+                        <EventHandler event="OnLButtonUp" function="WarbandComms.IncreaseHeaderStyle" />
+                    </EventHandlers>
+                    <Windows>
+                        <Label name="$parentLabel" font="font_clear_medium_bold" textalign="center">
+                            <Size><AbsPoint x="28" y="20" /></Size>
+                            <Anchors>
+                                <Anchor point="center" relativePoint="center" relativeTo="$parent" />
+                            </Anchors>
+                        </Label>
+                    </Windows>
+                </Button>
+
+                <!-- dynamically generated tracker checkbox and labels -->
+
+                <!-- Notifications Title -->
+                <Label name="$parentNotificationsTitle" font="font_clear_medium_bold" textalign="center">
+                    <Size><AbsPoint x="660" y="20" /></Size>
+                    <Anchors>
+                        <Anchor point="topleft" relativePoint="topleft" relativeTo="$parent">
+                            <AbsPoint x="20" y="50" />
+                        </Anchor>
+                    </Anchors>
+                </Label>
+
+                <Label name="$parentTrackerGroupTitle" font="font_clear_medium_bold" textalign="left">
+                    <Size><AbsPoint x="330" y="20" /></Size>
+                    <Anchors>
+                        <Anchor point="topleft" relativePoint="topleft" relativeTo="$parent">
+                            <AbsPoint x="20" y="198" />
+                        </Anchor>
+                    </Anchors>
+                    <EventHandlers>
+                        <EventHandler event="OnMouseOver" function="WarbandComms.ShowConfigLabelTooltip" />
+                        <EventHandler event="OnMouseOverEnd" function="WarbandComms.HideConfigLabelTooltip" />
+                    </EventHandlers>
+                </Label>
+
+                <Label name="$parentNotificationGroupTitle" font="font_clear_medium_bold" textalign="left">
+                    <Size><AbsPoint x="330" y="20" /></Size>
+                    <Anchors>
+                        <Anchor point="topleft" relativePoint="topleft" relativeTo="$parent">
+                            <AbsPoint x="350" y="198" />
+                        </Anchor>
+                    </Anchors>
+                    <EventHandlers>
+                        <EventHandler event="OnMouseOver" function="WarbandComms.ShowConfigLabelTooltip" />
+                        <EventHandler event="OnMouseOverEnd" function="WarbandComms.HideConfigLabelTooltip" />
+                    </EventHandlers>
+                </Label>
+
+                <!-- dynamically generated notification checkbox and labels -->
+
+            </Windows>
+        </Window>
+    </Windows>
+</Interface>

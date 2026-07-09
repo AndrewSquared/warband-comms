@@ -10,6 +10,16 @@
 
 - Yen owns release packaging, metadata, and supporting script work for the addon.
 - The project ships through an explicit release packaging flow rather than a generic app build pipeline.
+- Version `3.6.0` (2026-05-03) is the release that shipped the WBC-only breaking change, so it is properly versioned. No retroactive version bump needed. Unreleased optimization commits since then are non-breaking and can be bundled in a 3.6.1 patch when needed.
+
+### 2026-07-08T22:10:02Z: WBC-only breaking change version audit
+
+Verified that the WBC-only protocol breaking change is already reflected in version 3.6.0:
+- WarbandComms.lua: `local DEFAULT_COMMS_KEY = "[WBC]"`, outbound/inbound both WBC-only
+- WarbandComms.mod: version="3.6.0"
+- changelog.md: top entry "3.6.0 (2026-05-03)" lists "addon comms are now WBC-only for both outbound sends and inbound parsing"
+- Current unreleased commits: team coordination (.squad/), plus one optimization in WarbandComms.lua (removed commsKey cache in favor of direct GetOutboundCommsKey() calls)
+- Conclusion: Breaking change is properly versioned. No action needed. If unreleased commits are shipped, they would be 3.6.1.
 
 ### 2026-07-08T21:51:36Z: Documentation cleanup pass
 

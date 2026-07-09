@@ -11,6 +11,10 @@
 - Rusty owns scope, decisions, and review for the WarbandComms squad.
 - The project centers on coordinating 24-player group communication and timers inside the game client.
 
+### 2026-07-08T21:54:22Z: Changelog cleanup — RET/DEVA reference removal
+
+Completed final surface pass: removed historical `/ret slash commands` mention from 3.3.0 changelog entry. This was the last app-surface reference to realm-specific legacy keys after protocol cleanup. Edit was surgical: removed only the out-of-date line from the 3.3.0 entry, preserved all other historical items in that release. Verified zero remaining RET/DEVA references in changelog.md post-fix.
+
 ### 2026-06-04T23:32:48Z: Decision Inbox Merged
 
 Team decisions recorded and consolidated:
@@ -22,6 +26,15 @@ Team decisions recorded and consolidated:
 - Tooling fix: release help surface consistency resolved
 
 Team ready to move into next phase.
+
+### 2026-07-09T01:46:59Z: WBC-Only Protocol Cutover — Final Approval
+
+Rusty's final changelog cleanup (2026-07-08T21:54:22Z removing 3.3.0 `/ret` mention) cleared the last blocker. Protocol cleanup cycle now complete:
+- Full runtime aligned to WBC-only (Livingston)
+- Packaged docs clean (Yen)
+- Changelog/release surface clean (Rusty)
+- Review gate validation complete (Basher)
+Result: **Approved and merged to `.squad/decisions.md`**. All team decisions documented. Ready for next phase.
 
 ### Battle-Group Channel Expansion Scope Review (2026-06-04)
 

@@ -73,3 +73,18 @@ Scribe recorded Livingston's audit findings in team orchestration log and sessio
 - Key runtime tradeoff: cached `commsKey` is simple at send time, but it can drift if initialization happens before `GameData.Player.realm` is ready because the fallback path returns `[WBC]` and the cached field is not recomputed later.
 - Addon-specific best-practice recommendation: prefer calling `GetOutboundCommsKey()` at outbound construction/use sites for protocol correctness, clearer derived-state handling, and lower maintenance risk during the current mixed-key compatibility phase.
 - Relevant file path: `WarbandComms.lua`.
+
+### 2026-07-08T21:46:59.901-04:00: WBC-only Protocol Cleanup
+
+- Removed legacy realm-key compatibility from `WarbandComms.lua` and `WarbandComms/WarbandComms.lua` so outbound sends, inbound parsing, and `/wbc selfcheck` all use `[WBC]` as the only comms key.
+- Updated directly related docs to match the live runtime state: `README.md`, `WarbandComms/README.md`, `RELEASING.md`, `changelog.md`, `.github/copilot-instructions.md`, and `.github/prompts/plan-warbandComms.prompt.md`.
+- Validation path used: `python3 scripts/validate_release_state.py --build release`, `python3 scripts/package_release.py --build release --clean`, and a release-zip string scan confirming no legacy protocol tags remain in packaged text files.
+- Remaining explicit legacy-key reference intentionally left outside app surface: `.squad/agents/rusty/history.md` documents the older transition behavior for team history.
+
+### 2026-07-09T01:46:59Z: Team Approval — WBC-Only Protocol Cutover
+
+Protocol cleanup cycle complete. Basher approved final submission. Team decisions recorded:
+- **Livingston decision:** WBC-only comms (runtime/parsing/self-check all unified on single key)
+- **Basher decision:** Doc-surface legacy references are review gates (shipped/reviewed artifacts must be clean)
+- Cross-team coordination: Yen cleaned app-facing docs, Rusty removed final changelog RET line, Basher validated full scope
+- Status: **Approved and merged to decisions.md**. Ready for next phase.

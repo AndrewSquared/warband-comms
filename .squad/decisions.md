@@ -47,6 +47,20 @@
 - **Why:** Outbound protocol selection depends on realm state, and initialization-time caching can hold a fallback value before realm data is ready.
 - **Scope:** `WarbandComms.lua` protocol send and self-check paths.
 
+### Livingston Decision — WBC-only protocol cutover (2026-07-08)
+
+- **By:** Livingston
+- **Decision:** Remove legacy realm-key compatibility and keep addon comms WBC-only for both outbound sends and inbound parsing.
+- **Why:** The runtime and self-check output are simpler and less ambiguous when `GetOutboundCommsKey()`, `GetAcceptedCommsKeys()`, and `IsAcceptedCommsKey()` all agree on a single live key. This also aligns product and maintainer docs with the actual shipped behavior.
+- **Scope:** `WarbandComms.lua`, packaged addon mirror under `WarbandComms/`, README/release docs, and maintainer prompt documentation.
+
+### Basher Decision — doc-surface legacy reference threshold (2026-07-08)
+
+- **By:** Basher
+- **Decision:** Treat legacy protocol or slash-command references in listed repo docs such as `changelog.md` as review blockers for protocol-cleanup approval, even when the reference is historical.
+- **Why:** Runtime WBC-only proof is not enough if maintainers or players can still encounter retired identifiers in current documentation surfaces. Internal `.squad/` notes and generic template noise can be ignored, but a shipped or explicitly-reviewed doc artifact is still product-facing enough to count as a miss.
+- **Scope:** Protocol cleanup reviews covering `README.md`, packaged README copies, changelog/release docs, and other explicitly requested documentation artifacts.
+
 ## Governance
 
 - All meaningful changes require team consensus
